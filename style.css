@@ -1,0 +1,38 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080909;color:#eee;font-family:Arial,Helvetica,sans-serif;touch-action:none}
+body{position:fixed;inset:0}
+#game{position:absolute;inset:0;width:100%;height:100%;display:block;background:#111}
+#hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 2px 4px #000}
+.top-left{position:absolute;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));width:180px}
+.top-right{position:absolute;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));text-align:right}
+.top-center{position:absolute;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);text-align:center}
+#waveText{font-size:20px;font-weight:900;letter-spacing:2px}
+#zombieText{font-size:12px;color:#bbb}
+.stat{display:grid;grid-template-columns:58px 1fr 32px;gap:5px;align-items:center;margin-bottom:6px;font-size:10px;font-weight:bold}
+.bar{height:9px;background:#292929;border:1px solid #555;border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:#b32626}
+.bar.armour i{background:#777}
+.stat b{font-size:11px;text-align:right}
+#weaponText{font-weight:900;font-size:16px;letter-spacing:1px}
+#ammoText{font-size:14px;color:#ddd;margin-top:3px}
+#message{position:absolute;top:24%;left:50%;transform:translateX(-50%);font-weight:900;font-size:24px;opacity:0;transition:opacity .15s;white-space:nowrap}
+#mobileControls{position:absolute;inset:0;pointer-events:none}
+.stick{position:absolute;width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);pointer-events:auto;bottom:max(24px,env(safe-area-inset-bottom));touch-action:none}
+#moveStick{left:max(20px,env(safe-area-inset-left));}
+#aimStick{right:max(20px,env(safe-area-inset-right));}
+.knob{position:absolute;width:58px;height:58px;left:35px;top:35px;border-radius:50%;background:rgba(190,190,190,.28);border:2px solid rgba(255,255,255,.28)}
+.action{position:absolute;pointer-events:auto;border:1px solid rgba(255,255,255,.3);background:rgba(20,20,20,.72);color:#eee;border-radius:50%;font-size:22px;font-weight:bold;touch-action:none}
+#reloadBtn{right:178px;bottom:max(38px,calc(env(safe-area-inset-bottom) + 14px));width:58px;height:58px}
+#grenadeBtn{right:178px;bottom:max(108px,calc(env(safe-area-inset-bottom) + 84px));width:52px;height:52px;font-size:16px}
+#desktopHelp{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:#999;pointer-events:none}
+#startOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,6,6,.82);z-index:5;text-align:center}
+#startOverlay h1{margin:0;font-size:clamp(42px,11vw,84px);letter-spacing:8px;color:#ddd}
+#startOverlay p{margin:8px 0 24px;color:#aaa}
+#startOverlay button{font-size:20px;font-weight:900;letter-spacing:2px;padding:14px 44px;background:#a62222;color:#fff;border:1px solid #d66;border-radius:4px}
+#startOverlay small{margin-top:16px;color:#777}
+@media (hover:hover) and (pointer:fine){
+  #mobileControls{display:none}
+}
+@media (pointer:coarse){
+  #desktopHelp{display:none}
+}

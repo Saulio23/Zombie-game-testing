@@ -1,0 +1,9 @@
+{
+  "name":"Deadline Zombie Game",
+  "short_name":"Deadline",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#080909",
+  "theme_color":"#0a0a0a",
+  "orientation":"landscape"
+}

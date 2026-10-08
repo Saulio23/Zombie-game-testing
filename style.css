@@ -1,20 +1,9 @@
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-  -webkit-touch-callout:none;
-  -webkit-user-select:none;
-  user-select:none;
-}
-html,body{
-  margin:0;width:100%;height:100%;overflow:hidden;background:#080909;color:#eee;
-  font-family:Arial,Helvetica,sans-serif;touch-action:none;
-  overscroll-behavior:none;
-}
-body{position:fixed;inset:0;-webkit-text-size-adjust:100%;}
-button{font:inherit;-webkit-appearance:none;appearance:none;}
-#game{position:absolute;inset:0;width:100%;height:100%;display:block;background:#111;touch-action:none;}
-#hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 2px 4px #000;}
-.top-left{position:absolute;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));width:190px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080909;color:#eee;font-family:Arial,Helvetica,sans-serif;touch-action:none}
+body{position:fixed;inset:0}
+#game{position:absolute;inset:0;width:100%;height:100%;display:block;background:#111}
+#hud{position:absolute;inset:0;pointer-events:none;text-shadow:0 2px 4px #000}
+.top-left{position:absolute;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));width:180px}
 .top-right{position:absolute;right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));text-align:right}
 .top-center{position:absolute;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);text-align:center}
 #waveText{font-size:20px;font-weight:900;letter-spacing:2px}
@@ -27,24 +16,23 @@ button{font:inherit;-webkit-appearance:none;appearance:none;}
 #weaponText{font-weight:900;font-size:16px;letter-spacing:1px}
 #ammoText{font-size:14px;color:#ddd;margin-top:3px}
 #message{position:absolute;top:24%;left:50%;transform:translateX(-50%);font-weight:900;font-size:24px;opacity:0;transition:opacity .15s;white-space:nowrap}
-#mobileControls{position:absolute;inset:0;pointer-events:none;touch-action:none;}
-.stick{position:absolute;width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);pointer-events:auto;bottom:max(24px,env(safe-area-inset-bottom));touch-action:none;}
+#mobileControls{position:absolute;inset:0;pointer-events:none}
+.stick{position:absolute;width:132px;height:132px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);pointer-events:auto;bottom:max(24px,env(safe-area-inset-bottom));touch-action:none}
 #moveStick{left:max(20px,env(safe-area-inset-left));}
 #aimStick{right:max(20px,env(safe-area-inset-right));}
-.knob{position:absolute;width:58px;height:58px;left:35px;top:35px;border-radius:50%;background:rgba(190,190,190,.28);border:2px solid rgba(255,255,255,.28);pointer-events:none;}
-.action{position:absolute;pointer-events:auto;border:1px solid rgba(255,255,255,.3);background:rgba(20,20,20,.72);color:#eee;border-radius:50%;font-size:22px;font-weight:bold;touch-action:none;}
-.action:active{background:rgba(150,30,30,.82);}
+.knob{position:absolute;width:58px;height:58px;left:35px;top:35px;border-radius:50%;background:rgba(190,190,190,.28);border:2px solid rgba(255,255,255,.28)}
+.action{position:absolute;pointer-events:auto;border:1px solid rgba(255,255,255,.3);background:rgba(20,20,20,.72);color:#eee;border-radius:50%;font-size:22px;font-weight:bold;touch-action:none}
 #reloadBtn{right:178px;bottom:max(38px,calc(env(safe-area-inset-bottom) + 14px));width:58px;height:58px}
 #grenadeBtn{right:178px;bottom:max(108px,calc(env(safe-area-inset-bottom) + 84px));width:52px;height:52px;font-size:16px}
 #desktopHelp{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:#999;pointer-events:none}
-#startOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,6,6,.84);z-index:5;text-align:center;touch-action:none;}
+#startOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,6,6,.82);z-index:5;text-align:center}
 #startOverlay h1{margin:0;font-size:clamp(42px,11vw,84px);letter-spacing:8px;color:#ddd}
 #startOverlay p{margin:8px 0 24px;color:#aaa}
-#startOverlay button{font-size:20px;font-weight:900;letter-spacing:2px;padding:14px 52px;background:#a62222;color:#fff;border:1px solid #d66;border-radius:4px;}
+#startOverlay button{font-size:20px;font-weight:900;letter-spacing:2px;padding:14px 44px;background:#a62222;color:#fff;border:1px solid #d66;border-radius:4px}
 #startOverlay small{margin-top:16px;color:#777}
-.versionLabel{margin-top:10px;color:#aaa;font-size:13px;letter-spacing:1px}
-@media (hover:hover) and (pointer:fine){#mobileControls{display:none}}
-@media (pointer:coarse){#desktopHelp{display:none}}
-@media (orientation:portrait) and (pointer:coarse){
-  #startOverlay:after{content:"Rotate to landscape for the best experience";position:absolute;bottom:28px;color:#777;font-size:12px;}
+@media (hover:hover) and (pointer:fine){
+  #mobileControls{display:none}
+}
+@media (pointer:coarse){
+  #desktopHelp{display:none}
 }

@@ -1,10 +1,20 @@
-DEADLINE - v1.0 prototype
+DEADLINE - Alpha 1.1
 
 Files:
 - index.html
 - style.css
-- js/game.js
+- game.js
 - manifest.json
+
+Alpha 1.1 changes:
+- Fixed Wave 1 immediately ending on load.
+- Improved iPhone touch handling and suppressed text selection/touch callouts.
+- Added stronger touch/gesture prevention for full-screen play.
+- Added grenade travel/flash/explosion effects.
+- Added simple muzzle flash and zombie hit/death feedback.
+- Added wave transition banner.
+- Added grenade count to the HUD.
+- Added Alpha 1.1 version label to the start screen.
 
 Run locally:
 1. From this folder, run a local web server, e.g.:
@@ -12,7 +22,6 @@ Run locally:
 2. Open http://localhost:8000
 
 For iPhone testing:
-- The game needs to be served over HTTPS when testing from an iPhone on another device.
-- A simple free static host can be used later.
+- Serve over HTTPS.
 - Use landscape orientation.
 - Touch controls: left stick moves, right stick aims/fires, R reload button, G grenade.

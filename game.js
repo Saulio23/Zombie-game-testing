@@ -25,7 +25,7 @@ function boom(x,y){p.push({x,y,t:.35,m:.35,k:"e"});for(const e of z){let dx=e.x-
 function limb(x1,y1,x2,y2,w,col){x.strokeStyle=col;x.lineWidth=w;x.lineCap="round";x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke()}
 function drawZombie(e){
  const dying=e.dead,life=dying?Math.max(0,e.deathT/(e.deathLen||.58)):1;
- const step=Math.sin(e.phase)*3.4,side=Math.cos(e.phase*.72)*2.1;
+ const step=Math.sin(e.phase)*3.4,side=Math.cos(e.phase*.72)*2.1,reach=Math.sin(e.phase*.82);
  // Twenty compact procedural palettes keep the horde varied without sprite downloads.
  const looks=[
   {skin:"#65745a",cloth:"#4e5142",pants:"#34372f",accent:"#8c2525"},
@@ -59,13 +59,33 @@ function drawZombie(e){
   limb(-4,4,-5+l,12,5,pants);limb(4,4,5+r,12,5,pants);
  }
  x.fillStyle=cloth;x.beginPath();const shape=e.variant%6;if(shape===1)x.ellipse(0,1,e.r*.79,e.r*.8,0,0,Math.PI*2);else if(shape===2)x.ellipse(0,1,e.r*.48,e.r*.9,0,0,Math.PI*2);else if(shape===3){x.moveTo(-e.r*.62,-7);x.lineTo(e.r*.55,-7);x.lineTo(e.r*.8,5);x.lineTo(4,8);x.lineTo(-e.r*.72,5);x.closePath()}else if(shape===4){x.ellipse(0,1,e.r*.67,e.r*.72,0,0,Math.PI*2)}else x.ellipse(0,1,e.r*.62,e.r*.83,0,0,Math.PI*2);x.fill();
+ // Dark collar and shoulder shadows reinforce the human upper-body silhouette.
+ x.fillStyle="#252522";x.beginPath();x.moveTo(-5,-7);x.lineTo(0,-4.5);x.lineTo(5,-7);x.lineTo(3,-2);x.lineTo(-3,-2);x.closePath();x.fill();
  // Torn seams, contrasting undershirts, and grime stripes.
  x.strokeStyle="#201f1d";x.lineWidth=2;x.beginPath();x.moveTo(-5,-7);x.lineTo(-2,-1);x.lineTo(-6,3);x.moveTo(4,-5);x.lineTo(2,1);x.lineTo(6,6);x.stroke();
  if(e.variant%4===1){x.fillStyle="#a5a09a";x.fillRect(-2,-7,4,11)}else if(e.variant%4===2){x.fillStyle="#272727";x.fillRect(-2,-7,3,12)}else if(e.variant%4===3){x.fillStyle="#c0b59a";x.fillRect(-5,-5,2,7);x.fillRect(3,-3,2,7)}
- if(!dying){let armSwing=e.walkStyle===2?step*.55:step*.8;limb(-6,-3,-11-armSwing,5,4,skin);limb(6,-3,11+armSwing,4,4,skin)}
+ // Reaching-horror gait: shoulders flare outward, elbows bend, and forearms
+ // reach toward the zombie's facing direction (local -Y). Small asymmetry keeps
+ // the horde from looking perfectly synchronized while using only cheap line art.
+ if(!dying){
+  const gait=e.walkStyle===1?side*.55:step*.22;
+  const reachL=reach*(e.walkStyle===2?1.4:1.0),reachR=Math.sin(e.phase*.82+1.05)*(e.walkStyle===1?1.25:.9);
+  const lx=-5.5-gait*.35,rx=5.5+gait*.35;
+  const lex=-9.5-gait+reachL*.65, rex=9.5+gait+reachR*.65;
+  const ley=-6.5+Math.abs(step)*.12, rey=-6.2+Math.abs(step)*.1;
+  const lwx=-6.5+reachL*.9, rwx=6.5+reachR*.9;
+  const lwy=-13.2+reachL*.8, rwy=-13.8+reachR*.8;
+  limb(lx,-3,lex,ley,4.8,skin);limb(rx,-3,rex,rey,4.8,skin);
+  limb(lex,ley,lwx,lwy,3.8,skin);limb(rex,rey,rwx,rwy,3.8,skin);
+  // Small claw-like fingers are readable at close range but inexpensive to draw.
+  limb(lwx,lwy,lwx-2.0,lwy-2.2,1.7,skin);limb(lwx,lwy,lwx+.5,lwy-2.8,1.6,skin);
+  limb(rwx,rwy,rwx+2.0,rwy-2.2,1.7,skin);limb(rwx,rwy,rwx-.5,rwy-2.8,1.6,skin);
+ }
+ // Forward-thrust head and neck make the stance feel hunched and predatory.
+ x.fillStyle=skin;x.beginPath();x.ellipse(0,-e.r*.38,3.1,4.4,-.08,0,Math.PI*2);x.fill();
  // Head shape and face details.
- x.fillStyle=e.hitT>0?"#f0d6c1":skin;x.beginPath();if(e.variant%5===2)x.ellipse(e.variant%2?1:-1,-e.r*.56,e.r*.32,e.r*.44,0,0,Math.PI*2);else x.arc(e.variant%3===0?1:-1,-e.r*.56,e.variant%5===1?e.r*.39:e.r*.42,0,Math.PI*2);x.fill();
- x.fillStyle="#1a1412";x.beginPath();x.arc(-4,-e.r*.59,1.7,0,Math.PI*2);x.arc(2,-e.r*.62,1.4,0,Math.PI*2);x.fill();
+ x.fillStyle=e.hitT>0?"#f0d6c1":skin;x.beginPath();if(e.variant%5===2)x.ellipse(e.variant%2?1:-1,-e.r*.66,e.r*.32,e.r*.42,0,0,Math.PI*2);else x.arc(e.variant%3===0?1:-1,-e.r*.66,e.variant%5===1?e.r*.39:e.r*.42,0,Math.PI*2);x.fill();
+ x.fillStyle="#1a1412";x.beginPath();x.arc(-4,-e.r*.69,1.7,0,Math.PI*2);x.arc(2,-e.r*.72,1.4,0,Math.PI*2);x.fill();
  // Palette-specific wounds and bruises; stylised at game scale.
  x.fillStyle=accent;x.beginPath();x.ellipse(-5,-2,3.2+(e.variant%3)*.5,2.2,-.5,0,Math.PI*2);x.fill();x.fillRect(3,1,3,5);x.fillRect(-2,5,4,2);
  x.strokeStyle="#261c1a";x.lineWidth=1.6;x.beginPath();x.moveTo(-7,-5);x.lineTo(-3,-1);x.moveTo(5,-4);x.lineTo(2,-1);x.stroke();

@@ -6,7 +6,7 @@ function resize(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener("
 function message(t){msg.textContent=t;clearTimeout(message.t);message.t=setTimeout(()=>msg.textContent="",1000)}
 function reset(){z=[];b=[];g=[];p=[];wave=1;clock=0;player={x:W/2,y:H/2,r:17,hp:100,arm:50,ammo:12,a:0,cd:0,walk:0,move:0,shootT:0,reloadT:0,throwT:0};newWave()}
 function newWave(){left=C.base+(wave-1)*C.perWave;spawnT=0;inter=0;message("WAVE "+wave)}
-function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}z.push({x:px,y:py,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*5),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random()});left--}
+function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}z.push({x:px,y:py,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*20),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random()});left--}
 function shoot(){if(!running||paused||player.cd>0)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;dx/=d;dy/=d;player.a=Math.atan2(dy,dx);b.push({x:player.x+dx*24,y:player.y+dy*24,vx:dx*850,vy:dy*850,t:.6});player.cd=.07;player.ammo=12;player.shootT=.12;p.push({x:player.x+dx*27,y:player.y+dy*27,t:.07,m:.07,k:"m"})}
 function grenade(){if(!running||paused)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;g.push({x:player.x+dx*18,y:player.y+dy*18,vx:dx/d*430,vy:dy/d*430,t:.55});player.throwT=.32}
 function reload(){if(!player)return;player.ammo=12;if(running&&!paused)player.reloadT=.42}
@@ -26,36 +26,58 @@ function limb(x1,y1,x2,y2,w,col){x.strokeStyle=col;x.lineWidth=w;x.lineCap="roun
 function drawZombie(e){
  const dying=e.dead,life=dying?Math.max(0,e.deathT/(e.deathLen||.58)):1;
  const step=Math.sin(e.phase)*3.4,side=Math.cos(e.phase*.72)*2.1;
- const skins=["#65745a","#77766b","#626a55","#7c6b5c","#565f55"];
- const clothes=["#4e5142","#34434a","#693f3a","#5a5140","#3f4141"];
- const skin=skins[e.variant]||skins[0],cloth=clothes[e.variant]||clothes[0];
+ // Twenty compact procedural palettes keep the horde varied without sprite downloads.
+ const looks=[
+  {skin:"#65745a",cloth:"#4e5142",pants:"#34372f",accent:"#8c2525"},
+  {skin:"#77766b",cloth:"#34434a",pants:"#272f32",accent:"#a52b2b"},
+  {skin:"#626a55",cloth:"#693f3a",pants:"#38302b",accent:"#7d2222"},
+  {skin:"#7c6b5c",cloth:"#5a5140",pants:"#39352c",accent:"#6f171b"},
+  {skin:"#565f55",cloth:"#3f4141",pants:"#292d2b",accent:"#8d2024"},
+  {skin:"#b0a18a",cloth:"#493b35",pants:"#272629",accent:"#9d2427"},
+  {skin:"#8c9a78",cloth:"#414b35",pants:"#31382c",accent:"#6f2022"},
+  {skin:"#8e7771",cloth:"#46323d",pants:"#2e2932",accent:"#a92d30"},
+  {skin:"#b3b4a0",cloth:"#4a4d52",pants:"#303136",accent:"#7d2528"},
+  {skin:"#6b6651",cloth:"#786b4d",pants:"#3f392d",accent:"#9a2925"},
+  {skin:"#9c8060",cloth:"#573f2e",pants:"#332b25",accent:"#7f1d21"},
+  {skin:"#525b61",cloth:"#384b59",pants:"#262d35",accent:"#a02c32"},
+  {skin:"#a8a08d",cloth:"#5e5a58",pants:"#3a3635",accent:"#752025"},
+  {skin:"#74816a",cloth:"#594c32",pants:"#383326",accent:"#a22b26"},
+  {skin:"#887f6a",cloth:"#494c31",pants:"#2f3325",accent:"#772126"},
+  {skin:"#a08b8b",cloth:"#533b42",pants:"#33292e",accent:"#b02b31"},
+  {skin:"#62645e",cloth:"#625d5b",pants:"#343333",accent:"#872125"},
+  {skin:"#b6ad95",cloth:"#3f4541",pants:"#2b302d",accent:"#9e2428"},
+  {skin:"#81705b",cloth:"#6b3f32",pants:"#3b2e29",accent:"#aa2828"},
+  {skin:"#737d83",cloth:"#3b3f4e",pants:"#292b37",accent:"#7e2029"}
+ ];
+ const look=looks[e.variant%looks.length],skin=look.skin,cloth=look.cloth,pants=look.pants,accent=look.accent;
  let rot=0,lean=0,fall=0;
  if(dying){fall=(1-life);if(e.deathStyle===0){rot=fall*1.42;lean=fall*5}else if(e.deathStyle===1){rot=-fall*1.72;lean=fall*2}else{rot=fall*.45;lean=fall*10}}
  x.save();x.translate(e.x,e.y+lean);x.rotate(dying?rot:e.turn+Math.sin(e.phase*.5)*.025);x.globalAlpha=dying?Math.min(1,life*1.8):1;
- if(dying&&e.deathStyle===2){x.scale(1+fall*.28,1-fall*.14)}
- // Legs: three gait rhythms make the crowd less synchronized.
+ if(dying&&e.deathStyle===2)x.scale(1+fall*.28,1-fall*.14);
+ // Distinct gait rhythms and body silhouettes.
  if(!dying){let l=step,r=-step;if(e.walkStyle===1){l=side+step*.45;r=-side-step*.45}else if(e.walkStyle===2){l=step*1.25;r=-step*.65}
- limb(-4,4,-5+l,12,5, e.variant===1?"#272f32":"#35372f");limb(4,4,5+r,12,5,e.variant===1?"#272f32":"#35372f");
+  limb(-4,4,-5+l,12,5,pants);limb(4,4,5+r,12,5,pants);
  }
- // Ragged torso, different silhouettes and clothing colours.
- x.fillStyle=cloth;x.beginPath();if(e.variant===1)x.ellipse(0,1,e.r*.79,e.r*.8,0,0,Math.PI*2);else if(e.variant===2)x.ellipse(0,1,e.r*.48,e.r*.9,0,0,Math.PI*2);else x.ellipse(0,1,e.r*.62,e.r*.83,0,0,Math.PI*2);x.fill();
- // Torn shirt panels and dirty highlights.
+ x.fillStyle=cloth;x.beginPath();const shape=e.variant%6;if(shape===1)x.ellipse(0,1,e.r*.79,e.r*.8,0,0,Math.PI*2);else if(shape===2)x.ellipse(0,1,e.r*.48,e.r*.9,0,0,Math.PI*2);else if(shape===3){x.moveTo(-e.r*.62,-7);x.lineTo(e.r*.55,-7);x.lineTo(e.r*.8,5);x.lineTo(4,8);x.lineTo(-e.r*.72,5);x.closePath()}else if(shape===4){x.ellipse(0,1,e.r*.67,e.r*.72,0,0,Math.PI*2)}else x.ellipse(0,1,e.r*.62,e.r*.83,0,0,Math.PI*2);x.fill();
+ // Torn seams, contrasting undershirts, and grime stripes.
  x.strokeStyle="#201f1d";x.lineWidth=2;x.beginPath();x.moveTo(-5,-7);x.lineTo(-2,-1);x.lineTo(-6,3);x.moveTo(4,-5);x.lineTo(2,1);x.lineTo(6,6);x.stroke();
- // Arms hang unevenly; variants have distinct silhouettes.
+ if(e.variant%4===1){x.fillStyle="#a5a09a";x.fillRect(-2,-7,4,11)}else if(e.variant%4===2){x.fillStyle="#272727";x.fillRect(-2,-7,3,12)}else if(e.variant%4===3){x.fillStyle="#c0b59a";x.fillRect(-5,-5,2,7);x.fillRect(3,-3,2,7)}
  if(!dying){let armSwing=e.walkStyle===2?step*.55:step*.8;limb(-6,-3,-11-armSwing,5,4,skin);limb(6,-3,11+armSwing,4,4,skin)}
- // Head and face, kept readable at small scale.
- x.fillStyle=e.hitT>0?"#f0d6c1":skin;x.beginPath();x.arc(e.variant===3?1:-1,-e.r*.56,e.variant===1?e.r*.39:e.r*.42,0,Math.PI*2);x.fill();
+ // Head shape and face details.
+ x.fillStyle=e.hitT>0?"#f0d6c1":skin;x.beginPath();if(e.variant%5===2)x.ellipse(e.variant%2?1:-1,-e.r*.56,e.r*.32,e.r*.44,0,0,Math.PI*2);else x.arc(e.variant%3===0?1:-1,-e.r*.56,e.variant%5===1?e.r*.39:e.r*.42,0,Math.PI*2);x.fill();
  x.fillStyle="#1a1412";x.beginPath();x.arc(-4,-e.r*.59,1.7,0,Math.PI*2);x.arc(2,-e.r*.62,1.4,0,Math.PI*2);x.fill();
- // Bloodied wounds, torn patches and bruising: non-photorealistic readable marks.
- x.fillStyle="#741d20";x.beginPath();x.ellipse(-5,-2,3.2,2.2,-.5,0,Math.PI*2);x.fill();x.fillStyle="#a52b2b";x.fillRect(3,1,3,5);x.fillRect(-2,5,4,2);
+ // Palette-specific wounds and bruises; stylised at game scale.
+ x.fillStyle=accent;x.beginPath();x.ellipse(-5,-2,3.2+(e.variant%3)*.5,2.2,-.5,0,Math.PI*2);x.fill();x.fillRect(3,1,3,5);x.fillRect(-2,5,4,2);
  x.strokeStyle="#261c1a";x.lineWidth=1.6;x.beginPath();x.moveTo(-7,-5);x.lineTo(-3,-1);x.moveTo(5,-4);x.lineTo(2,-1);x.stroke();
- // Individual damage marks and missing-cloth shapes vary by skin.
- if(e.variant===0){x.fillStyle="#282c25";x.beginPath();x.moveTo(6,-7);x.lineTo(10,-3);x.lineTo(7,0);x.fill()}
- if(e.variant===1){x.fillStyle="#4b2424";x.beginPath();x.ellipse(5,3,4,3,.5,0,Math.PI*2);x.fill();x.fillStyle="#8c2525";x.fillRect(-6,-7,4,3)}
- if(e.variant===2){x.fillStyle="#29201d";x.beginPath();x.moveTo(-8,-3);x.lineTo(-4,-7);x.lineTo(-3,1);x.fill();x.fillStyle="#7d2222";x.fillRect(2,4,3,4)}
- if(e.variant===3){x.fillStyle="#a6a18a";x.fillRect(-5,-4,3,3);x.fillStyle="#6f171b";x.fillRect(3,-1,4,3)}
- if(e.variant===4){x.fillStyle="#211b1a";x.beginPath();x.moveTo(-6,-8);x.lineTo(-1,-6);x.lineTo(-4,-2);x.fill();x.fillStyle="#8d2024";x.fillRect(-6,2,5,4)}
- if(dying){x.globalAlpha=Math.max(.12,life);x.fillStyle="#6f1518";x.beginPath();x.ellipse(0,7,8+fall*5,3+fall*2,0,0,Math.PI*2);x.fill();if(e.deathStyle===1){limb(-2,1,-12,8,3,skin)} }
+ const mark=e.variant%10;
+ if(mark===0||mark===6){x.fillStyle="#282c25";x.beginPath();x.moveTo(6,-7);x.lineTo(10,-3);x.lineTo(7,0);x.fill()}
+ if(mark===1||mark===7){x.fillStyle="#4b2424";x.beginPath();x.ellipse(5,3,4,3,.5,0,Math.PI*2);x.fill();x.fillStyle=accent;x.fillRect(-6,-7,4,3)}
+ if(mark===2||mark===8){x.fillStyle="#29201d";x.beginPath();x.moveTo(-8,-3);x.lineTo(-4,-7);x.lineTo(-3,1);x.fill();x.fillStyle=accent;x.fillRect(2,4,3,4)}
+ if(mark===3||mark===9){x.fillStyle="#a6a18a";x.fillRect(-5,-4,3,3);x.fillStyle=accent;x.fillRect(3,-1,4,3)}
+ if(mark===4){x.fillStyle="#211b1a";x.beginPath();x.moveTo(-6,-8);x.lineTo(-1,-6);x.lineTo(-4,-2);x.fill();x.fillStyle=accent;x.fillRect(-6,2,5,4)}
+ if(e.variant>=10){x.strokeStyle=accent;x.lineWidth=1.8;x.beginPath();x.moveTo(-6,4);x.lineTo(-2,7);x.lineTo(1,3);x.stroke()}
+ if(e.variant%7===5){x.fillStyle="#272323";x.fillRect(-7,-10,13,3);x.fillRect(-4,-13,8,3)}
+ if(dying){x.globalAlpha=Math.max(.12,life);x.fillStyle="#6f1518";x.beginPath();x.ellipse(0,7,8+fall*5,3+fall*2,0,0,Math.PI*2);x.fill();if(e.deathStyle===1)limb(-2,1,-12,8,3,skin)}
  x.restore();x.globalAlpha=1;
 }
 function drawPlayer(){if(!player)return;let walk=player.move?Math.sin(player.walk)*4:Math.sin(player.walk)*.5,shoot=player.shootT>0?player.shootT/.12:0,reload=player.reloadT>0?Math.sin((.42-player.reloadT)/.42*Math.PI):0,throwing=player.throwT>0?player.throwT/.32:0;x.save();x.translate(player.x,player.y);x.rotate(player.a);

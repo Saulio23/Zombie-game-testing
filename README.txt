@@ -1,4 +1,4 @@
-SAS VS ZOMBIES — ALPHA 1.18: TOP-DOWN ZOMBIE ROSTER
+SAS VS ZOMBIES — ALPHA 1.19: FULL ZOMBIE ANIMATION SET
 
 INSTALL
 Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. If prompted, replace the existing files.
@@ -13,3 +13,4 @@ CHANGES
 
 TESTING
 JavaScript syntax and ZIP structure checked. Real iPhone performance still needs to be confirmed after deployment. If GitHub Pages shows a cached version, refresh or open the site in a private tab.
+\n\nALPHA 1.19 — FULL ZOMBIE ANIMATION SET\nAll 20 zombie models now use individual transparent sprite sheets. Each sheet contains 6 walking frames, 3 hit-reaction frames, and 4 death frames (13 frames total). Keep the assets folder and PNG filenames unchanged.\n

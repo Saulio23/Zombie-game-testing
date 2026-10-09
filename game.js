@@ -2,7 +2,7 @@
 const c=document.getElementById("game"),x=c.getContext("2d"),hp=document.getElementById("hp"),arm=document.getElementById("arm"),waveEl=document.getElementById("wave"),zEl=document.getElementById("zombies"),ammo=document.getElementById("ammo"),msg=document.getElementById("message"),start=document.getElementById("startOverlay"),pause=document.getElementById("pauseOverlay"),startBtn=document.getElementById("startBtn"),resume=document.getElementById("resumeBtn"),pauseBtn=document.getElementById("pauseBtn"),reloadBtn=document.getElementById("reloadBtn"),grenadeBtn=document.getElementById("grenadeBtn"),ms=document.getElementById("moveStick"),as=document.getElementById("aimStick");
 let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0;const mv={x:0,y:0,id:null},aim={x:0,y:0,id:null};
 const C={base:700,perWave:0,spawnMs:20,max:700,speed:240};
-// Alpha 1.18: a consistent 20-model top-down sprite roster. Each model is a
+// Alpha 1.19: a consistent 20-model top-down sprite roster. Each model is a
 // transparent overhead PNG, oriented head-first toward the top of the image.
 const zombieArt=Array.from({length:20},(_,i)=>{const im=new Image();im.src=`assets/zombie_topdown_${String(i+1).padStart(2,"0")}.png`;return im;});
 function drawDetailedZombie(e){

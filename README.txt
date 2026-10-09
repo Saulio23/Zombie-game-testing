@@ -1,13 +1,14 @@
-DEADLINE — ALPHA 1.13 ANIMATION STRESS TEST
+SAS VS ZOMBIES — ALPHA 1.14: ZOMBIE VISUALS
 
-Purpose: establish baseline animation systems for the player and zombies while preserving the 700-zombie stress test.
+Install: replace the five files in your GitHub Pages repository root with the files in this ZIP. Keep all five together, then refresh the game on your iPhone. If the old build remains cached, open the site in a private tab or refresh again.
 
-Includes:
-- Zombie procedural walking, hit flash, and short collapse/fade death animation.
-- Player procedural walking, weapon recoil while firing, reload motion, and grenade-throw motion.
-- Shared lightweight Canvas drawing; no external image assets required.
-- 700-zombie target wave, rapid spawning, invulnerability, instant reload, unlimited grenades, one-hit kills, pause/resume.
+What changed:
+- Five procedurally rendered zombie looks with different silhouettes, clothing colours, wounds, torn patches and blood marks.
+- Each zombie randomly selects one of three walking gait styles.
+- Each zombie randomly selects one of three death animations.
+- Blood droplets and short-lived blood pools on kills, plus existing muzzle flashes and grenade effects.
+- Retains the 700-zombie stress-test setup, invulnerable player, rapid fire, unlimited ammo/grenades, and pause controls.
 
-Install: replace the five files in the root of the GitHub Pages repository with these files.
+Performance note: Alpha 1.13 handled 700 animated zombies smoothly on the tested iPhone. This build adds per-zombie visual variety; please retest the same 700-zombie scenario because effects and rendering have changed.
 
-Note: animations are procedural placeholders for baseline movement, not final art or sprite-sheet assets. Performance still needs to be tested on-device.
+This is a procedural-art pass, not final hand-painted sprite sheets yet. It establishes variety and animation behaviour without adding large image assets or network dependencies.

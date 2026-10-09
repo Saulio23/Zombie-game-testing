@@ -1,17 +1,15 @@
-SAS VS ZOMBIES — ALPHA 1.17: GRITTY SPRITE OVERHAUL
+SAS VS ZOMBIES — ALPHA 1.18: TOP-DOWN ZOMBIE ROSTER
 
 INSTALL
-Replace the five root files in your GitHub Pages repository with the files in this ZIP, and upload the included assets folder too. Keep the folder name and PNG filenames unchanged. Refresh the game on your iPhone; if the old build remains cached, open the site in a private tab or refresh again.
+Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. If prompted, replace the existing files.
 
-WHAT CHANGED
-- Added five detailed pre-rendered zombie sprite palettes inspired by classic gritty top-down survival horror and more polished modern horror art.
-- Sprite artwork includes ragged clothing, layered cloth and skin shading, bruising, old blood, facial damage, clawed reaching hands and distinct head/torso details.
-- Added an eight-frame asynchronous shambling cycle rendered from sprite strips, keeping per-frame draw cost low for mobile performance.
-- Five of the twenty look slots use the new sprite-art family in this first quality benchmark. Existing procedural looks remain in place, preserving the established horde variety and providing a fallback if an asset fails to load.
-- Updated the title screen and version log for Alpha 1.17.
-- Preserved the 700-zombie population target, controls, shooting, grenades, waves, pause, and other existing gameplay.
+ASSETS
+The assets folder contains 20 consistent overhead zombie models. The game loads them as assets/zombie_topdown_01.png through assets/zombie_topdown_20.png. Keep the files in that exact folder.
 
-IMPORTANT TEST NOTES
-Alpha 1.17 is the first sprite-art benchmark, not the final full replacement of every procedural look. Please test it on your iPhone for visual readability and responsiveness, including large crowds. The prior 700-zombie result was confirmed on Alpha 1.13; this new art build has not yet been device-validated. If performance stays strong and you like the art direction, the next step is to expand the sprite family with additional silhouettes and dedicated death poses.
+CHANGES
+- Replaces the mixed low-resolution/procedural and front-facing sprites with a consistent top-down artwork family across all 20 zombie variants.
+- Preserves the existing movement, shooting, grenade, wave, mobile controls, and 700-zombie population target.
+- Retains a procedural fallback while images are loading or if an asset is missing.
 
-The assets are local PNG files in /assets; no external downloads or network requests are required.
+TESTING
+JavaScript syntax and ZIP structure checked. Real iPhone performance still needs to be confirmed after deployment. If GitHub Pages shows a cached version, refresh or open the site in a private tab.

@@ -2,6 +2,22 @@
 const c=document.getElementById("game"),x=c.getContext("2d"),hp=document.getElementById("hp"),arm=document.getElementById("arm"),waveEl=document.getElementById("wave"),zEl=document.getElementById("zombies"),ammo=document.getElementById("ammo"),msg=document.getElementById("message"),start=document.getElementById("startOverlay"),pause=document.getElementById("pauseOverlay"),startBtn=document.getElementById("startBtn"),resume=document.getElementById("resumeBtn"),pauseBtn=document.getElementById("pauseBtn"),reloadBtn=document.getElementById("reloadBtn"),grenadeBtn=document.getElementById("grenadeBtn"),ms=document.getElementById("moveStick"),as=document.getElementById("aimStick");
 let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0;const mv={x:0,y:0,id:null},aim={x:0,y:0,id:null};
 const C={base:700,perWave:0,spawnMs:20,max:700,speed:240};
+// Alpha 1.17: pre-rendered, detailed gritty zombie sprite strips. Images load
+// asynchronously; the procedural renderer remains the fallback and preserves
+// the original twenty-look horde if a sprite cannot load.
+const zombieArt=Array.from({length:5},(_,i)=>{const im=new Image();im.src=`assets/zombie_gritty_${i+1}.png`;return im;});
+function drawDetailedZombie(e){
+ const im=zombieArt[e.variant%5];if(!im||!im.complete||!im.naturalWidth)return false;
+ const dying=e.dead,life=dying?Math.max(0,e.deathT/(e.deathLen||.58)):1;
+ const frame=dying?Math.min(7,Math.floor((1-life)*7)):Math.floor((e.phase*1.25+((e.variant%3)*.7))%8);
+ const cell=112,sw=im.naturalWidth/8;
+ x.save();x.translate(e.x,e.y);x.rotate(dying?e.turn+((e.deathStyle===1?-1:1)*(1-life)*1.25):e.turn+Math.sin(e.phase*.5)*.025);
+ x.globalAlpha=dying?Math.max(.12,life):1;
+ const scale=1.04+(e.variant%3)*.035;
+ x.drawImage(im,frame*sw,0,sw,im.naturalHeight,-22*scale,-23*scale,44*scale,46*scale);
+ if(e.hitT>0){x.globalCompositeOperation='screen';x.globalAlpha=.18;x.fillStyle='#f4d4bd';x.beginPath();x.ellipse(0,-9,8,10,0,0,Math.PI*2);x.fill()}
+ x.restore();x.globalAlpha=1;x.globalCompositeOperation='source-over';return true;
+}
 function resize(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener("resize",resize);resize();
 function message(t){msg.textContent=t;clearTimeout(message.t);message.t=setTimeout(()=>msg.textContent="",1000)}
 function reset(){z=[];b=[];g=[];p=[];wave=1;clock=0;player={x:W/2,y:H/2,r:17,hp:100,arm:50,ammo:12,a:0,cd:0,walk:0,move:0,shootT:0,reloadT:0,throwT:0};newWave()}
@@ -24,6 +40,9 @@ function blood(x,y,variant=0){const count=5+Math.floor(Math.random()*4);for(let 
 function boom(x,y){p.push({x,y,t:.35,m:.35,k:"e"});for(const e of z){let dx=e.x-x,dy=e.y-y,dist=Math.hypot(dx,dy);if(!e.dead&&dist<105)killZombie(e)}}
 function limb(x1,y1,x2,y2,w,col){x.strokeStyle=col;x.lineWidth=w;x.lineCap="round";x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke()}
 function drawZombie(e){
+ // Five of the twenty look slots use the new polished sprite artwork; the
+ // remaining slots retain their established procedural silhouettes for variety.
+ if(e.variant%4===0&&drawDetailedZombie(e))return;
  const dying=e.dead,life=dying?Math.max(0,e.deathT/(e.deathLen||.58)):1;
  const step=Math.sin(e.phase)*3.4,side=Math.cos(e.phase*.72)*2.1,reach=Math.sin(e.phase*.82);
  // Twenty compact procedural palettes keep the horde varied without sprite downloads.

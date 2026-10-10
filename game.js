@@ -6,16 +6,37 @@ const C={base:700,perWave:0,spawnMs:20,max:700,speed:240};
 // transparent overhead PNG, oriented head-first toward the top of the image.
 const zombieArt=Array.from({length:20},(_,i)=>{const im=new Image();im.src=`assets/zombie_topdown_${String(i+1).padStart(2,"0")}.png`;return im;});
 function drawDetailedZombie(e){
- const im=zombieArt[e.variant%zombieArt.length];if(!im||!im.complete||!im.naturalWidth)return false;
- const dying=e.dead,life=dying?Math.max(0,e.deathT/(e.deathLen||.58)):1;
+ const im=zombieArt[e.variant%zombieArt.length];
+ if(!im||!im.complete||!im.naturalWidth)return false;
+ // Sprite strips contain 13 equal 96x96 frames: walk 0-5, hit 6-8, death 9-12.
+ // Derive frame dimensions from the actual image so a strip is never drawn as a barcode.
+ const frameCount=13,frameW=im.naturalWidth/frameCount,frameH=im.naturalHeight;
+ if(!Number.isFinite(frameW)||frameW<=0||frameH<=0)return false;
+ const dying=e.dead,life=dying?Math.max(0,Math.min(1,e.deathT/(e.deathLen||.58))):1;
+ let frame;
+ if(dying){
+  const progress=Math.max(0,Math.min(.999,1-life));
+  frame=9+Math.min(3,Math.floor(progress*4));
+ }else if(e.hitT>0){
+  const hitDuration=.18;
+  const progress=Math.max(0,Math.min(.999,1-e.hitT/hitDuration));
+  frame=6+Math.min(2,Math.floor(progress*3));
+ }else{
+  frame=((Math.floor(e.phase*1.3)%6)+6)%6;
+ }
+ const sx=frame*frameW;
  const bob=dying?0:Math.sin(e.phase*1.7)*1.15;
  const scale=1.02+(e.variant===14?0.13:0)+(e.variant%5)*0.015;
- x.save();x.translate(e.x,e.y+bob);x.rotate(dying?e.turn+((e.deathStyle===1?-1:1)*(1-life)*.8):e.turn+Math.sin(e.phase*.35)*.018);
+ x.save();
+ x.translate(e.x,e.y+bob);
+ x.rotate(dying?e.turn+((e.deathStyle===1?-1:1)*(1-life)*.8):e.turn+Math.sin(e.phase*.35)*.018);
  x.globalAlpha=dying?Math.max(.12,life):1;
- // All twenty variants now use the same overhead artwork family.
- x.drawImage(im,-25*scale,-25*scale,50*scale,50*scale);
- if(dying){x.globalAlpha=Math.max(.12,life)*.24;x.fillStyle="#5d1115";x.beginPath();x.ellipse(0,9,12+(1-life)*8,6+(1-life)*3,0,0,Math.PI*2);x.fill()}
- if(e.hitT>0){x.globalCompositeOperation='screen';x.globalAlpha=.18;x.fillStyle='#f4d4bd';x.beginPath();x.ellipse(0,-9,8,10,0,0,Math.PI*2);x.fill()}
+ x.drawImage(im,sx,0,frameW,frameH,-25*scale,-25*scale,50*scale,50*scale);
+ // No extra ellipse/shadow is drawn beneath the sprite; the PNG has transparency.
+ if(!dying&&e.hitT>0){
+  x.globalCompositeOperation='screen';x.globalAlpha=.18;
+  x.fillStyle='#f4d4bd';x.beginPath();x.ellipse(0,-9,8,10,0,0,Math.PI*2);x.fill();
+ }
  x.restore();x.globalAlpha=1;x.globalCompositeOperation='source-over';return true;
 }
 function resize(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener("resize",resize);resize();

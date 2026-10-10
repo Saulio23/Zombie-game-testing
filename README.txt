@@ -13,4 +13,4 @@ CHANGES
 
 TESTING
 JavaScript syntax and ZIP structure checked. Real iPhone performance still needs to be confirmed after deployment. If GitHub Pages shows a cached version, refresh or open the site in a private tab.
-\n\nALPHA 1.19 — FULL ZOMBIE ANIMATION SET\nAll 20 zombie models now use individual transparent sprite sheets. Each sheet contains 6 walking frames, 3 hit-reaction frames, and 4 death frames (13 frames total). Keep the assets folder and PNG filenames unchanged.\n
+\n\nALPHA 1.19.1 — SPRITE FRAME FIX\nFixed sprite animation rendering for all 20 individual transparent zombie sprite sheets. The renderer now crops one frame at a time from each 13-frame strip: 6 walking frames, 3 hit-reaction frames, and 4 death frames. Removed the extra circular death shadow. Keep the assets folder and PNG filenames unchanged.\n

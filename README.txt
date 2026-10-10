@@ -1,16 +1,17 @@
-SAS VS ZOMBIES — ALPHA 1.19: FULL ZOMBIE ANIMATION SET
+SAS VS ZOMBIES — ALPHA 1.20: MAIN MENU & SETTINGS
 
 INSTALL
-Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. If prompted, replace the existing files.
-
-ASSETS
-The assets folder contains 20 consistent overhead zombie models. The game loads them as assets/zombie_topdown_01.png through assets/zombie_topdown_20.png. Keep the files in that exact folder.
+Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. The five root files are index.html, game.js, style.css, manifest.json and README.txt.
 
 CHANGES
-- Replaces the mixed low-resolution/procedural and front-facing sprites with a consistent top-down artwork family across all 20 zombie variants.
-- Preserves the existing movement, shooting, grenade, wave, mobile controls, and 700-zombie population target.
-- Retains a procedural fallback while images are loading or if an asset is missing.
+- Replaced the old Home Screen with a proper three-button menu: Single Player, Multiplayer (placeholder for future LAN work), and Settings.
+- Single Player launches the existing game flow.
+- Settings has a back button and an expandable, scrollable version history from Alpha 1.11 through Alpha 1.20.
+- The current version remains visible on the Home Screen.
+- Retained existing gameplay, zombie assets, wave logic, keyboard controls, mobile touch controls and the 700-zombie target.
+
+IMPORTANT
+The multiplayer button is intentionally a placeholder; LAN multiplayer is not implemented by this release. Zombie sprite artwork still uses the existing assets; the requested bird's-eye redesign is a separate future task.
 
 TESTING
-JavaScript syntax and ZIP structure checked. Real iPhone performance still needs to be confirmed after deployment. If GitHub Pages shows a cached version, refresh or open the site in a private tab.
-\n\nALPHA 1.19.1 — SPRITE FRAME FIX\nFixed sprite animation rendering for all 20 individual transparent zombie sprite sheets. The renderer now crops one frame at a time from each 13-frame strip: 6 walking frames, 3 hit-reaction frames, and 4 death frames. Removed the extra circular death shadow. Keep the assets folder and PNG filenames unchanged.\n
+JavaScript syntax, archive integrity, expected files and asset references were checked. This package has not been tested live on an iPhone or PC browser; please test navigation and gameplay after deploying.

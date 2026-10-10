@@ -1,15 +1,22 @@
-SAS VS ZOMBIES — ALPHA 1.21: IN-GAME PAUSE MENU
+DEADLINE — ALPHA 1.22: FARMHOUSE MAP FOUNDATION
 
 INSTALL
-Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. The five root files are index.html, game.js, style.css, manifest.json and README.txt.
+Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. The five root files are index.html, game.js, style.css, manifest.json and README.txt. Keep the ZIP structure flat at the root, with assets/ alongside the root files.
 
 CHANGES
-- Expanded the in-game pause menu with Resume, Settings and Return to Menu.
-- Settings opens the full Settings screen. Its Back button returns to the pause menu when Settings was opened during a match, leaving the match paused. From the Home Screen, Back returns to the Home Screen as before.
-- Return to Menu asks for confirmation before ending the current arena session. Cancel returns to the pause menu; confirmation returns to the Home Screen and clears the current session.
-- Escape closes the confirmation prompt, returns from Settings to its previous screen, or toggles the pause menu during gameplay.
-- Updated the Home Screen version label and Settings changelog to Alpha 1.21.
-- Preserved the existing arena, zombie assets, spawning, combat and controls. Multiplayer remains a placeholder.
+- Single Player now opens MAP SELECT.
+- Added four SAS 3-inspired blood-stained Polaroid map cards: FARMHOUSE is playable and the other three say COMING SOON.
+- Added a detailed, layered farmhouse environment: ground-floor rooms, floorboard textures, furniture, broken boards, garden beds, fence, barn, yard clutter, blood stains and blood-written HELP.
+- Separated map collision/navigation data from drawing code and established data records for future windows, doors and repairable barriers.
+- Farmhouse starts with 85 zombies per wave, a 100-active-zombie cap and paced spawning; the per-wave target increases by 5. These are initial tuning values, not final balance.
+- Preserved the 700-zombie arena stress test through a separate ARENA STRESS TEST option on Map Select.
+- Updated title, Home Screen version and Settings changelog to Alpha 1.22.
+- Existing pause/settings/return confirmation and touch/keyboard controls retained.
+
+IMPORTANT CURRENT LIMITATIONS
+- This is the first playable map foundation, not a finished commercial-quality map. Art is procedurally drawn on layered canvas passes rather than a final hand-painted tile atlas.
+- Static collision/navigation metadata and future barrier object records are in place, but full zombie pathfinding around room walls and interactive break/repair mechanics are not implemented yet. Those should be added in subsequent releases before treating the farmhouse as complete.
+- The four card previews are stylized CSS concepts and should be replaced with final map thumbnails when those maps are developed.
 
 TESTING
-Archive integrity, required files, JavaScript syntax and asset references were checked. This package has not been live-tested on an iPhone or PC browser; please test pause/resume, Settings/back navigation, the confirmation prompt, and keyboard/touch controls after deploying.
+Archive integrity, JavaScript syntax, expected root files and zombie asset references were checked. This package has not been live-tested in iPhone Safari or desktop browsers. After deploying, test Single Player -> Map Select -> Farmhouse, Back, all Coming Soon cards, Arena Stress Test, movement/shooting, pause/resume, Settings navigation and return confirmation.

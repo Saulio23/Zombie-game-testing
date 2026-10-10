@@ -1,9 +1,10 @@
-DEADLINE — ALPHA 1.22: FARMHOUSE MAP FOUNDATION
+DEADLINE — ALPHA 1.23: OPEN DOORWAYS & ZOMBIE COLLISION
 
 INSTALL
 Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. The five root files are index.html, game.js, style.css, manifest.json and README.txt. Keep the ZIP structure flat at the root, with assets/ alongside the root files.
 
 CHANGES
+- Alpha 1.23: Removed visible interior door leaves and added open doorway gaps between rooms. Zombie movement now checks farmhouse collision geometry, slides along walls and tries nearby directions when blocked.
 - Single Player now opens MAP SELECT.
 - Added four SAS 3-inspired blood-stained Polaroid map cards: FARMHOUSE is playable and the other three say COMING SOON.
 - Added a detailed, layered farmhouse environment: ground-floor rooms, floorboard textures, furniture, broken boards, garden beds, fence, barn, yard clutter, blood stains and blood-written HELP.
@@ -15,7 +16,7 @@ CHANGES
 
 IMPORTANT CURRENT LIMITATIONS
 - This is the first playable map foundation, not a finished commercial-quality map. Art is procedurally drawn on layered canvas passes rather than a final hand-painted tile atlas.
-- Static collision/navigation metadata and future barrier object records are in place, but full zombie pathfinding around room walls and interactive break/repair mechanics are not implemented yet. Those should be added in subsequent releases before treating the farmhouse as complete.
+- Static collision/navigation metadata and future barrier object records are in place, but full route-planning/pathfinding around complex room layouts and interactive break/repair mechanics are not implemented yet; current zombie steering is local collision-aware movement. Those should be added in subsequent releases before treating the farmhouse as complete.
 - The four card previews are stylized CSS concepts and should be replaced with final map thumbnails when those maps are developed.
 
 TESTING

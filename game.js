@@ -6,12 +6,26 @@ const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
 const farmhouseMap={id:"farmhouse",spawn:{x:.50,y:.73},collision:[
  {x:.285,y:.225,w:.43,h:.018,type:"wall"},{x:.285,y:.225,w:.018,h:.44,type:"wall"},{x:.697,y:.225,w:.018,h:.44,type:"wall"},{x:.285,y:.655,w:.17,h:.018,type:"wall"},{x:.517,y:.655,w:.198,h:.018,type:"wall"},
- {x:.405,y:.235,w:.012,h:.19,type:"wall"},{x:.565,y:.235,w:.012,h:.19,type:"wall"},{x:.405,y:.44,w:.012,h:.21,type:"wall"},{x:.565,y:.44,w:.012,h:.21,type:"wall"},
+ {x:.405,y:.235,w:.012,h:.065,type:"wall"},{x:.405,y:.345,w:.012,h:.08,type:"wall"},{x:.565,y:.235,w:.012,h:.065,type:"wall"},{x:.565,y:.345,w:.012,h:.08,type:"wall"},{x:.405,y:.44,w:.012,h:.075,type:"wall"},{x:.405,y:.56,w:.012,h:.09,type:"wall"},{x:.565,y:.44,w:.012,h:.075,type:"wall"},{x:.565,y:.56,w:.012,h:.09,type:"wall"},
  {x:.33,y:.31,w:.055,h:.065,type:"furniture"},{x:.61,y:.31,w:.055,h:.055,type:"furniture"},{x:.46,y:.49,w:.08,h:.045,type:"furniture"}],
  interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}
 function blocked(px,py,r){if(stressMode)return false;return farmhouseMap.collision.some(q=>q.type!=="building-shell"&&rectHit(px,py,r,q))}
 function movePlayer(dx,dy){let nx=Math.max(18,Math.min(W-18,player.x+dx)),ny=Math.max(18,Math.min(H-18,player.y+dy));if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny}
+// Zombies use the same solid geometry as the player. Axis sliding lets them follow walls;
+// a short steering fan helps them find nearby open doorways instead of crossing walls.
+function moveZombie(e,dx,dy){
+ const r=Math.max(5,e.r*.72),ox=e.x,oy=e.y;
+ let nx=ox+dx,ny=oy+dy;
+ if(!blocked(nx,oy,r))e.x=nx;
+ if(!blocked(e.x,ny,r))e.y=ny;
+ if(Math.hypot(e.x-ox,e.y-oy)>.01)return;
+ const base=Math.atan2(dy,dx),step=Math.hypot(dx,dy);
+ for(const a of [.65,-.65,1.25,-1.25,1.9,-1.9,Math.PI]){
+  const tx=ox+Math.cos(base+a)*step,ty=oy+Math.sin(base+a)*step;
+  if(!blocked(tx,ty,r)){e.x=tx;e.y=ty;return}
+ }
+}
 // Alpha 1.19: a consistent 20-model top-down sprite roster. Each model is a
 // transparent overhead PNG, oriented head-first toward the top of the image.
 const zombieArt=Array.from({length:20},(_,i)=>{const im=new Image();im.src=`assets/zombie_topdown_${String(i+1).padStart(2,"0")}.png`;return im;});
@@ -64,7 +78,7 @@ let mx=mv.x,my=mv.y;if(keys.w||keys.arrowup)my--;if(keys.s||keys.arrowdown)my++;
 if(Math.hypot(aim.x,aim.y)>.2){player.a=Math.atan2(aim.y,aim.x);shoot()}
 for(const q of b){q.x+=q.vx*dt;q.y+=q.vy*dt;q.t-=dt;for(const e of z)if(!e.dead&&Math.hypot(q.x-e.x,q.y-e.y)<e.r+4){killZombie(e);q.t=0;break}}b=b.filter(q=>q.t>0&&q.x>-40&&q.x<W+40&&q.y>-40&&q.y<H+40);
 for(const q of g){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.985;q.vy*=.985;q.t-=dt;if(q.t<=0){boom(q.x,q.y);q.dead=1}}g=g.filter(q=>!q.dead);
-for(const e of z){if(e.dead){e.deathT-=dt;continue}e.hitT=Math.max(0,e.hitT-dt);let dx=player.x-e.x,dy=player.y-e.y,dist=Math.hypot(dx,dy)||1;e.phase+=dt*(e.v*.12);const desiredTurn=Math.atan2(dy,dx)+Math.PI/2;let turnDelta=((desiredTurn-e.turn+Math.PI*3)%(Math.PI*2))-Math.PI;e.turn+=turnDelta*Math.min(1,dt*9);e.x+=dx/dist*e.v*dt;e.y+=dy/dist*e.v*dt;if(dist<e.r+player.r+3)hurt(12*dt)}z=z.filter(e=>!e.dead||e.deathT>0);for(const q of p)q.t-=dt;p=p.filter(q=>q.t>0);
+for(const e of z){if(e.dead){e.deathT-=dt;continue}e.hitT=Math.max(0,e.hitT-dt);let dx=player.x-e.x,dy=player.y-e.y,dist=Math.hypot(dx,dy)||1;e.phase+=dt*(e.v*.12);const desiredTurn=Math.atan2(dy,dx)+Math.PI/2;let turnDelta=((desiredTurn-e.turn+Math.PI*3)%(Math.PI*2))-Math.PI;e.turn+=turnDelta*Math.min(1,dt*9);moveZombie(e,dx/dist*e.v*dt,dy/dist*e.v*dt);if(dist<e.r+player.r+3)hurt(12*dt)}z=z.filter(e=>!e.dead||e.deathT>0);for(const q of p)q.t-=dt;p=p.filter(q=>q.t>0);
 if(left===0&&z.filter(e=>!e.dead).length===0){inter+=dt;if(inter>.5){wave++;newWave()}}
 hp.textContent="∞";arm.textContent="∞";waveEl.textContent=wave;zEl.textContent=z.length+left;ammo.textContent="∞"}
 function blood(x,y,variant=0){const count=5+Math.floor(Math.random()*4);for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,d=Math.random()*19;p.push({x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,t:.34+Math.random()*.38,m:.72,k:"b",r:1.5+Math.random()*3.2,rot:Math.random()*6.28})}p.push({x,y,t:.85,m:.85,k:"s",r:5+Math.random()*5})}
@@ -179,10 +193,10 @@ function drawFarmhouse(){
  x.fillStyle="#403126";x.fillRect(W*.32,H*.285,W*.055,H*.07);x.fillStyle="#8e7759";x.fillRect(W*.325,H*.29,W*.045,H*.06);x.fillStyle="#332b25";x.fillRect(W*.60,H*.29,W*.07,H*.045);x.fillStyle="#8a7657";x.fillRect(W*.605,H*.295,W*.06,H*.035);x.fillStyle="#342b24";x.fillRect(W*.49,H*.50,W*.06,H*.045);x.fillStyle="#9b8764";x.fillRect(W*.495,H*.505,W*.05,H*.035);
  for(let i=0;i<9;i++){x.strokeStyle=i%2?"#3b2b20":"#b5a17a";x.lineWidth=2;x.beginPath();x.moveTo(W*(.35+i*.009),H*(.58+(i%3)*.012));x.lineTo(W*(.37+i*.009),H*(.62+(i%2)*.01));x.stroke()}
  // Walls over floor; openings are intentional future window/door interaction points.
- x.fillStyle="#292824";x.fillRect(W*.285,H*.225,W*.43,H*.018);x.fillRect(W*.285,H*.225,W*.018,H*.44);x.fillRect(W*.697,H*.225,W*.018,H*.44);x.fillRect(W*.285,H*.655,W*.17,H*.018);x.fillRect(W*.51,H*.655,W*.205,H*.018);x.fillRect(W*.405,H*.235,W*.012,H*.19);x.fillRect(W*.565,H*.235,W*.012,H*.19);x.fillRect(W*.405,H*.44,W*.012,H*.21);x.fillRect(W*.565,H*.44,W*.012,H*.21);
- // Windows and doors: clear, high-contrast features reserved for later damage states.
+ x.fillStyle="#292824";x.fillRect(W*.285,H*.225,W*.43,H*.018);x.fillRect(W*.285,H*.225,W*.018,H*.44);x.fillRect(W*.697,H*.225,W*.018,H*.44);x.fillRect(W*.285,H*.655,W*.17,H*.018);x.fillRect(W*.51,H*.655,W*.205,H*.018);x.fillRect(W*.405,H*.235,W*.012,H*.065);x.fillRect(W*.405,H*.345,W*.012,H*.08);x.fillRect(W*.565,H*.235,W*.012,H*.065);x.fillRect(W*.565,H*.345,W*.012,H*.08);x.fillRect(W*.405,H*.44,W*.012,H*.075);x.fillRect(W*.405,H*.56,W*.012,H*.09);x.fillRect(W*.565,H*.44,W*.012,H*.075);x.fillRect(W*.565,H*.56,W*.012,H*.09);
+ // Windows remain visible; interior door leaves are removed so rooms connect through open doorways.
  for(const wx of [.34,.62]){x.fillStyle="#1b282a";x.fillRect(W*wx,H*.216,W*.045,H*.025);x.strokeStyle="#b7b29c";x.lineWidth=2;x.strokeRect(W*wx,H*.216,W*.045,H*.025);x.beginPath();x.moveTo(W*(wx+.0225),H*.217);x.lineTo(W*(wx+.0225),H*.24);x.stroke()}
- x.fillStyle="#463225";x.fillRect(W*.465,H*.638,W*.052,H*.04);x.strokeStyle="#b59a6c";x.strokeRect(W*.465,H*.638,W*.052,H*.04);x.fillStyle="#c6b28b";x.beginPath();x.arc(W*.506,H*.657,2,0,Math.PI*2);x.fill();
+ x.strokeStyle="#b59a6c";x.lineWidth=2;x.beginPath();x.moveTo(W*.455,H*.655);x.lineTo(W*.455,H*.64);x.moveTo(W*.517,H*.655);x.lineTo(W*.517,H*.64);x.stroke();
  // Blood-stained environmental storytelling: trails, smears and HELP on the floor.
  x.fillStyle="#651719";for(let i=0;i<18;i++){let xx=W*(.36+(i%6)*.011),yy=H*(.34+Math.floor(i/6)*.014);x.globalAlpha=.55+(i%3)*.12;x.beginPath();x.ellipse(xx,yy,W*(.003+(i%3)*.001),H*(.002+(i%2)*.002),i*.6,0,Math.PI*2);x.fill()}x.globalAlpha=1;
  x.save();x.translate(W*.61,H*.57);x.rotate(-.09);x.fillStyle="#7e1b20";x.font=`900 ${Math.max(11,Math.min(20,W*.022))}px Georgia`;x.fillText("HELP",0,0);x.strokeStyle="#681619";x.lineWidth=2;x.beginPath();x.moveTo(-4,5);x.lineTo(W*.035,8);x.moveTo(2,10);x.lineTo(W*.022,13);x.stroke();x.restore();

@@ -1,17 +1,15 @@
-SAS VS ZOMBIES — ALPHA 1.20: MAIN MENU & SETTINGS
+SAS VS ZOMBIES — ALPHA 1.21: IN-GAME PAUSE MENU
 
 INSTALL
 Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. The five root files are index.html, game.js, style.css, manifest.json and README.txt.
 
 CHANGES
-- Replaced the old Home Screen with a proper three-button menu: Single Player, Multiplayer (placeholder for future LAN work), and Settings.
-- Single Player launches the existing game flow.
-- Settings has a back button and an expandable, scrollable version history from Alpha 1.11 through Alpha 1.20.
-- The current version remains visible on the Home Screen.
-- Retained existing gameplay, zombie assets, wave logic, keyboard controls, mobile touch controls and the 700-zombie target.
-
-IMPORTANT
-The multiplayer button is intentionally a placeholder; LAN multiplayer is not implemented by this release. Zombie sprite artwork still uses the existing assets; the requested bird's-eye redesign is a separate future task.
+- Expanded the in-game pause menu with Resume, Settings and Return to Menu.
+- Settings opens the full Settings screen. Its Back button returns to the pause menu when Settings was opened during a match, leaving the match paused. From the Home Screen, Back returns to the Home Screen as before.
+- Return to Menu asks for confirmation before ending the current arena session. Cancel returns to the pause menu; confirmation returns to the Home Screen and clears the current session.
+- Escape closes the confirmation prompt, returns from Settings to its previous screen, or toggles the pause menu during gameplay.
+- Updated the Home Screen version label and Settings changelog to Alpha 1.21.
+- Preserved the existing arena, zombie assets, spawning, combat and controls. Multiplayer remains a placeholder.
 
 TESTING
-JavaScript syntax, archive integrity, expected files and asset references were checked. This package has not been tested live on an iPhone or PC browser; please test navigation and gameplay after deploying.
+Archive integrity, required files, JavaScript syntax and asset references were checked. This package has not been live-tested on an iPhone or PC browser; please test pause/resume, Settings/back navigation, the confirmation prompt, and keyboard/touch controls after deploying.

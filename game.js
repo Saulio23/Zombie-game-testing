@@ -3,22 +3,32 @@ const c=document.getElementById("game"),x=c.getContext("2d"),hp=document.getElem
 let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0,selectedMap="farmhouse",stressMode=false;
 // Farmhouse world is 4x the former viewport dimensions in each axis. The camera follows
 // the player instead of shrinking the estate to fit the screen. Stress-test remains screen-sized.
-const FARMHOUSE_WORLD_SCALE=4; let viewW=innerWidth,viewH=innerHeight,camX=0,camY=0;
+const FARMHOUSE_WORLD_SCALE=3; let viewW=innerWidth,viewH=innerHeight,camX=0,camY=0;
 const mv={x:0,y:0,id:null},aim={x:0,y:0,id:null};
+const farmhouseTexture=new Image(); farmhouseTexture.src="assets/farmhouse_apocalypse.png";
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
-const farmhouseMap={id:"farmhouse",spawn:{x:.52,y:.53},collision:[
- // Landscape estate: barn left, farmhouse centre, garage lower-left, fountain right.
- {x:.345,y:.18,w:.018,h:.64,type:"wall"},{x:.345,y:.18,w:.36,h:.018,type:"wall"},{x:.345,y:.80,w:.36,h:.018,type:"wall"},{x:.687,y:.18,w:.018,h:.64,type:"wall"},
- {x:.455,y:.20,w:.012,h:.20,type:"wall"},{x:.455,y:.48,w:.012,h:.30,type:"wall"},{x:.565,y:.20,w:.012,h:.20,type:"wall"},{x:.565,y:.48,w:.012,h:.30,type:"wall"},
- {x:.36,y:.39,w:.09,h:.014,type:"wall"},{x:.47,y:.39,w:.085,h:.014,type:"wall"},{x:.58,y:.39,w:.10,h:.014,type:"wall"},
- {x:.36,y:.59,w:.09,h:.014,type:"wall"},{x:.47,y:.59,w:.085,h:.014,type:"wall"},{x:.58,y:.59,w:.10,h:.014,type:"wall"},
- {x:.055,y:.14,w:.27,h:.018,type:"wall"},{x:.055,y:.14,w:.018,h:.29,type:"wall"},{x:.055,y:.412,w:.27,h:.018,type:"wall"},{x:.307,y:.14,w:.018,h:.29,type:"wall"},
- {x:.075,y:.28,w:.07,h:.012,type:"wall"},{x:.155,y:.28,w:.07,h:.012,type:"wall"},{x:.235,y:.28,w:.07,h:.012,type:"wall"},
- {x:.09,y:.66,w:.19,h:.018,type:"wall"},{x:.09,y:.66,w:.018,h:.19,type:"wall"},{x:.09,y:.832,w:.19,h:.018,type:"wall"},{x:.262,y:.66,w:.018,h:.19,type:"wall"},
- {x:.39,y:.26,w:.035,h:.045,type:"furniture"},{x:.50,y:.25,w:.035,h:.05,type:"furniture"},{x:.61,y:.26,w:.04,h:.05,type:"furniture"},{x:.49,y:.68,w:.06,h:.045,type:"furniture"}],
- interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
+const farmhouseMap={id:"farmhouse",spawn:{x:.62,y:.76},collision:[
+ // Collision zones aligned to the illustrated landscape map (normalized world coordinates).
+ // Barn shell and stall partitions.
+ {x:.052,y:.115,w:.012,h:.44,type:"wall"},{x:.052,y:.115,w:.225,h:.012,type:"wall"},{x:.052,y:.543,w:.225,h:.012,type:"wall"},{x:.265,y:.115,w:.012,h:.44,type:"wall"},
+ {x:.105,y:.22,w:.008,h:.30,type:"wall"},{x:.16,y:.22,w:.008,h:.30,type:"wall"},{x:.215,y:.22,w:.008,h:.30,type:"wall"},
+ // Main farmhouse outer walls, with intentional openings at the entrances.
+ {x:.335,y:.18,w:.012,h:.49,type:"wall"},{x:.335,y:.18,w:.225,h:.012,type:"wall"},{x:.335,y:.66,w:.225,h:.012,type:"wall"},{x:.548,y:.18,w:.012,h:.49,type:"wall"},
+ // Internal room partitions; door gaps are left between segments.
+ {x:.405,y:.19,w:.008,h:.13,type:"wall"},{x:.405,y:.35,w:.008,h:.13,type:"wall"},{x:.475,y:.19,w:.008,h:.13,type:"wall"},{x:.475,y:.35,w:.008,h:.13,type:"wall"},
+ {x:.405,y:.49,w:.008,h:.15,type:"wall"},{x:.475,y:.49,w:.008,h:.15,type:"wall"},
+ {x:.345,y:.32,w:.06,h:.009,type:"wall"},{x:.415,y:.32,w:.06,h:.009,type:"wall"},{x:.485,y:.32,w:.055,h:.009,type:"wall"},
+ {x:.345,y:.475,w:.06,h:.009,type:"wall"},{x:.415,y:.475,w:.06,h:.009,type:"wall"},{x:.485,y:.475,w:.055,h:.009,type:"wall"},
+ // Garage/workshop shell and fixed workbench/storage obstacles.
+ {x:.12,y:.65,w:.012,h:.21,type:"wall"},{x:.12,y:.65,w:.18,h:.012,type:"wall"},{x:.12,y:.848,w:.18,h:.012,type:"wall"},{x:.288,y:.65,w:.012,h:.21,type:"wall"},
+ {x:.145,y:.69,w:.018,h:.12,type:"furniture"},{x:.265,y:.69,w:.012,h:.11,type:"furniture"},
+ // Large fixtures: fountain rim and selected fixed storage.
+ {x:.765,y:.46,w:.105,h:.16,type:"furniture"},
+ // Perimeter fence blocks escape but keeps the southern entrance open.
+ {x:.025,y:.055,w:.95,h:.009,type:"wall"},{x:.025,y:.935,w:.37,h:.009,type:"wall"},{x:.60,y:.935,w:.375,h:.009,type:"wall"},{x:.025,y:.055,w:.008,h:.88,type:"wall"},{x:.967,y:.055,w:.008,h:.88,type:"wall"}
+],interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}
 function blocked(px,py,r){if(stressMode)return false;return farmhouseMap.collision.some(q=>q.type!=="building-shell"&&rectHit(px,py,r,q))}
 function movePlayer(dx,dy){let nx=Math.max(18,Math.min(W-18,player.x+dx)),ny=Math.max(18,Math.min(H-18,player.y+dy));if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny}
@@ -82,7 +92,7 @@ function resize(){
  camY=Math.max(0,Math.min(H-viewH,(player?player.y:viewH*scale/2)-viewH/2));
 }addEventListener("resize",resize);resize();
 function message(t){msg.textContent=t;clearTimeout(message.t);message.t=setTimeout(()=>msg.textContent="",1000)}
-function reset(){resize();z=[];b=[];g=[];p=[];wave=1;clock=0;player={x:W/2,y:stressMode?H/2:H*.53,r:17,hp:100,arm:50,ammo:12,a:0,cd:0,walk:0,move:0,shootT:0,reloadT:0,throwT:0};C.base=stressMode?700:85;C.perWave=stressMode?0:5;C.spawnMs=stressMode?20:220;C.max=stressMode?700:100;newWave()}
+function reset(){resize();z=[];b=[];g=[];p=[];wave=1;clock=0;player={x:stressMode?W/2:W*farmhouseMap.spawn.x,y:stressMode?H/2:H*farmhouseMap.spawn.y,r:17,hp:100,arm:50,ammo:12,a:0,cd:0,walk:0,move:0,shootT:0,reloadT:0,throwT:0};C.base=stressMode?700:85;C.perWave=stressMode?0:5;C.spawnMs=stressMode?20:220;C.max=stressMode?700:100;newWave()}
 function newWave(){left=C.base+(wave-1)*C.perWave;spawnT=0;inter=0;message("WAVE "+wave)}
 function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(!stressMode&&s===0){px=(.12+Math.random()*.76)*W;py=H*.08}else if(!stressMode&&s===1){px=W*.92;py=(.12+Math.random()*.76)*H}else if(!stressMode&&s===2){px=(.12+Math.random()*.76)*W;py=H*.92}else if(!stressMode){px=W*.08;py=(.12+Math.random()*.76)*H}else if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}z.push({x:px,y:py,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*20),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random()});left--}
 function shoot(){if(!running||paused||player.cd>0)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;dx/=d;dy/=d;player.a=Math.atan2(dy,dx);b.push({x:player.x+dx*24,y:player.y+dy*24,vx:dx*850,vy:dy*850,t:.6});player.cd=.07;player.ammo=12;player.shootT=.12;p.push({x:player.x+dx*27,y:player.y+dy*27,t:.07,m:.07,k:"m"})}
@@ -253,7 +263,7 @@ function draw(){
  x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,c.width,c.height);
  if(player){camX=Math.max(0,Math.min(W-viewW,player.x-viewW/2));camY=Math.max(0,Math.min(H-viewH,player.y-viewH/2))}else{camX=0;camY=0}
  x.save();x.translate(-camX,-camY);
- if(stressMode){x.fillStyle="#151515";x.fillRect(0,0,W,H);x.strokeStyle="#383838";x.lineWidth=3;x.strokeRect(18,18,W-36,H-36)}else drawFarmhouse();
+ if(stressMode){x.fillStyle="#151515";x.fillRect(0,0,W,H);x.strokeStyle="#383838";x.lineWidth=3;x.strokeRect(18,18,W-36,H-36)}else if(farmhouseTexture.complete&&farmhouseTexture.naturalWidth){x.drawImage(farmhouseTexture,0,0,W,H)}else drawFarmhouse();
 for(const q of p){let a=q.t/q.m;if(q.k==="b"){x.globalAlpha=a;x.fillStyle="#76191c";x.save();x.translate(q.x,q.y);x.rotate(q.rot||0);x.beginPath();x.ellipse(0,0,q.r||3,(q.r||3)*.58,0,0,Math.PI*2);x.fill();x.restore()}else if(q.k==="s"){x.globalAlpha=a*.7;x.fillStyle="#501316";x.beginPath();x.ellipse(q.x,q.y,q.r||7,(q.r||7)*.55,0,0,Math.PI*2);x.fill()}else if(q.k==="m"){x.globalAlpha=a;x.fillStyle="#fff1a8";x.beginPath();x.arc(q.x,q.y,13,0,7);x.fill()}else{x.globalAlpha=a;x.strokeStyle="#ffcc55";x.lineWidth=6;x.beginPath();x.arc(q.x,q.y,60*(1-a)+8,0,7);x.stroke()}}x.globalAlpha=1;
 for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();x.restore()}
 

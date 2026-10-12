@@ -9,30 +9,36 @@ const farmhouseTexture=new Image(); farmhouseTexture.src="assets/farmhouse_apoca
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
-const farmhouseMap={id:"farmhouse",spawn:{x:.56,y:.80},collision:[
- // Alpha 1.24.4: collision polygons are aligned to the current high-detail 1536x1024 texture.
- // Barn outer shell. Wide south-side loading entrance and central access gap remain open.
- {x:.105,y:.055,w:.006,h:.22,type:"wall"}, {x:.105,y:.055,w:.415,h:.007,type:"wall"},
- {x:.105,y:.275,w:.275,h:.007,type:"wall"}, {x:.445,y:.275,w:.075,h:.007,type:"wall"},
- {x:.514,y:.055,w:.006,h:.22,type:"wall"},
- // Stall dividers are visual only in this pass; avoid false blocking inside the barn.
- // Farmhouse shell. Wide front steps/door opening centred on the south wall.
- {x:.285,y:.302,w:.006,h:.392,type:"wall"}, {x:.285,y:.302,w:.275,h:.007,type:"wall"},
- {x:.554,y:.302,w:.006,h:.392,type:"wall"},
- {x:.285,y:.694,w:.135,h:.007,type:"wall"}, {x:.485,y:.694,w:.075,h:.007,type:"wall"},
- // Internal room walls intentionally omitted until each doorway is pixel-aligned; rooms remain traversable.
- // Garage/workshop. Large vehicle entrance on east side plus a broad north-side opening.
- {x:.105,y:.695,w:.006,h:.215,type:"wall"}, {x:.105,y:.695,w:.065,h:.007,type:"wall"},
- {x:.255,y:.695,w:.045,h:.007,type:"wall"}, {x:.105,y:.905,w:.195,h:.007,type:"wall"},
- {x:.299,y:.695,w:.006,h:.055,type:"wall"}, {x:.299,y:.825,w:.006,h:.085,type:"wall"},
- // Main solid obstacles: fountain rim and garage storage shelves, with the vehicle bay left clear.
- {x:.835,y:.435,w:.075,h:.145,type:"furniture"},
- {x:.125,y:.735,w:.018,h:.105,type:"furniture"},
- // Estate perimeter; entrance remains open at the south-east gate.
- {x:.02,y:.055,w:.96,h:.006,type:"wall"}, {x:.02,y:.935,w:.70,h:.006,type:"wall"},
- {x:.83,y:.935,w:.15,h:.006,type:"wall"}, {x:.02,y:.055,w:.005,h:.88,type:"wall"},
+const farmhouseMap={id:"farmhouse",spawn:{x:.52,y:.78},collision:[
+ // Alpha 1.24.5 tutorial layout: simple, image-aligned exterior shells only.
+ // House bounds x=.335-.75 / y=.17-.69. Doorways are intentional gaps.
+ {x:.335,y:.17,w:.415,h:.009,type:"wall"},
+ {x:.335,y:.17,w:.009,h:.505,type:"wall"},
+ {x:.741,y:.17,w:.009,h:.505,type:"wall"},
+ // South house wall split around the broad front entrance/porch.
+ {x:.335,y:.666,w:.145,h:.009,type:"wall"},
+ {x:.565,y:.666,w:.185,h:.009,type:"wall"},
+ // Barn bounds x=.065-.30 / y=.09-.49. Keep a broad southern loading opening.
+ {x:.065,y:.09,w:.235,h:.009,type:"wall"},
+ {x:.065,y:.09,w:.009,h:.40,type:"wall"},
+ {x:.291,y:.09,w:.009,h:.40,type:"wall"},
+ {x:.065,y:.481,w:.075,h:.009,type:"wall"},
+ {x:.225,y:.481,w:.075,h:.009,type:"wall"},
+ // Garage bounds x=.12-.305 / y=.67-.89. Main south vehicle door stays open.
+ {x:.12,y:.67,w:.185,h:.009,type:"wall"},
+ {x:.12,y:.67,w:.009,h:.22,type:"wall"},
+ {x:.296,y:.67,w:.009,h:.22,type:"wall"},
+ {x:.12,y:.881,w:.055,h:.009,type:"wall"},
+ {x:.255,y:.881,w:.05,h:.009,type:"wall"},
+ // Fountain rim and selected fixed clutter; no interior room partitions are solid in this tutorial pass.
+ {x:.795,y:.43,w:.075,h:.13,type:"furniture"},
+ // Outer fence. Southern entrance gap near the driveway remains passable.
+ {x:.02,y:.055,w:.96,h:.006,type:"wall"},
+ {x:.02,y:.935,w:.43,h:.006,type:"wall"},
+ {x:.64,y:.935,w:.34,h:.006,type:"wall"},
+ {x:.02,y:.055,w:.005,h:.88,type:"wall"},
  {x:.975,y:.055,w:.005,h:.88,type:"wall"}
-],interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
+],interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"house-barricade",type:"barrier",health:200,repairable:true},{id:"barn-barricade",type:"barrier",health:200,repairable:true}]};
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}
 function blocked(px,py,r){if(stressMode)return false;return farmhouseMap.collision.some(q=>q.type!=="building-shell"&&rectHit(px,py,r,q))}
 function movePlayer(dx,dy){let nx=Math.max(18,Math.min(W-18,player.x+dx)),ny=Math.max(18,Math.min(H-18,player.y+dy));if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny}

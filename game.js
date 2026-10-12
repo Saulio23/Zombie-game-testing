@@ -34,7 +34,7 @@ const solidSegments=[
  [.47,.17,.47,.29],[.47,.33,.47,.39],[.47,.43,.47,.49],
  [.34,.34,.43,.34],[.47,.34,.49,.34],
  [.34,.43,.40,.43],[.44,.43,.47,.43],
- [.50,.17,.50,.28],[.50,.32,.50,.40],/* removed misplaced horizontal solid segment at X=50–58%, Y=40% */
+ [.50,.17,.50,.28],[.50,.32,.50,.40],[.50,.40,.58,.40],
  [.59,.17,.59,.28],[.59,.32,.59,.40],
  [.66,.17,.66,.26],[.66,.30,.66,.40],
  [.34,.50,.41,.50],[.45,.50,.47,.50],[.34,.50,.34,.64],
@@ -329,17 +329,43 @@ function drawFarmhouse(){
 function drawCollisionDebug(){
  if(!collisionDebug||stressMode)return;
  x.save();
- // World-space grid, aligned to the exact image rectangle and collision coordinate system.
- x.lineWidth=1; x.font='12px monospace';
+ // World-space 2% grid. Each cell is labelled with its X/Y percentage range
+ // so collision reports can identify the exact box start and end.
+ x.lineWidth=1;
+ const cellW=W/50, cellH=H/50;
+ x.font='9px monospace';
  for(let ix=0;ix<=50;ix++){
-  const gx=W*ix/50; x.strokeStyle=ix%5===0?'rgba(255,255,255,.42)':'rgba(255,255,255,.22)';
+  const gx=W*ix/50;
+  x.strokeStyle=ix%5===0?'rgba(255,255,255,.48)':'rgba(255,255,255,.24)';
   x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke();
-  if(ix%5===0){x.fillStyle='rgba(0,0,0,.78)';x.fillRect(gx+2,4,34,16);x.fillStyle='#fff';x.fillText(String(ix*2).padStart(2,'0')+'%',gx+4,16)}
  }
  for(let iy=0;iy<=50;iy++){
-  const gy=H*iy/50;x.strokeStyle=iy%5===0?'rgba(255,255,255,.42)':'rgba(255,255,255,.22)';
+  const gy=H*iy/50;
+  x.strokeStyle=iy%5===0?'rgba(255,255,255,.48)':'rgba(255,255,255,.24)';
   x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();
-  if(iy%5===0){x.fillStyle='rgba(0,0,0,.78)';x.fillRect(3,gy+2,35,16);x.fillStyle='#fff';x.fillText(String(iy*2).padStart(2,'0')+'%',5,gy+14)}
+ }
+ // Label every cell with the cell's top-left X/Y coordinate, using a dark
+ // backing for legibility. Labels are world-space and pan with the map.
+ for(let iy=0;iy<50;iy++){
+  for(let ix=0;ix<50;ix++){
+   const gx=ix*cellW, gy=iy*cellH;
+   const label=`${String(ix*2).padStart(2,'0')},${String(iy*2).padStart(2,'0')}`;
+   x.font='9px monospace';
+   const tw=x.measureText(label).width;
+   x.fillStyle='rgba(0,0,0,.62)';
+   x.fillRect(gx+2,gy+2,tw+4,12);
+   x.fillStyle='rgba(255,255,255,.94)';
+   x.fillText(label,gx+4,gy+11);
+  }
+ }
+ // Perimeter labels every 10% remain larger for orientation.
+ x.font='bold 12px monospace';
+ for(let i=0;i<=10;i++){
+  const pct=i*10, gx=W*i/10, gy=H*i/10, label=String(pct).padStart(2,'0')+'%';
+  x.fillStyle='rgba(0,0,0,.82)'; x.fillRect(Math.min(Math.max(0,gx-17),W-36),0,36,16);
+  x.fillStyle='#fff'; x.fillText(label,Math.min(Math.max(2,gx-15),W-34),12);
+  x.fillStyle='rgba(0,0,0,.82)'; x.fillRect(0,Math.min(Math.max(0,gy-8),H-16),36,16);
+  x.fillStyle='#fff'; x.fillText(label,2,Math.min(Math.max(12,gy+4),H-2));
  }
  const drawSegments=(arr,color,width)=>{x.strokeStyle=color;x.lineWidth=width;x.lineCap='round';for(const q of arr){x.beginPath();x.moveTo(q[0]*W,q[1]*H);x.lineTo(q[2]*W,q[3]*H);x.stroke()}};
  drawSegments(solidSegments,'#ff3b30',4);
@@ -356,7 +382,7 @@ function draw(){
  x.save();x.translate(-camX,-camY);
  if(stressMode){x.fillStyle="#151515";x.fillRect(0,0,W,H);x.strokeStyle="#383838";x.lineWidth=3;x.strokeRect(18,18,W-36,H-36)}else if(farmhouseTexture.complete&&farmhouseTexture.naturalWidth){x.drawImage(farmhouseTexture,0,0,W,H)}else drawFarmhouse();
 for(const q of p){let a=q.t/q.m;if(q.k==="b"){x.globalAlpha=a;x.fillStyle="#76191c";x.save();x.translate(q.x,q.y);x.rotate(q.rot||0);x.beginPath();x.ellipse(0,0,q.r||3,(q.r||3)*.58,0,0,Math.PI*2);x.fill();x.restore()}else if(q.k==="s"){x.globalAlpha=a*.7;x.fillStyle="#501316";x.beginPath();x.ellipse(q.x,q.y,q.r||7,(q.r||7)*.55,0,0,Math.PI*2);x.fill()}else if(q.k==="m"){x.globalAlpha=a;x.fillStyle="#fff1a8";x.beginPath();x.arc(q.x,q.y,13,0,7);x.fill()}else{x.globalAlpha=a;x.strokeStyle="#ffcc55";x.lineWidth=6;x.beginPath();x.arc(q.x,q.y,60*(1-a)+8,0,7);x.stroke()}}x.globalAlpha=1;
-for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();drawCollisionDebug();x.restore();if(collisionDebug&&!stressMode){x.save();x.setTransform(1,0,0,1,0,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(8,8,Math.min(c.width-16,360),48);x.fillStyle="#fff";x.font="bold 13px monospace";x.fillText("COLLISION DEBUG ON · GRID 2%",16,26);x.font="11px monospace";x.fillText("RED solid · BLUE breakable · GREEN movement-only · YELLOW entry",16,43);x.restore()}}
+for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();drawCollisionDebug();x.restore();if(collisionDebug&&!stressMode){x.save();x.setTransform(1,0,0,1,0,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(8,8,Math.min(c.width-16,360),48);x.fillStyle="#fff";x.font="bold 13px monospace";x.fillText("COLLISION DEBUG ON · GRID 5%",16,26);x.font="11px monospace";x.fillText("RED solid · BLUE breakable · GREEN movement-only · YELLOW entry",16,43);x.restore()}}
 
 function frame(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(frame)}requestAnimationFrame(frame);
 let settingsOrigin="home";

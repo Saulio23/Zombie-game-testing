@@ -4,10 +4,16 @@ let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
-const farmhouseMap={id:"farmhouse",spawn:{x:.50,y:.73},collision:[
- {x:.285,y:.225,w:.43,h:.018,type:"wall"},{x:.285,y:.225,w:.018,h:.44,type:"wall"},{x:.697,y:.225,w:.018,h:.44,type:"wall"},{x:.285,y:.655,w:.17,h:.018,type:"wall"},{x:.517,y:.655,w:.198,h:.018,type:"wall"},
- {x:.405,y:.235,w:.012,h:.065,type:"wall"},{x:.405,y:.345,w:.012,h:.08,type:"wall"},{x:.565,y:.235,w:.012,h:.065,type:"wall"},{x:.565,y:.345,w:.012,h:.08,type:"wall"},{x:.405,y:.44,w:.012,h:.075,type:"wall"},{x:.405,y:.56,w:.012,h:.09,type:"wall"},{x:.565,y:.44,w:.012,h:.075,type:"wall"},{x:.565,y:.56,w:.012,h:.09,type:"wall"},
- {x:.33,y:.31,w:.055,h:.065,type:"furniture"},{x:.61,y:.31,w:.055,h:.055,type:"furniture"},{x:.46,y:.49,w:.08,h:.045,type:"furniture"}],
+const farmhouseMap={id:"farmhouse",spawn:{x:.52,y:.53},collision:[
+ // Landscape estate: barn left, farmhouse centre, garage lower-left, fountain right.
+ {x:.345,y:.18,w:.018,h:.64,type:"wall"},{x:.345,y:.18,w:.36,h:.018,type:"wall"},{x:.345,y:.80,w:.36,h:.018,type:"wall"},{x:.687,y:.18,w:.018,h:.64,type:"wall"},
+ {x:.455,y:.20,w:.012,h:.20,type:"wall"},{x:.455,y:.48,w:.012,h:.30,type:"wall"},{x:.565,y:.20,w:.012,h:.20,type:"wall"},{x:.565,y:.48,w:.012,h:.30,type:"wall"},
+ {x:.36,y:.39,w:.09,h:.014,type:"wall"},{x:.47,y:.39,w:.085,h:.014,type:"wall"},{x:.58,y:.39,w:.10,h:.014,type:"wall"},
+ {x:.36,y:.59,w:.09,h:.014,type:"wall"},{x:.47,y:.59,w:.085,h:.014,type:"wall"},{x:.58,y:.59,w:.10,h:.014,type:"wall"},
+ {x:.055,y:.14,w:.27,h:.018,type:"wall"},{x:.055,y:.14,w:.018,h:.29,type:"wall"},{x:.055,y:.412,w:.27,h:.018,type:"wall"},{x:.307,y:.14,w:.018,h:.29,type:"wall"},
+ {x:.075,y:.28,w:.07,h:.012,type:"wall"},{x:.155,y:.28,w:.07,h:.012,type:"wall"},{x:.235,y:.28,w:.07,h:.012,type:"wall"},
+ {x:.09,y:.66,w:.19,h:.018,type:"wall"},{x:.09,y:.66,w:.018,h:.19,type:"wall"},{x:.09,y:.832,w:.19,h:.018,type:"wall"},{x:.262,y:.66,w:.018,h:.19,type:"wall"},
+ {x:.39,y:.26,w:.035,h:.045,type:"furniture"},{x:.50,y:.25,w:.035,h:.05,type:"furniture"},{x:.61,y:.26,w:.04,h:.05,type:"furniture"},{x:.49,y:.68,w:.06,h:.045,type:"furniture"}],
  interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}
 function blocked(px,py,r){if(stressMode)return false;return farmhouseMap.collision.some(q=>q.type!=="building-shell"&&rectHit(px,py,r,q))}
@@ -174,36 +180,63 @@ limb(-4,-1,-9,4,4,"#8e806a");let armY=throwing?-11*throwing:(reload?-7*reload:0)
 x.save();x.translate(7+shoot*3,armY);x.rotate(reload*.7+throwing*.9);x.fillStyle="#b9b9b3";x.fillRect(0,-3,18,6);x.fillStyle="#292b2b";x.fillRect(8,-4,9,3);x.fillStyle="#111";x.fillRect(4,1,5,7);x.restore();
 if(throwing>.05){x.fillStyle="#8b8b83";x.beginPath();x.arc(13,-11,3.5,0,Math.PI*2);x.fill()}if(reload>.1){x.strokeStyle="#d7c7a5";x.lineWidth=2;x.beginPath();x.arc(7,-3,8,-.8,.9);x.stroke()}x.restore()}
 function drawFarmhouse(){
- // Ground-art layer: weathered grass, soil tracks and mottled patches.
- x.fillStyle="#424632";x.fillRect(0,0,W,H);
- for(let i=0;i<260;i++){let xx=(i*173.7%W),yy=(i*97.3%H);x.fillStyle=i%3===0?"#55533a":i%3===1?"#343d2b":"#4a4c35";x.globalAlpha=.28;x.beginPath();x.ellipse(xx,yy,3+(i%7),1+(i%3),i*.7,0,Math.PI*2);x.fill()}x.globalAlpha=1;
- // Muddy wheel tracks around the yard.
- x.strokeStyle="#282c22";x.lineWidth=Math.max(8,W*.012);x.globalAlpha=.55;x.beginPath();x.moveTo(W*.04,H*.19);x.bezierCurveTo(W*.22,H*.1,W*.77,H*.13,W*.95,H*.2);x.stroke();x.beginPath();x.moveTo(W*.08,H*.83);x.bezierCurveTo(W*.28,H*.93,W*.73,H*.91,W*.92,H*.82);x.stroke();x.globalAlpha=1;
- // Fence and gates are a separate prop layer.
- x.strokeStyle="#4c3828";x.lineWidth=4;x.beginPath();x.moveTo(W*.06,H*.08);x.lineTo(W*.94,H*.08);x.lineTo(W*.94,H*.92);x.lineTo(W*.06,H*.92);x.closePath();x.stroke();for(let i=0;i<30;i++){let xx=W*(.06+i*.88/29);x.fillStyle="#776044";x.fillRect(xx-2,H*.07,4,10);x.fillRect(xx-2,H*.91,4,10)}
- // Rear garden and vegetable beds.
- x.fillStyle="#303b28";x.fillRect(W*.12,H*.12,W*.2,H*.095);for(let i=0;i<5;i++){x.fillStyle=i%2?"#59613b":"#6d6740";x.fillRect(W*(.13+i*.036),H*.13,W*.022,H*.075)}
- // Barn/outbuilding, roof and shadow on the rear-right side.
- x.fillStyle="#20221b";x.fillRect(W*.735,H*.16,W*.17,H*.2);x.fillStyle="#574034";x.fillRect(W*.745,H*.15,W*.15,H*.18);x.fillStyle="#392b25";for(let i=0;i<7;i++)x.fillRect(W*.75,H*(.16+i*.022),W*.14,H*.006);x.fillStyle="#171a17";x.fillRect(W*.79,H*.245,W*.06,H*.085);x.strokeStyle="#a08b67";x.lineWidth=3;x.strokeRect(W*.745,H*.15,W*.15,H*.18);
- // Farmhouse shadow, masonry/foundation and floorboards.
- x.fillStyle="#20221e";x.fillRect(W*.255,H*.205,W*.49,H*.51);x.fillStyle="#8a806a";x.fillRect(W*.27,H*.22,W*.46,H*.48);x.fillStyle="#574b3c";x.fillRect(W*.285,H*.235,W*.43,H*.45);
- // Ground-floor rooms rendered as individual floor layers.
- const rooms=[{x:.30,y:.25,w:.105,h:.17,c:"#74654f"},{x:.42,y:.25,w:.145,h:.17,c:"#81735b"},{x:.575,y:.25,w:.12,h:.17,c:"#665744"},{x:.30,y:.44,w:.16,h:.22,c:"#8b795f"},{x:.47,y:.44,w:.225,h:.22,c:"#76664e"}];for(const r of rooms){x.fillStyle=r.c;x.fillRect(W*r.x,H*r.y,W*r.w,H*r.h);x.strokeStyle="#a79a7a";x.lineWidth=1;x.strokeRect(W*r.x,H*r.y,W*r.w,H*r.h);for(let j=0;j<6;j++){x.strokeStyle="#443b30";x.globalAlpha=.35;x.beginPath();x.moveTo(W*r.x,H*(r.y+.025+j*r.h/7));x.lineTo(W*(r.x+r.w),H*(r.y+.025+j*r.h/7));x.stroke()}x.globalAlpha=1}
- // Interior furniture, wreckage and broken boards.
- x.fillStyle="#403126";x.fillRect(W*.32,H*.285,W*.055,H*.07);x.fillStyle="#8e7759";x.fillRect(W*.325,H*.29,W*.045,H*.06);x.fillStyle="#332b25";x.fillRect(W*.60,H*.29,W*.07,H*.045);x.fillStyle="#8a7657";x.fillRect(W*.605,H*.295,W*.06,H*.035);x.fillStyle="#342b24";x.fillRect(W*.49,H*.50,W*.06,H*.045);x.fillStyle="#9b8764";x.fillRect(W*.495,H*.505,W*.05,H*.035);
- for(let i=0;i<9;i++){x.strokeStyle=i%2?"#3b2b20":"#b5a17a";x.lineWidth=2;x.beginPath();x.moveTo(W*(.35+i*.009),H*(.58+(i%3)*.012));x.lineTo(W*(.37+i*.009),H*(.62+(i%2)*.01));x.stroke()}
- // Walls over floor; openings are intentional future window/door interaction points.
- x.fillStyle="#292824";x.fillRect(W*.285,H*.225,W*.43,H*.018);x.fillRect(W*.285,H*.225,W*.018,H*.44);x.fillRect(W*.697,H*.225,W*.018,H*.44);x.fillRect(W*.285,H*.655,W*.17,H*.018);x.fillRect(W*.51,H*.655,W*.205,H*.018);x.fillRect(W*.405,H*.235,W*.012,H*.065);x.fillRect(W*.405,H*.345,W*.012,H*.08);x.fillRect(W*.565,H*.235,W*.012,H*.065);x.fillRect(W*.565,H*.345,W*.012,H*.08);x.fillRect(W*.405,H*.44,W*.012,H*.075);x.fillRect(W*.405,H*.56,W*.012,H*.09);x.fillRect(W*.565,H*.44,W*.012,H*.075);x.fillRect(W*.565,H*.56,W*.012,H*.09);
- // Windows remain visible; interior door leaves are removed so rooms connect through open doorways.
- for(const wx of [.34,.62]){x.fillStyle="#1b282a";x.fillRect(W*wx,H*.216,W*.045,H*.025);x.strokeStyle="#b7b29c";x.lineWidth=2;x.strokeRect(W*wx,H*.216,W*.045,H*.025);x.beginPath();x.moveTo(W*(wx+.0225),H*.217);x.lineTo(W*(wx+.0225),H*.24);x.stroke()}
- x.strokeStyle="#b59a6c";x.lineWidth=2;x.beginPath();x.moveTo(W*.455,H*.655);x.lineTo(W*.455,H*.64);x.moveTo(W*.517,H*.655);x.lineTo(W*.517,H*.64);x.stroke();
- // Blood-stained environmental storytelling: trails, smears and HELP on the floor.
- x.fillStyle="#651719";for(let i=0;i<18;i++){let xx=W*(.36+(i%6)*.011),yy=H*(.34+Math.floor(i/6)*.014);x.globalAlpha=.55+(i%3)*.12;x.beginPath();x.ellipse(xx,yy,W*(.003+(i%3)*.001),H*(.002+(i%2)*.002),i*.6,0,Math.PI*2);x.fill()}x.globalAlpha=1;
- x.save();x.translate(W*.61,H*.57);x.rotate(-.09);x.fillStyle="#7e1b20";x.font=`900 ${Math.max(11,Math.min(20,W*.022))}px Georgia`;x.fillText("HELP",0,0);x.strokeStyle="#681619";x.lineWidth=2;x.beginPath();x.moveTo(-4,5);x.lineTo(W*.035,8);x.moveTo(2,10);x.lineTo(W*.022,13);x.stroke();x.restore();
- // Outdoor clutter: barrels, stones, scattered timber and blood near the path.
- for(let i=0;i<12;i++){let xx=W*(.12+(i*37%72)/100),yy=H*(.76+(i%4)*.035);x.fillStyle=i%2?"#554735":"#34352d";x.save();x.translate(xx,yy);x.rotate(i*.8);x.fillRect(-5,-2,10,4);x.restore()}x.fillStyle="#6a171a";x.globalAlpha=.65;x.beginPath();x.ellipse(W*.23,H*.72,W*.035,H*.012,-.4,0,Math.PI*2);x.fill();x.globalAlpha=1;
- // Light vignette and grime keep the art moody without obscuring gameplay.
- const vg=x.createRadialGradient(W*.5,H*.5,Math.min(W,H)*.15,W*.5,H*.5,Math.max(W,H)*.72);vg.addColorStop(0,"#00000000");vg.addColorStop(1,"#080908a8");x.fillStyle=vg;x.fillRect(0,0,W,H);
+ // Landscape estate canvas: deliberately follows the supplied plan after a 90-degree clockwise rotation.
+ const R=(a,b,c,d,col)=>{x.fillStyle=col;x.fillRect(W*a,H*b,W*c,H*d)}, S=(a,b,c,d,col,l=2)=>{x.strokeStyle=col;x.lineWidth=l;x.strokeRect(W*a,H*b,W*c,H*d)};
+ R(0,0,1,1,"#30382a");
+ // Dead grass, scorched patches and overgrowth.
+ for(let i=0;i<360;i++){let xx=(i*173.7%W),yy=(i*97.3%H);x.globalAlpha=.28+(i%4)*.07;x.fillStyle=["#55513a","#242b22","#65513a","#3d432e"][i%4];x.beginPath();x.ellipse(xx,yy,2+i%8,1+i%4,i*.7,0,Math.PI*2);x.fill()}x.globalAlpha=1;
+ // Perimeter fence, broken panels and rusty posts.
+ x.strokeStyle="#161a17";x.lineWidth=8;x.strokeRect(W*.025,H*.055,W*.95,H*.89);x.strokeStyle="#6c6a58";x.lineWidth=2;x.strokeRect(W*.025,H*.055,W*.95,H*.89);
+ for(let i=0;i<44;i++){let xx=W*(.025+i*.95/43);R(xx/W-.003,.047,.006,.025,i%7===0?"#282a25":"#77715c");R(xx/W-.003,.928,.006,.025,i%8===0?"#282a25":"#77715c")}
+ for(let i=0;i<18;i++){let yy=.07+i*.049;R(.018,yy,.014,.007,"#665e4a");R(.968,yy,.014,.007,"#665e4a")}
+ // Overgrown perimeter, dead trees and thorny hedges.
+ for(let i=0;i<23;i++){let xx=.035+(i%2)*.02, yy=.10+i*.036; x.fillStyle=i%3?"#202b20":"#353d29";x.beginPath();x.arc(W*xx,H*yy,W*.014,0,Math.PI*2);x.fill();x.fillStyle="#171e18";x.beginPath();x.arc(W*(xx-.004),H*(yy-.006),W*.008,0,Math.PI*2);x.fill()}
+ for(let i=0;i<24;i++){let xx=.92+(i%2)*.018,yy=.10+i*.035;x.fillStyle="#263023";x.beginPath();x.arc(W*xx,H*yy,W*.013,0,7);x.fill()}
+ // Winding stone footpath from gardens around the farmhouse to the drive.
+ x.lineCap="round";x.lineJoin="round";x.strokeStyle="#242820";x.lineWidth= W*.026;x.beginPath();x.moveTo(W*.30,H*.43);x.lineTo(W*.30,H*.51);x.bezierCurveTo(W*.29,H*.62,W*.32,H*.70,W*.38,H*.83);x.stroke();x.strokeStyle="#77715e";x.lineWidth=W*.019;x.beginPath();x.moveTo(W*.30,H*.43);x.lineTo(W*.30,H*.51);x.bezierCurveTo(W*.29,H*.62,W*.32,H*.70,W*.38,H*.83);x.stroke();
+ // Main gravel drive and entrance on the right.
+ x.strokeStyle="#20231f";x.lineWidth=W*.105;x.beginPath();x.moveTo(W*.98,H*.56);x.bezierCurveTo(W*.88,H*.56,W*.79,H*.57,W*.75,H*.66);x.bezierCurveTo(W*.72,H*.74,W*.80,H*.83,W*.91,H*.88);x.stroke();x.strokeStyle="#696657";x.lineWidth=W*.083;x.stroke();for(let i=0;i<210;i++){let xx=.70+(i*37%29)/100,yy=.55+(i*53%35)/100;x.fillStyle=i%3?"#89816a":"#403e35";x.globalAlpha=.45;x.fillRect(W*xx,H*yy,2,2)}x.globalAlpha=1;
+ // Barn at left: seven damaged stalls and the large storage/work bay.
+ R(.052,.115,.285,.34,"#121817");R(.06,.125,.269,.315,"#39403b");R(.065,.132,.255,.30,"#493b2d");
+ // Stall floors, partitions and filthy straw.
+ for(let i=0;i<4;i++){let xx=.075+i*.056;R(xx,.15,.049,.105,i%2?"#55452e":"#665033");for(let k=0;k<16;k++){x.strokeStyle=k%2?"#847044":"#332b20";x.lineWidth=1;x.beginPath();x.moveTo(W*(xx+.004+(k%5)*.008),H*(.16+Math.floor(k/5)*.025));x.lineTo(W*(xx+.012+(k%5)*.008),H*(.17+Math.floor(k/5)*.025));x.stroke()}R(xx+.047,.145,.006,.116,"#242724")}
+ for(let i=0;i<3;i++){let xx=.075+i*.056;R(xx,.275,.049,.105,"#4d402e");for(let k=0;k<12;k++){x.strokeStyle="#79643c";x.beginPath();x.moveTo(W*(xx+.005+(k%4)*.01),H*(.29+Math.floor(k/4)*.027));x.lineTo(W*(xx+.012+(k%4)*.01),H*(.30+Math.floor(k/4)*.027));x.stroke()}}
+ // Barn storage bay, crates, drums and broken roof sections.
+ R(.255,.145,.073,.27,"#292d2a");R(.262,.153,.059,.25,"#55564d");for(let i=0;i<7;i++)for(let j=0;j<3;j++){R(.27+i*.007,.18+j*.065,.023,.047,(i+j)%2?"#62503a":"#4a3b2b");S(.27+i*.007,.18+j*.065,.023,.047,"#201f1a",1)}
+ for(let i=0;i<8;i++){x.fillStyle=i%2?"#3b3227":"#4c4131";x.beginPath();x.arc(W*(.08+(i%4)*.055),H*(.14+Math.floor(i/4)*.27),W*.006,0,7);x.fill();x.strokeStyle="#161a18";x.stroke()}
+ S(.052,.115,.285,.34,"#121715",5);for(let i=0;i<9;i++){R(.055+i*.032,.118,.003,.334,i%3?"#55594f":"#7a705c")}
+ // Farmhouse centre, preserving room arrangement and central hall.
+ R(.333,.15,.385,.70,"#111715");R(.345,.165,.36,.67,"#5a4c3a");R(.355,.18,.34,.64,"#302a24");
+ // Floor rooms: upper bedrooms, bathroom, living rooms, kitchen and lower rooms.
+ const rooms=[ [.365,.20,.083,.17,"#564635"],[.465,.20,.083,.17,"#554331"],[.565,.20,.083,.17,"#4b4438"],[.365,.40,.083,.17,"#554433"],[.465,.40,.083,.17,"#3e3429"],[.565,.40,.083,.17,"#514434"],[.365,.60,.083,.17,"#4b3d2d"],[.465,.60,.083,.17,"#493a2c"],[.565,.60,.083,.17,"#514333"] ];
+ for(const a of rooms){R(...a);for(let j=0;j<8;j++){x.strokeStyle="#211f1a";x.globalAlpha=.45;x.lineWidth=1;x.beginPath();x.moveTo(W*a[0],H*(a[1]+.02+j*a[3]/8));x.lineTo(W*(a[0]+a[2]),H*(a[1]+.02+j*a[3]/8));x.stroke()}x.globalAlpha=1;S(a[0],a[1],a[2],a[3],"#89785b",2)}
+ // Central corridor and blood-smeared runner.
+ R(.448,.185,.012,.65,"#211b19");R(.449,.20,.009,.62,"#6c5542");R(.445,.39,.018,.23,"#4b1719");
+ // Room partitions with door gaps, furniture and fixtures.
+ for(const a of [[.455,.18,.012,.18],[.555,.18,.012,.18],[.455,.40,.012,.15],[.555,.40,.012,.15],[.455,.60,.012,.17],[.555,.60,.012,.17]])R(...a,"#171c1b");
+ // Beds, bathroom fixtures, kitchen island, dining table and wrecked lounge furniture.
+ R(.378,.23,.052,.07,"#292824");R(.381,.235,.045,.027,"#aaa18b");R(.381,.264,.045,.03,"#687582");R(.478,.23,.052,.07,"#292824");R(.481,.235,.045,.027,"#b1a48b");R(.481,.264,.045,.03,"#59636a");
+ R(.58,.225,.022,.07,"#9b9887");R(.584,.23,.014,.045,"#c3c0b1");R(.614,.22,.025,.025,"#b6b4a6");R(.616,.225,.02,.015,"#4b5a5a");
+ R(.58,.435,.052,.035,"#2b2721");R(.585,.44,.042,.025,"#6a5840");R(.59,.47,.01,.035,"#27251f");R(.38,.435,.045,.045,"#433a2d");R(.384,.44,.037,.035,"#75644b");
+ R(.378,.64,.052,.06,"#302b24");R(.382,.645,.044,.05,"#77664e");R(.482,.64,.052,.06,"#312a22");R(.486,.645,.044,.05,"#66553e");R(.58,.64,.052,.06,"#292622");R(.584,.645,.044,.05,"#726149");
+ // Wall outline and window frames, with boarded/broken panes.
+ S(.333,.15,.385,.70,"#101615",5);S(.342,.16,.367,.68,"#7b7661",2);
+ for(const yy of [.31,.51,.71]){R(.335,yy,.015,.045,"#171c1b");R(.704,yy,.015,.045,"#171c1b");R(.336,yy+.005,.012,.034,"#5c6966");R(.705,yy+.005,.012,.034,"#4b5a56");for(let j=0;j<3;j++)R(.337+j*.004,yy+.006,.002,.031,j%2?"#171b1a":"#8a3d32")}
+ // Garage/workshop bottom-left, with wrecked car, shelves and scattered tools.
+ R(.075,.64,.225,.225,"#121716");R(.085,.65,.205,.205,"#393b35");R(.095,.66,.185,.185,"#45443b");for(let i=0;i<5;i++){R(.10+i*.012,.67,.009,.15,i%2?"#5d4a34":"#282a26");R(.10+i*.012,.67,.009,.15,"#55422f")}
+ // Car silhouette with shattered windshield and rust.
+ x.fillStyle="#171b1c";x.beginPath();x.ellipse(W*.205,H*.755,W*.052,H*.042,-.06,0,Math.PI*2);x.fill();x.fillStyle="#343a3a";x.beginPath();x.ellipse(W*.205,H*.755,W*.043,H*.031,-.06,0,Math.PI*2);x.fill();x.fillStyle="#1c282b";x.beginPath();x.moveTo(W*.18,H*.735);x.lineTo(W*.224,H*.733);x.lineTo(W*.238,H*.755);x.lineTo(W*.17,H*.758);x.closePath();x.fill();x.strokeStyle="#73362c";x.lineWidth=3;x.beginPath();x.moveTo(W*.18,H*.735);x.lineTo(W*.20,H*.751);x.lineTo(W*.225,H*.735);x.stroke();for(const xx of [.17,.24]){x.fillStyle="#080a09";x.beginPath();x.arc(W*xx,H*.775,W*.009,0,7);x.fill()}
+ S(.075,.64,.225,.225,"#111514",4);
+ // Vegetable beds and overgrown left garden.
+ for(let i=0;i<3;i++){R(.06,.49+i*.055,.045,.035,"#242720");S(.06,.49+i*.055,.045,.035,"#716047",2);for(let j=0;j<5;j++){x.fillStyle=j%2?"#465034":"#5c5a37";x.beginPath();x.arc(W*(.068+j*.007),H*(.50+i*.055),W*.003,0,7);x.fill()}}
+ // Fountain on the right, drained and bloodied, ringed by weeds and rubble.
+ x.fillStyle="#18201d";x.beginPath();x.ellipse(W*.825,H*.59,W*.064,H*.105,0,0,7);x.fill();x.fillStyle="#665d49";x.beginPath();x.ellipse(W*.825,H*.59,W*.054,H*.091,0,0,7);x.fill();x.fillStyle="#272f2e";x.beginPath();x.ellipse(W*.825,H*.59,W*.044,H*.076,0,0,7);x.fill();x.fillStyle="#3f4b48";x.beginPath();x.ellipse(W*.825,H*.59,W*.034,H*.063,0,0,7);x.fill();x.fillStyle="#6b171b";x.beginPath();x.ellipse(W*.817,H*.60,W*.023,H*.027,-.2,0,7);x.fill();x.strokeStyle="#8d8065";x.lineWidth=3;x.beginPath();x.ellipse(W*.825,H*.59,W*.049,H*.083,0,0,7);x.stroke();
+ // Gore, corpses, broken boards, sandbags, rubble and rusty barricades.
+ for(let i=0;i<22;i++){let xx=.32+(i*17%43)/100,yy=.22+(i*31%56)/100;x.fillStyle=i%3?"#64181b":"#302a24";x.globalAlpha=.45+(i%4)*.12;x.beginPath();x.ellipse(W*xx,H*yy,W*(.004+i%3*.002),H*(.003+i%2*.002),i*.6,0,7);x.fill()}x.globalAlpha=1;
+ for(let i=0;i<13;i++){let xx=.30+(i*23%62)/100,yy=.84-(i%3)*.025;x.save();x.translate(W*xx,H*yy);x.rotate(i*.77);R(-.012,-.003,.024,.006,i%2?"#302b24":"#4c4030");x.restore()}
+ // Blood-written warning and oppressive vignette.
+ x.save();x.translate(W*.49,H*.53);x.rotate(-.04);x.fillStyle="#8a2023";x.font=`900 ${Math.max(12,Math.min(22,W*.022))}px Georgia`;x.fillText("HELP",0,0);x.restore();
+ const vg=x.createRadialGradient(W*.5,H*.5,Math.min(W,H)*.12,W*.5,H*.5,Math.max(W,H)*.76);vg.addColorStop(0,"#00000000");vg.addColorStop(1,"#050706c9");x.fillStyle=vg;x.fillRect(0,0,W,H);
 }
 function draw(){x.clearRect(0,0,W,H);if(stressMode){x.fillStyle="#151515";x.fillRect(0,0,W,H);x.strokeStyle="#383838";x.lineWidth=3;x.strokeRect(18,18,W-36,H-36)}else drawFarmhouse();
 for(const q of p){let a=q.t/q.m;if(q.k==="b"){x.globalAlpha=a;x.fillStyle="#76191c";x.save();x.translate(q.x,q.y);x.rotate(q.rot||0);x.beginPath();x.ellipse(0,0,q.r||3,(q.r||3)*.58,0,0,Math.PI*2);x.fill();x.restore()}else if(q.k==="s"){x.globalAlpha=a*.7;x.fillStyle="#501316";x.beginPath();x.ellipse(q.x,q.y,q.r||7,(q.r||7)*.55,0,0,Math.PI*2);x.fill()}else if(q.k==="m"){x.globalAlpha=a;x.fillStyle="#fff1a8";x.beginPath();x.arc(q.x,q.y,13,0,7);x.fill()}else{x.globalAlpha=a;x.strokeStyle="#ffcc55";x.lineWidth=6;x.beginPath();x.arc(q.x,q.y,60*(1-a)+8,0,7);x.stroke()}}x.globalAlpha=1;

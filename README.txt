@@ -1,16 +1,9 @@
-SAS VS ZOMBIES — ALPHA 1.24.7
+SAS VS ZOMBIES / DEADLINE — Alpha 1.24.8
 
-INSTALL
-Replace the existing repository files with the files in this ZIP. Keep root files at repository root and upload the included assets/ folder.
+Collision diagnostic build. Start Farmhouse, then pause and choose COLLISION DEBUG: ON. On desktop, press D to toggle the overlay.
 
-ALPHA 1.24.7 CHANGES
-- Rebuilt collision geometry from the user's colour-coded farmhouse blueprint.
-- Red solid barriers block players, zombies and bullets; open doorway gaps remain passable.
-- Green movement-only obstacles block players and zombies but allow bullets through.
-- Blue farmhouse windows are breakable; bullets damage them, zombies attack nearby barricades, and reloading near a damaged window repairs it.
-- Zombies spawn outside the perimeter and route toward the main gate or marked fence-climb points.
-- Fence climbs take about 0.82 seconds, use a multi-step visual motion, and can be interrupted by killing the zombie.
-- Preserved landscape world scaling and the separate 700-zombie stress-test button.
+Overlay legend: RED = solid movement/projectile barriers; BLUE = breakable windows; GREEN = movement-only obstacles (bullets pass); YELLOW = gate/climb points. Grid labels are world-space percentages, aligned to the map image. Player position is shown as normalized percentages.
 
-TESTING NOTES
-JavaScript syntax and ZIP integrity checked. Not live-tested in mobile Safari. Verify all marked wall segments and entry routes in-game; collision coordinates are transcribed from the supplied markup and may need small visual calibration.
+The overlay is diagnostic; it does not automatically correct collision placement. Send a screenshot with the overlay ON, ideally one of the whole estate and one close-up around a mismatched wall/doorway.
+
+Separate 700-zombie Arena Stress Test remains available from Map Select.

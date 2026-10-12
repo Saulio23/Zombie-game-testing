@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const c=document.getElementById("game"),x=c.getContext("2d"),hp=document.getElementById("hp"),arm=document.getElementById("arm"),waveEl=document.getElementById("wave"),zEl=document.getElementById("zombies"),ammo=document.getElementById("ammo"),msg=document.getElementById("message"),start=document.getElementById("startOverlay"),pause=document.getElementById("pauseOverlay"),startBtn=document.getElementById("startBtn"),resume=document.getElementById("resumeBtn"),pauseBtn=document.getElementById("pauseBtn"),settingsBtn=document.getElementById("settingsBtn"),pauseSettingsBtn=document.getElementById("pauseSettingsBtn"),backHomeBtn=document.getElementById("backHomeBtn"),returnMenuBtn=document.getElementById("returnMenuBtn"),confirmOverlay=document.getElementById("confirmOverlay"),cancelReturnBtn=document.getElementById("cancelReturnBtn"),confirmReturnBtn=document.getElementById("confirmReturnBtn"),multiplayerBtn=document.getElementById("multiplayerBtn"),homeMenu=document.getElementById("homeMenu"),mapMenu=document.getElementById("mapMenu"),backMapBtn=document.getElementById("backMapBtn"),farmhouseBtn=document.getElementById("farmhouseBtn"),stressTestBtn=document.getElementById("stressTestBtn"),settingsMenu=document.getElementById("settingsMenu"),reloadBtn=document.getElementById("reloadBtn"),grenadeBtn=document.getElementById("grenadeBtn"),ms=document.getElementById("moveStick"),as=document.getElementById("aimStick");
-let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0,selectedMap="farmhouse",stressMode=false;
+let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0,selectedMap="farmhouse",stressMode=false,collisionDebug=false;
 // Farmhouse world is 3x the viewport dimensions in each axis. The camera follows
 // the player instead of shrinking the estate to fit the screen. Stress-test remains screen-sized.
 const FARMHOUSE_WORLD_SCALE=3; let viewW=innerWidth,viewH=innerHeight,camX=0,camY=0;
@@ -326,13 +326,37 @@ function drawFarmhouse(){
  x.save();x.translate(W*.49,H*.53);x.rotate(-.04);x.fillStyle="#8a2023";x.font=`900 ${Math.max(12,Math.min(22,W*.022))}px Georgia`;x.fillText("HELP",0,0);x.restore();
  const vg=x.createRadialGradient(W*.5,H*.5,Math.min(W,H)*.12,W*.5,H*.5,Math.max(W,H)*.76);vg.addColorStop(0,"#00000000");vg.addColorStop(1,"#050706c9");x.fillStyle=vg;x.fillRect(0,0,W,H);
 }
+function drawCollisionDebug(){
+ if(!collisionDebug||stressMode)return;
+ x.save();
+ // World-space grid, aligned to the exact image rectangle and collision coordinate system.
+ x.lineWidth=1; x.font='12px monospace';
+ for(let ix=0;ix<=20;ix++){
+  const gx=W*ix/20; x.strokeStyle=ix%2===0?'rgba(255,255,255,.24)':'rgba(255,255,255,.10)';
+  x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke();
+  if(ix%2===0){x.fillStyle='rgba(0,0,0,.72)';x.fillRect(gx+2,4,34,16);x.fillStyle='#fff';x.fillText(String(ix*5).padStart(2,'0')+'%',gx+4,16)}
+ }
+ for(let iy=0;iy<=20;iy++){
+  const gy=H*iy/20;x.strokeStyle=iy%2===0?'rgba(255,255,255,.24)':'rgba(255,255,255,.10)';
+  x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();
+  if(iy%2===0){x.fillStyle='rgba(0,0,0,.72)';x.fillRect(3,gy+2,35,16);x.fillStyle='#fff';x.fillText(String(iy*5).padStart(2,'0')+'%',5,gy+14)}
+ }
+ const drawSegments=(arr,color,width)=>{x.strokeStyle=color;x.lineWidth=width;x.lineCap='round';for(const q of arr){x.beginPath();x.moveTo(q[0]*W,q[1]*H);x.lineTo(q[2]*W,q[3]*H);x.stroke()}};
+ drawSegments(solidSegments,'#ff3b30',4);
+ drawSegments(movementOnly,'#38e56d',4);
+ for(const q of breakables){x.fillStyle=q.hp>0?'rgba(30,160,255,.48)':'rgba(120,120,120,.25)';x.strokeStyle='#26a7ff';x.lineWidth=3;x.fillRect(q.x*W,q.y*H,q.w*W,q.h*H);x.strokeRect(q.x*W,q.y*H,q.w*W,q.h*H)}
+ for(const q of climbPoints){x.fillStyle='#ffe52e';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(q.x*W,q.y*H,13,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#111';x.font='bold 12px monospace';x.fillText('CLIMB',q.x*W-20,q.y*H-18)}
+ x.fillStyle='#ffe52e';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(gatePoint.x*W,gatePoint.y*H,13,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#111';x.font='bold 12px monospace';x.fillText('GATE',gatePoint.x*W-15,gatePoint.y*H-18);
+ if(player){x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(player.x,player.y,player.r,0,Math.PI*2);x.stroke();x.fillStyle='#fff';x.font='bold 13px monospace';x.fillText(`PLAYER ${Math.round(player.x/W*100)}%, ${Math.round(player.y/H*100)}%`,player.x+18,player.y-18)}
+ x.restore();
+}
 function draw(){
  x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,c.width,c.height);
  if(player){camX=Math.max(0,Math.min(W-viewW,player.x-viewW/2));camY=Math.max(0,Math.min(H-viewH,player.y-viewH/2))}else{camX=0;camY=0}
  x.save();x.translate(-camX,-camY);
  if(stressMode){x.fillStyle="#151515";x.fillRect(0,0,W,H);x.strokeStyle="#383838";x.lineWidth=3;x.strokeRect(18,18,W-36,H-36)}else if(farmhouseTexture.complete&&farmhouseTexture.naturalWidth){x.drawImage(farmhouseTexture,0,0,W,H)}else drawFarmhouse();
 for(const q of p){let a=q.t/q.m;if(q.k==="b"){x.globalAlpha=a;x.fillStyle="#76191c";x.save();x.translate(q.x,q.y);x.rotate(q.rot||0);x.beginPath();x.ellipse(0,0,q.r||3,(q.r||3)*.58,0,0,Math.PI*2);x.fill();x.restore()}else if(q.k==="s"){x.globalAlpha=a*.7;x.fillStyle="#501316";x.beginPath();x.ellipse(q.x,q.y,q.r||7,(q.r||7)*.55,0,0,Math.PI*2);x.fill()}else if(q.k==="m"){x.globalAlpha=a;x.fillStyle="#fff1a8";x.beginPath();x.arc(q.x,q.y,13,0,7);x.fill()}else{x.globalAlpha=a;x.strokeStyle="#ffcc55";x.lineWidth=6;x.beginPath();x.arc(q.x,q.y,60*(1-a)+8,0,7);x.stroke()}}x.globalAlpha=1;
-for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();x.restore()}
+for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();drawCollisionDebug();x.restore();if(collisionDebug&&!stressMode){x.save();x.setTransform(1,0,0,1,0,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(8,8,Math.min(c.width-16,360),48);x.fillStyle="#fff";x.font="bold 13px monospace";x.fillText("COLLISION DEBUG ON · GRID 5%",16,26);x.font="11px monospace";x.fillText("RED solid · BLUE breakable · GREEN movement-only · YELLOW entry",16,43);x.restore()}}
 
 function frame(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;update(dt);draw();requestAnimationFrame(frame)}requestAnimationFrame(frame);
 let settingsOrigin="home";
@@ -347,8 +371,8 @@ function askReturnToMenu(){confirmOverlay.classList.remove("hidden")}
 function cancelReturn(){confirmOverlay.classList.add("hidden")}
 function returnToMenu(){confirmOverlay.classList.add("hidden");pause.classList.add("hidden");start.classList.remove("hidden");settingsMenu.classList.add("hidden");mapMenu.classList.add("hidden");homeMenu.classList.remove("hidden");running=false;paused=false;z=[];b=[];g=[];p=[];keys={};mv.x=mv.y=aim.x=aim.y=0;pauseBtn.textContent="Ⅱ";hp.textContent="100";arm.textContent="50";waveEl.textContent="1";zEl.textContent="0";ammo.textContent="12";msg.textContent=""}
 function bind(el,fn){let suppressClick=false;el.addEventListener("touchstart",e=>{e.preventDefault();e.stopPropagation();suppressClick=true;fn(e);setTimeout(()=>suppressClick=false,700)},{passive:false});el.addEventListener("click",e=>{e.preventDefault();if(suppressClick){suppressClick=false;return}fn(e)})}
-bind(startBtn,showMapSelect);bind(backMapBtn,backToHome);bind(farmhouseBtn,()=>startSelectedMap(false));bind(stressTestBtn,()=>startSelectedMap(true));document.querySelectorAll(".mapCard.unavailable").forEach(el=>bind(el,()=>{message("LOCATION COMING SOON")}));bind(settingsBtn,()=>openSettings("home"));bind(pauseSettingsBtn,()=>openSettings("pause"));bind(backHomeBtn,backFromSettings);bind(multiplayerBtn,()=>{multiplayerBtn.querySelector("span").textContent="NOT AVAILABLE YET";setTimeout(()=>{const s=multiplayerBtn.querySelector("span");if(s)s.textContent="COMING SOON"},1800)});bind(resume,toggle);bind(pauseBtn,toggle);bind(returnMenuBtn,askReturnToMenu);bind(cancelReturnBtn,cancelReturn);bind(confirmReturnBtn,returnToMenu);bind(reloadBtn,reload);bind(grenadeBtn,grenade);
-addEventListener("keydown",e=>{const k=e.key.toLowerCase();keys[k]=1;if(e.key==="Escape"){if(!confirmOverlay.classList.contains("hidden"))cancelReturn();else if(!settingsMenu.classList.contains("hidden"))backFromSettings();else toggle()}if(k==="r")reload();if(k==="g")grenade()});addEventListener("keyup",e=>keys[e.key.toLowerCase()]=0);
+bind(startBtn,showMapSelect);bind(backMapBtn,backToHome);bind(farmhouseBtn,()=>startSelectedMap(false));bind(stressTestBtn,()=>startSelectedMap(true));document.querySelectorAll(".mapCard.unavailable").forEach(el=>bind(el,()=>{message("LOCATION COMING SOON")}));bind(settingsBtn,()=>openSettings("home"));bind(pauseSettingsBtn,()=>openSettings("pause"));bind(backHomeBtn,backFromSettings);bind(multiplayerBtn,()=>{multiplayerBtn.querySelector("span").textContent="NOT AVAILABLE YET";setTimeout(()=>{const s=multiplayerBtn.querySelector("span");if(s)s.textContent="COMING SOON"},1800)});bind(resume,toggle);bind(pauseBtn,toggle);const debugBtn=document.getElementById("collisionDebugBtn");if(debugBtn)bind(debugBtn,()=>{collisionDebug=!collisionDebug;debugBtn.textContent=collisionDebug?"COLLISION DEBUG: ON":"COLLISION DEBUG: OFF";message(collisionDebug?"COLLISION DEBUG ON":"COLLISION DEBUG OFF")});bind(returnMenuBtn,askReturnToMenu);bind(cancelReturnBtn,cancelReturn);bind(confirmReturnBtn,returnToMenu);bind(reloadBtn,reload);bind(grenadeBtn,grenade);
+addEventListener("keydown",e=>{const k=e.key.toLowerCase();keys[k]=1;if(e.key==="Escape"){if(!confirmOverlay.classList.contains("hidden"))cancelReturn();else if(!settingsMenu.classList.contains("hidden"))backFromSettings();else toggle()}if(k==="r")reload();if(k==="g")grenade();if(k==="d"){collisionDebug=!collisionDebug;const db=document.getElementById("collisionDebugBtn");if(db)db.textContent=collisionDebug?"COLLISION DEBUG: ON":"COLLISION DEBUG: OFF";message(collisionDebug?"COLLISION DEBUG ON":"COLLISION DEBUG OFF")}});addEventListener("keyup",e=>keys[e.key.toLowerCase()]=0);
 function stick(el,s){el.addEventListener("touchstart",e=>{e.preventDefault();if(s.id!==null)return;s.id=e.changedTouches[0].identifier;moveStick(e.changedTouches[0],el,s)},{passive:false})}
 function moveStick(t,el,s){let r=el.getBoundingClientRect(),dx=t.clientX-(r.left+r.width/2),dy=t.clientY-(r.top+r.height/2),m=r.width*.37,d=Math.hypot(dx,dy)||1;if(d>m){dx=dx/d*m;dy=dy/d*m}s.x=dx/m;s.y=dy/m;el.querySelector(".knob").style.transform=`translate(${dx}px,${dy}px)`}
 function clearStick(el,s){s.id=null;s.x=s.y=0;el.querySelector(".knob").style.transform="translate(0,0)"}

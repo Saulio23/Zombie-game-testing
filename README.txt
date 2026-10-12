@@ -1,26 +1,14 @@
-DEADLINE — ALPHA 1.23: OPEN DOORWAYS & ZOMBIE COLLISION
+SAS VS ZOMBIES — ALPHA 1.24.3
 
 INSTALL
-Replace the five root files in your GitHub Pages repository with the files in this ZIP. Upload the included assets folder, keeping its name and all PNG filenames unchanged. The five root files are index.html, game.js, style.css, manifest.json and README.txt. Keep the ZIP structure flat at the root, with assets/ alongside the root files.
+Replace the existing repository files with the files in this ZIP. Keep the root files at repository root and upload the included assets/ folder unchanged.
 
-CHANGES
-- Alpha 1.23: Removed visible interior door leaves and added open doorway gaps between rooms. Zombie movement now checks farmhouse collision geometry, slides along walls and tries nearby directions when blocked.
-- Single Player now opens MAP SELECT.
-- Added four SAS 3-inspired blood-stained Polaroid map cards: FARMHOUSE is playable and the other three say COMING SOON.
-- Added a detailed, layered farmhouse environment: ground-floor rooms, floorboard textures, furniture, broken boards, garden beds, fence, barn, yard clutter, blood stains and blood-written HELP.
-- Separated map collision/navigation data from drawing code and established data records for future windows, doors and repairable barriers.
-- Farmhouse starts with 85 zombies per wave, a 100-active-zombie cap and paced spawning; the per-wave target increases by 5. These are initial tuning values, not final balance.
-- Preserved the 700-zombie arena stress test through a separate ARENA STRESS TEST option on Map Select.
-- Updated title, Home Screen version and Settings changelog to Alpha 1.22.
-- Existing pause/settings/return confirmation and touch/keyboard controls retained.
+ALPHA 1.24.3 CHANGES
+- Rebuilt collision geometry against the actual landscape farmhouse texture coordinates rather than the previous mismatched layout.
+- Corrected the barn shell and stall dividers, farmhouse exterior and interior partitions, garage/workshop, fountain rim and perimeter fence.
+- Left gaps at the farmhouse front entrance, room doorways, barn access and southern perimeter entrance.
+- Preserved the 3x world scale and player-follow camera.
+- Preserved the separate 700-zombie Arena Stress Test button on Map Select.
 
-IMPORTANT CURRENT LIMITATIONS
-- This is the first playable map foundation, not a finished commercial-quality map. Art is procedurally drawn on layered canvas passes rather than a final hand-painted tile atlas.
-- Static collision/navigation metadata and future barrier object records are in place, but full route-planning/pathfinding around complex room layouts and interactive break/repair mechanics are not implemented yet; current zombie steering is local collision-aware movement. Those should be added in subsequent releases before treating the farmhouse as complete.
-- The four card previews are stylized CSS concepts and should be replaced with final map thumbnails when those maps are developed.
-
-TESTING
-Archive integrity, JavaScript syntax, expected root files and zombie asset references were checked. This package has not been live-tested in iPhone Safari or desktop browsers. After deploying, test Single Player -> Map Select -> Farmhouse, Back, all Coming Soon cards, Arena Stress Test, movement/shooting, pause/resume, Settings navigation and return confirmation.
-
-
-Alpha 1.24.2: Farmhouse world expanded to 3x viewport width and height with a player-follow camera. The separate 700-zombie Arena Stress Test remains available from Map Select.
+TESTING NOTES
+JavaScript syntax and ZIP integrity were checked. This build has not been live-tested in iPhone Safari, so verify movement through each doorway and along the outer walls after deployment. Collision geometry is based on the current 1536x1024 map image rendered to the full world dimensions.

@@ -1,7 +1,7 @@
 (()=>{"use strict";
 const c=document.getElementById("game"),x=c.getContext("2d"),hp=document.getElementById("hp"),arm=document.getElementById("arm"),waveEl=document.getElementById("wave"),zEl=document.getElementById("zombies"),ammo=document.getElementById("ammo"),msg=document.getElementById("message"),start=document.getElementById("startOverlay"),pause=document.getElementById("pauseOverlay"),startBtn=document.getElementById("startBtn"),resume=document.getElementById("resumeBtn"),pauseBtn=document.getElementById("pauseBtn"),settingsBtn=document.getElementById("settingsBtn"),pauseSettingsBtn=document.getElementById("pauseSettingsBtn"),backHomeBtn=document.getElementById("backHomeBtn"),returnMenuBtn=document.getElementById("returnMenuBtn"),confirmOverlay=document.getElementById("confirmOverlay"),cancelReturnBtn=document.getElementById("cancelReturnBtn"),confirmReturnBtn=document.getElementById("confirmReturnBtn"),multiplayerBtn=document.getElementById("multiplayerBtn"),homeMenu=document.getElementById("homeMenu"),mapMenu=document.getElementById("mapMenu"),backMapBtn=document.getElementById("backMapBtn"),farmhouseBtn=document.getElementById("farmhouseBtn"),stressTestBtn=document.getElementById("stressTestBtn"),settingsMenu=document.getElementById("settingsMenu"),reloadBtn=document.getElementById("reloadBtn"),grenadeBtn=document.getElementById("grenadeBtn"),ms=document.getElementById("moveStick"),as=document.getElementById("aimStick");
 let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0,selectedMap="farmhouse",stressMode=false;
-// Farmhouse world is 4x the former viewport dimensions in each axis. The camera follows
+// Farmhouse world is 3x the viewport dimensions in each axis. The camera follows
 // the player instead of shrinking the estate to fit the screen. Stress-test remains screen-sized.
 const FARMHOUSE_WORLD_SCALE=3; let viewW=innerWidth,viewH=innerHeight,camX=0,camY=0;
 const mv={x:0,y:0,id:null},aim={x:0,y:0,id:null};
@@ -9,25 +9,40 @@ const farmhouseTexture=new Image(); farmhouseTexture.src="assets/farmhouse_apoca
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
-const farmhouseMap={id:"farmhouse",spawn:{x:.62,y:.76},collision:[
- // Collision zones aligned to the illustrated landscape map (normalized world coordinates).
- // Barn shell and stall partitions.
- {x:.052,y:.115,w:.012,h:.44,type:"wall"},{x:.052,y:.115,w:.225,h:.012,type:"wall"},{x:.052,y:.543,w:.225,h:.012,type:"wall"},{x:.265,y:.115,w:.012,h:.44,type:"wall"},
- {x:.105,y:.22,w:.008,h:.30,type:"wall"},{x:.16,y:.22,w:.008,h:.30,type:"wall"},{x:.215,y:.22,w:.008,h:.30,type:"wall"},
- // Main farmhouse outer walls, with intentional openings at the entrances.
- {x:.335,y:.18,w:.012,h:.49,type:"wall"},{x:.335,y:.18,w:.225,h:.012,type:"wall"},{x:.335,y:.66,w:.225,h:.012,type:"wall"},{x:.548,y:.18,w:.012,h:.49,type:"wall"},
- // Internal room partitions; door gaps are left between segments.
- {x:.405,y:.19,w:.008,h:.13,type:"wall"},{x:.405,y:.35,w:.008,h:.13,type:"wall"},{x:.475,y:.19,w:.008,h:.13,type:"wall"},{x:.475,y:.35,w:.008,h:.13,type:"wall"},
- {x:.405,y:.49,w:.008,h:.15,type:"wall"},{x:.475,y:.49,w:.008,h:.15,type:"wall"},
- {x:.345,y:.32,w:.06,h:.009,type:"wall"},{x:.415,y:.32,w:.06,h:.009,type:"wall"},{x:.485,y:.32,w:.055,h:.009,type:"wall"},
- {x:.345,y:.475,w:.06,h:.009,type:"wall"},{x:.415,y:.475,w:.06,h:.009,type:"wall"},{x:.485,y:.475,w:.055,h:.009,type:"wall"},
- // Garage/workshop shell and fixed workbench/storage obstacles.
- {x:.12,y:.65,w:.012,h:.21,type:"wall"},{x:.12,y:.65,w:.18,h:.012,type:"wall"},{x:.12,y:.848,w:.18,h:.012,type:"wall"},{x:.288,y:.65,w:.012,h:.21,type:"wall"},
- {x:.145,y:.69,w:.018,h:.12,type:"furniture"},{x:.265,y:.69,w:.012,h:.11,type:"furniture"},
- // Large fixtures: fountain rim and selected fixed storage.
- {x:.765,y:.46,w:.105,h:.16,type:"furniture"},
- // Perimeter fence blocks escape but keeps the southern entrance open.
- {x:.025,y:.055,w:.95,h:.009,type:"wall"},{x:.025,y:.935,w:.37,h:.009,type:"wall"},{x:.60,y:.935,w:.375,h:.009,type:"wall"},{x:.025,y:.055,w:.008,h:.88,type:"wall"},{x:.967,y:.055,w:.008,h:.88,type:"wall"}
+const farmhouseMap={id:"farmhouse",spawn:{x:.59,y:.77},collision:[
+ // Alpha 1.24.3: normalized against the actual 1536x1024 landscape texture.
+ // Barn shell (visible footprint approx x .06-.30, y .11-.55).
+ {x:.061,y:.112,w:.006,h:.43,type:"wall"}, {x:.061,y:.112,w:.235,h:.008,type:"wall"},
+ {x:.061,y:.542,w:.235,h:.008,type:"wall"}, {x:.292,y:.112,w:.006,h:.43,type:"wall"},
+ // Barn stall dividers. Keep the aisle and gate openings traversable.
+ {x:.124,y:.19,w:.004,h:.335,type:"wall"}, {x:.183,y:.19,w:.004,h:.335,type:"wall"}, {x:.242,y:.19,w:.004,h:.335,type:"wall"},
+ {x:.124,y:.19,w:.059,h:.005,type:"wall"}, {x:.183,y:.19,w:.059,h:.005,type:"wall"},
+ // Main farmhouse outer shell (approx x .405-.637, y .18-.70). South entrance remains open.
+ {x:.405,y:.185,w:.006,h:.50,type:"wall"}, {x:.631,y:.185,w:.006,h:.50,type:"wall"},
+ {x:.405,y:.185,w:.232,h:.008,type:"wall"},
+ {x:.405,y:.685,w:.085,h:.008,type:"wall"}, {x:.523,y:.685,w:.114,h:.008,type:"wall"},
+ // Interior horizontal partitions: split around the visible door gaps.
+ {x:.411,y:.305,w:.084,h:.006,type:"wall"}, {x:.523,y:.305,w:.105,h:.006,type:"wall"},
+ {x:.411,y:.435,w:.055,h:.006,type:"wall"}, {x:.493,y:.435,w:.135,h:.006,type:"wall"},
+ {x:.411,y:.575,w:.055,h:.006,type:"wall"}, {x:.493,y:.575,w:.135,h:.006,type:"wall"},
+ // Interior vertical partitions, segmented to leave visible openings.
+ {x:.493,y:.195,w:.005,h:.105,type:"wall"}, {x:.493,y:.325,w:.005,h:.105,type:"wall"},
+ {x:.493,y:.445,w:.005,h:.12,type:"wall"}, {x:.493,y:.585,w:.005,h:.095,type:"wall"},
+ {x:.523,y:.315,w:.005,h:.115,type:"wall"}, {x:.523,y:.445,w:.005,h:.12,type:"wall"},
+ // Front porch rail/walls; central steps/door approach is deliberately clear.
+ {x:.424,y:.695,w:.065,h:.008,type:"wall"}, {x:.523,y:.695,w:.09,h:.008,type:"wall"},
+ // Garage shell (approx x .145-.34, y .64-.85), with an opening on the north side.
+ {x:.145,y:.65,w:.006,h:.20,type:"wall"}, {x:.145,y:.844,w:.195,h:.006,type:"wall"},
+ {x:.334,y:.65,w:.006,h:.20,type:"wall"}, {x:.145,y:.65,w:.052,h:.006,type:"wall"}, {x:.247,y:.65,w:.093,h:.006,type:"wall"},
+ // Fixed garage shelves/workbench, avoiding the central vehicle bay.
+ {x:.157,y:.68,w:.018,h:.135,type:"furniture"}, {x:.309,y:.68,w:.014,h:.12,type:"furniture"},
+ {x:.19,y:.70,w:.018,h:.025,type:"furniture"}, {x:.265,y:.80,w:.035,h:.012,type:"furniture"},
+ // Fountain stone rim; circular approximation kept tight to the visible ring.
+ {x:.785,y:.445,w:.088,h:.16,type:"furniture"},
+ // Perimeter fence. Southern entrance remains open for deployment/extraction.
+ {x:.02,y:.055,w:.96,h:.006,type:"wall"}, {x:.02,y:.935,w:.39,h:.006,type:"wall"},
+ {x:.59,y:.935,w:.39,h:.006,type:"wall"}, {x:.02,y:.055,w:.005,h:.88,type:"wall"},
+ {x:.975,y:.055,w:.005,h:.88,type:"wall"}
 ],interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}
 function blocked(px,py,r){if(stressMode)return false;return farmhouseMap.collision.some(q=>q.type!=="building-shell"&&rectHit(px,py,r,q))}

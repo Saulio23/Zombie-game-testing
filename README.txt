@@ -21,3 +21,6 @@ IMPORTANT CURRENT LIMITATIONS
 
 TESTING
 Archive integrity, JavaScript syntax, expected root files and zombie asset references were checked. This package has not been live-tested in iPhone Safari or desktop browsers. After deploying, test Single Player -> Map Select -> Farmhouse, Back, all Coming Soon cards, Arena Stress Test, movement/shooting, pause/resume, Settings navigation and return confirmation.
+
+
+Alpha 1.24.1: Farmhouse world expanded to 4x viewport width and height with a player-follow camera. The separate 700-zombie Arena Stress Test remains available from Map Select.

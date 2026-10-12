@@ -9,53 +9,108 @@ const farmhouseTexture=new Image(); farmhouseTexture.src="assets/farmhouse_apoca
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
-const farmhouseMap={id:"farmhouse",spawn:{x:.52,y:.78},collision:[
- // Alpha 1.24.5 tutorial layout: simple, image-aligned exterior shells only.
- // House bounds x=.335-.75 / y=.17-.69. Doorways are intentional gaps.
- {x:.335,y:.17,w:.415,h:.009,type:"wall"},
- {x:.335,y:.17,w:.009,h:.505,type:"wall"},
- {x:.741,y:.17,w:.009,h:.505,type:"wall"},
- // South house wall split around the broad front entrance/porch.
- {x:.335,y:.666,w:.145,h:.009,type:"wall"},
- {x:.565,y:.666,w:.185,h:.009,type:"wall"},
- // Barn bounds x=.065-.30 / y=.09-.49. Keep a broad southern loading opening.
- {x:.065,y:.09,w:.235,h:.009,type:"wall"},
- {x:.065,y:.09,w:.009,h:.40,type:"wall"},
- {x:.291,y:.09,w:.009,h:.40,type:"wall"},
- {x:.065,y:.481,w:.075,h:.009,type:"wall"},
- {x:.225,y:.481,w:.075,h:.009,type:"wall"},
- // Garage bounds x=.12-.305 / y=.67-.89. Main south vehicle door stays open.
- {x:.12,y:.67,w:.185,h:.009,type:"wall"},
- {x:.12,y:.67,w:.009,h:.22,type:"wall"},
- {x:.296,y:.67,w:.009,h:.22,type:"wall"},
- {x:.12,y:.881,w:.055,h:.009,type:"wall"},
- {x:.255,y:.881,w:.05,h:.009,type:"wall"},
- // Fountain rim and selected fixed clutter; no interior room partitions are solid in this tutorial pass.
- {x:.795,y:.43,w:.075,h:.13,type:"furniture"},
- // Outer fence. Southern entrance gap near the driveway remains passable.
- {x:.02,y:.055,w:.96,h:.006,type:"wall"},
- {x:.02,y:.935,w:.43,h:.006,type:"wall"},
- {x:.64,y:.935,w:.34,h:.006,type:"wall"},
- {x:.02,y:.055,w:.005,h:.88,type:"wall"},
- {x:.975,y:.055,w:.005,h:.88,type:"wall"}
-],interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"house-barricade",type:"barrier",health:200,repairable:true},{id:"barn-barricade",type:"barrier",health:200,repairable:true}]};
+const farmhouseMap={id:"farmhouse",spawn:{x:.52,y:.79},interactiveObjects:[
+ {id:"front-window-left",type:"window",health:100,maxHealth:100,repairable:true,x:.39,y:.58,w:.035,h:.018},
+ {id:"front-window-right",type:"window",health:100,maxHealth:100,repairable:true,x:.61,y:.58,w:.035,h:.018}
+]};
+// Collision blueprint transcribed from the user's red/blue/green/yellow markup.
+// All coordinates are normalized against the farmhouse PNG and therefore scale with the world.
+const solidSegments=[
+ // Outer perimeter, with gaps at marked climbing points and the main walk-through gate.
+ [.02,.075,.955,.075],
+ [.02,.075,.02,.91],
+ [.02,.91,.30,.91],[.36,.91,.48,.91],[.55,.91,.69,.91],[.75,.91,.955,.91],
+ [.955,.075,.955,.91],
+ // Barn shell (left upper structure) with southern entry gap.
+ [.075,.10,.24,.10],[.075,.10,.075,.27],[.075,.27,.075,.48],[.075,.48,.135,.48],
+ [.185,.48,.24,.48],[.24,.10,.24,.27],[.24,.27,.24,.48],
+ [.075,.10,.075,.27],[.075,.27,.15,.27],[.19,.27,.24,.27],
+ // House exterior, with front porch/door opening centred on south wall.
+ [.34,.17,.47,.17],[.50,.17,.59,.17],[.66,.17,.745,.17],
+ [.34,.17,.34,.42],[.34,.42,.34,.56],[.34,.56,.34,.64],
+ [.745,.17,.745,.34],[.745,.34,.745,.55],[.745,.55,.745,.64],
+ [.34,.64,.47,.64],[.51,.64,.63,.64],[.69,.64,.745,.64],
+ // Interior partitions, intentionally segmented to preserve the marked open doorways.
+ [.47,.17,.47,.29],[.47,.33,.47,.39],[.47,.43,.47,.49],
+ [.34,.34,.43,.34],[.47,.34,.49,.34],
+ [.34,.43,.40,.43],[.44,.43,.47,.43],
+ [.50,.17,.50,.28],[.50,.32,.50,.40],[.50,.40,.58,.40],
+ [.59,.17,.59,.28],[.59,.32,.59,.40],
+ [.66,.17,.66,.26],[.66,.30,.66,.40],
+ [.34,.50,.41,.50],[.45,.50,.47,.50],[.34,.50,.34,.64],
+ [.41,.50,.41,.57],[.41,.61,.41,.64],
+ [.59,.40,.59,.49],[.59,.53,.59,.64],
+ [.59,.49,.66,.49],[.70,.49,.745,.49],
+ // Garage/workshop (lower left), main opening on upper side and side door gap.
+ [.075,.65,.135,.65],[.18,.65,.26,.65],[.075,.65,.075,.85],[.26,.65,.26,.85],
+ [.075,.85,.135,.85],[.18,.85,.26,.85],
+ // Detached animal pen/shed upper-right.
+ [.83,.105,.92,.105],[.92,.105,.92,.27],[.92,.27,.83,.27],[.83,.27,.83,.105]
+];
+// Green obstacles stop character movement but intentionally never block bullets.
+const movementOnly=[
+ [.095,.13,.13,.22],[.16,.13,.22,.16],[.095,.31,.14,.45],[.19,.31,.22,.45],
+ [.355,.20,.39,.21],[.365,.22,.435,.22],[.38,.22,.38,.30],
+ [.365,.35,.405,.35],[.38,.35,.38,.41],[.36,.46,.405,.46],[.37,.46,.37,.53],
+ [.355,.55,.38,.56],[.36,.57,.36,.61],[.405,.54,.445,.54],[.445,.54,.445,.62],
+ [.52,.21,.58,.21],[.58,.21,.58,.29],[.52,.26,.56,.26],
+ [.62,.22,.65,.22],[.65,.22,.65,.28],
+ [.67,.19,.70,.19],[.70,.19,.70,.22],
+ [.615,.38,.63,.38],[.615,.38,.615,.44],[.60,.48,.63,.48],
+ [.665,.35,.685,.35],[.665,.35,.665,.43],[.68,.45,.72,.45],
+ [.62,.52,.69,.52],[.62,.52,.62,.59],[.69,.52,.69,.60],
+ [.09,.70,.13,.70],[.10,.73,.16,.73],[.16,.73,.16,.82],
+ [.84,.48,.91,.48],[.91,.48,.91,.55],[.85,.55,.91,.55],
+ [.83,.74,.90,.74],[.83,.74,.83,.83],[.83,.83,.90,.83],
+ [.90,.75,.95,.75],[.90,.75,.90,.82]
+];
+// Blue window barricades. A destroyed barricade stops blocking movement and bullets.
+const breakables=[
+ {id:"window-nw",x:.39,y:.165,w:.035,h:.012,hp:100,maxHp:100},
+ {id:"window-north",x:.52,y:.165,w:.035,h:.012,hp:100,maxHp:100},
+ {id:"window-east",x:.742,y:.30,w:.012,h:.035,hp:100,maxHp:100},
+ {id:"window-west",x:.332,y:.50,w:.012,h:.035,hp:100,maxHp:100}
+];
+// The gate is a walk-through opening. Other yellow-marked points are climb locations.
+const gatePoint={x:.515,y:.91};
+const climbPoints=[{x:.31,y:.055,side:"top"},{x:.64,y:.055,side:"top"},{x:.955,y:.315,side:"right"},{x:.955,y:.715,side:"right"}];
+function segmentHit(px,py,r,seg){const ax=seg[0]*W,ay=seg[1]*H,bx=seg[2]*W,by=seg[3]*H,dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy,t=l?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l)):0;return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))<r+5}
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}
-function blocked(px,py,r){if(stressMode)return false;return farmhouseMap.collision.some(q=>q.type!=="building-shell"&&rectHit(px,py,r,q))}
-function movePlayer(dx,dy){let nx=Math.max(18,Math.min(W-18,player.x+dx)),ny=Math.max(18,Math.min(H-18,player.y+dy));if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny}
-// Zombies use the same solid geometry as the player. Axis sliding lets them follow walls;
-// a short steering fan helps them find nearby open doorways instead of crossing walls.
-function moveZombie(e,dx,dy){
- const r=Math.max(5,e.r*.72),ox=e.x,oy=e.y;
- let nx=ox+dx,ny=oy+dy;
- if(!blocked(nx,oy,r))e.x=nx;
- if(!blocked(e.x,ny,r))e.y=ny;
- if(Math.hypot(e.x-ox,e.y-oy)>.01)return;
- const base=Math.atan2(dy,dx),step=Math.hypot(dx,dy);
- for(const a of [.65,-.65,1.25,-1.25,1.9,-1.9,Math.PI]){
-  const tx=ox+Math.cos(base+a)*step,ty=oy+Math.sin(base+a)*step;
-  if(!blocked(tx,ty,r)){e.x=tx;e.y=ty;return}
- }
+function insideBreakable(px,py,r,q){return q.hp>0&&rectHit(px,py,r,q)}
+function blocked(px,py,r,kind="player"){
+ if(stressMode)return false;
+ if(solidSegments.some(q=>segmentHit(px,py,r,q)))return true;
+ if(movementOnly.some(q=>segmentHit(px,py,r,q)))return true;
+ if(breakables.some(q=>insideBreakable(px,py,r,q)))return true;
+ return false;
 }
+function projectileBlocked(px,py,r=2){if(stressMode)return false;return solidSegments.some(q=>segmentHit(px,py,r,q))||breakables.some(q=>insideBreakable(px,py,r,q))}
+function moveBullet(q,dt){const dx=q.vx*dt,dy=q.vy*dt,steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/7));for(let i=0;i<steps;i++){q.x+=dx/steps;q.y+=dy/steps;const panel=stressMode?null:breakables.find(v=>v.hp>0&&rectHit(q.x,q.y,2,v));if(panel){panel.hp=Math.max(0,panel.hp-25);q.t=0;return false}if(projectileBlocked(q.x,q.y,2)){q.t=0;return false}for(const e of z){if(!e.dead&&Math.hypot(q.x-e.x,q.y-e.y)<e.r+3){killZombie(e);q.t=0;return false}}}q.t-=dt;return true}
+function movePlayer(dx,dy){let nx=Math.max(18,Math.min(W-18,player.x+dx)),ny=Math.max(18,Math.min(H-18,player.y+dy));if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny}
+function moveZombie(e,dx,dy){
+ if(e.climbing)return;
+ const r=Math.max(5,e.r*.72),ox=e.x,oy=e.y,step=Math.hypot(dx,dy);
+ // Outside zombies deliberately navigate to a gate or climb point before trying to reach the player.
+ if(!stressMode&&isOutsideFence(e.x,e.y)){
+  const points=[gatePoint,...climbPoints];
+  const target=points.reduce((best,q)=>Math.hypot(q.x*W-e.x,q.y*H-e.y)<Math.hypot(best.x*W-e.x,best.y*H-e.y)?q:best,points[0]);
+  const tx=target.x*W,ty=target.y*H,dd=Math.hypot(tx-e.x,ty-e.y)||1;
+  if(dd<24){if(target===gatePoint){e.x=tx;e.y=H*.89}else{e.climbing=true;e.climbT=.82;e.climbPoint=target;e.climbFrame=0}return}
+  const sx=(tx-e.x)/dd*Math.min(step,dd),sy=(ty-e.y)/dd*Math.min(step,dd);
+  // The outside approach can move along the outside edge, but never cross the fence except via a traversal.
+  if(!solidSegments.some(q=>segmentHit(e.x+sx,e.y+sy,r,q))){e.x+=sx;e.y+=sy;return}
+  const tangentCandidates=[[sx,0],[0,sy],[0,-Math.sign(e.y-ty)*step],[-Math.sign(e.x-tx)*step,0]];
+  for(const [txd,tyd] of tangentCandidates){if(!solidSegments.some(q=>segmentHit(e.x+txd,e.y+tyd,r,q))){e.x+=txd;e.y+=tyd;break}}
+  return;
+ }
+ let nx=ox+dx,ny=oy+dy;
+ if(!blocked(nx,oy,r,"zombie"))e.x=nx;
+ if(!blocked(e.x,ny,r,"zombie"))e.y=ny;
+ if(Math.hypot(e.x-ox,e.y-oy)>.01)return;
+ const base=Math.atan2(dy,dx);
+ for(const a of [.65,-.65,1.25,-1.25,1.9,-1.9,Math.PI]){const tx=ox+Math.cos(base+a)*step,ty=oy+Math.sin(base+a)*step;if(!blocked(tx,ty,r,"zombie")){e.x=tx;e.y=ty;return}}
+}
+function isOutsideFence(px,py){return px<.035*W||px>.945*W||py<.065*H||py>.895*H}
 // Alpha 1.19: a consistent 20-model top-down sprite roster. Each model is a
 // transparent overhead PNG, oriented head-first toward the top of the image.
 const zombieArt=Array.from({length:20},(_,i)=>{const im=new Image();im.src=`assets/zombie_topdown_${String(i+1).padStart(2,"0")}.png`;return im;});
@@ -82,8 +137,8 @@ function drawDetailedZombie(e){
  const bob=dying?0:Math.sin(e.phase*1.7)*1.15;
  const scale=1.02+(e.variant===14?0.13:0)+(e.variant%5)*0.015;
  x.save();
- x.translate(e.x,e.y+bob);
- x.rotate(dying?e.turn+((e.deathStyle===1?-1:1)*(1-life)*.8):e.turn+Math.sin(e.phase*.35)*.018);
+ x.translate(e.x,e.y+(e.climbing?-7*Math.sin((e.climbFrame||0)/5*Math.PI):bob));
+ x.rotate(dying?e.turn+((e.deathStyle===1?-1:1)*(1-life)*.8):e.climbing?(e.turn+Math.sin((e.climbFrame||0)*.7)*.25):e.turn+Math.sin(e.phase*.35)*.018);
  x.globalAlpha=dying?Math.max(.12,life):1;
  x.drawImage(im,sx,0,frameW,frameH,-25*scale,-25*scale,50*scale,50*scale);
  // No extra ellipse/shadow is drawn beneath the sprite; the PNG has transparency.
@@ -104,18 +159,20 @@ function resize(){
 function message(t){msg.textContent=t;clearTimeout(message.t);message.t=setTimeout(()=>msg.textContent="",1000)}
 function reset(){resize();z=[];b=[];g=[];p=[];wave=1;clock=0;player={x:stressMode?W/2:W*farmhouseMap.spawn.x,y:stressMode?H/2:H*farmhouseMap.spawn.y,r:17,hp:100,arm:50,ammo:12,a:0,cd:0,walk:0,move:0,shootT:0,reloadT:0,throwT:0};C.base=stressMode?700:85;C.perWave=stressMode?0:5;C.spawnMs=stressMode?20:220;C.max=stressMode?700:100;newWave()}
 function newWave(){left=C.base+(wave-1)*C.perWave;spawnT=0;inter=0;message("WAVE "+wave)}
-function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(!stressMode&&s===0){px=(.12+Math.random()*.76)*W;py=H*.08}else if(!stressMode&&s===1){px=W*.92;py=(.12+Math.random()*.76)*H}else if(!stressMode&&s===2){px=(.12+Math.random()*.76)*W;py=H*.92}else if(!stressMode){px=W*.08;py=(.12+Math.random()*.76)*H}else if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}z.push({x:px,y:py,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*20),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random()});left--}
+function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(!stressMode){if(s===0){px=(.05+Math.random()*.88)*W;py=H*.025}else if(s===1){px=W*.985;py=(.10+Math.random()*.78)*H}else if(s===2){px=(.05+Math.random()*.88)*W;py=H*.975}else{px=W*.005;py=(.10+Math.random()*.78)*H}}else if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}z.push({x:px,y:py,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*20),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random(),climbing:false,climbT:0,climbFrame:0,climbPoint:null});left--}
 function shoot(){if(!running||paused||player.cd>0)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;dx/=d;dy/=d;player.a=Math.atan2(dy,dx);b.push({x:player.x+dx*24,y:player.y+dy*24,vx:dx*850,vy:dy*850,t:.6});player.cd=.07;player.ammo=12;player.shootT=.12;p.push({x:player.x+dx*27,y:player.y+dy*27,t:.07,m:.07,k:"m"})}
 function grenade(){if(!running||paused)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;g.push({x:player.x+dx*18,y:player.y+dy*18,vx:dx/d*430,vy:dy/d*430,t:.55});player.throwT=.32}
-function reload(){if(!player)return;player.ammo=12;if(running&&!paused)player.reloadT=.42}
+function reload(){if(!player)return;player.ammo=12;if(running&&!paused){player.reloadT=.42;let near=breakables.filter(q=>q.hp>0&&q.hp<q.maxHp).sort((a,b)=>Math.hypot(a.x*W-player.x,a.y*H-player.y)-Math.hypot(b.x*W-player.x,b.y*H-player.y))[0];if(near&&Math.hypot(near.x*W-player.x,near.y*H-player.y)<85){near.hp=Math.min(near.maxHp,near.hp+35);message("BARRICADE REPAIRED")}}}
 function hurt(v){}
 function killZombie(e){if(e.dead)return;e.dead=true;e.deathT=e.deathLen||.58;e.hitT=0;blood(e.x,e.y,e.variant)}
 function update(dt){if(!running||paused)return;clock+=dt;player.cd=Math.max(0,player.cd-dt);player.shootT=Math.max(0,player.shootT-dt);player.reloadT=Math.max(0,player.reloadT-dt);player.throwT=Math.max(0,player.throwT-dt);spawnT-=dt*1000;while(left>0&&spawnT<=0&&z.length<C.max){spawn();spawnT+=C.spawnMs}
 let mx=mv.x,my=mv.y;if(keys.w||keys.arrowup)my--;if(keys.s||keys.arrowdown)my++;if(keys.a||keys.arrowleft)mx--;if(keys.d||keys.arrowright)mx++;let moveLen=Math.hypot(mx,my);let d=moveLen||1;if(moveLen>0){mx/=d;my/=d}player.move=moveLen>0?1:0;player.walk+=dt*(player.move?10:2);movePlayer(mx*C.speed*dt,my*C.speed*dt);
 if(Math.hypot(aim.x,aim.y)>.2){player.a=Math.atan2(aim.y,aim.x);shoot()}
-for(const q of b){q.x+=q.vx*dt;q.y+=q.vy*dt;q.t-=dt;for(const e of z)if(!e.dead&&Math.hypot(q.x-e.x,q.y-e.y)<e.r+4){killZombie(e);q.t=0;break}}b=b.filter(q=>q.t>0&&q.x>-40&&q.x<W+40&&q.y>-40&&q.y<H+40);
+for(const q of b)moveBullet(q,dt);b=b.filter(q=>q.t>0&&q.x>-40&&q.x<W+40&&q.y>-40&&q.y<H+40);
 for(const q of g){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.985;q.vy*=.985;q.t-=dt;if(q.t<=0){boom(q.x,q.y);q.dead=1}}g=g.filter(q=>!q.dead);
-for(const e of z){if(e.dead){e.deathT-=dt;continue}e.hitT=Math.max(0,e.hitT-dt);let dx=player.x-e.x,dy=player.y-e.y,dist=Math.hypot(dx,dy)||1;e.phase+=dt*(e.v*.12);const desiredTurn=Math.atan2(dy,dx)+Math.PI/2;let turnDelta=((desiredTurn-e.turn+Math.PI*3)%(Math.PI*2))-Math.PI;e.turn+=turnDelta*Math.min(1,dt*9);moveZombie(e,dx/dist*e.v*dt,dy/dist*e.v*dt);if(dist<e.r+player.r+3)hurt(12*dt)}z=z.filter(e=>!e.dead||e.deathT>0);for(const q of p)q.t-=dt;p=p.filter(q=>q.t>0);
+for(const e of z){if(e.dead){e.deathT-=dt;continue}e.hitT=Math.max(0,e.hitT-dt);e.phase+=dt*(e.v*.12);
+ if(e.climbing){e.climbT-=dt;e.climbFrame=Math.min(5,Math.floor((.82-e.climbT)/.82*6));const cp=e.climbPoint;if(e.climbT<=0&&cp){if(cp.side==="top")e.y=H*.095;else e.x=W*.935;e.climbing=false;e.climbPoint=null;e.climbT=0}continue}
+ let dx=player.x-e.x,dy=player.y-e.y,dist=Math.hypot(dx,dy)||1;const desiredTurn=Math.atan2(dy,dx)+Math.PI/2;let turnDelta=((desiredTurn-e.turn+Math.PI*3)%(Math.PI*2))-Math.PI;e.turn+=turnDelta*Math.min(1,dt*9);moveZombie(e,dx/dist*e.v*dt,dy/dist*e.v*dt);if(!e.climbing&&!stressMode){const wall=breakables.find(q=>q.hp>0&&Math.hypot(q.x*W-e.x,q.y*H-e.y)<32);if(wall)wall.hp=Math.max(0,wall.hp-10*dt)}if(dist<e.r+player.r+3)hurt(12*dt)}z=z.filter(e=>!e.dead||e.deathT>0);for(const q of p)q.t-=dt;p=p.filter(q=>q.t>0);
 if(left===0&&z.filter(e=>!e.dead).length===0){inter+=dt;if(inter>.5){wave++;newWave()}}
 hp.textContent="∞";arm.textContent="∞";waveEl.textContent=wave;zEl.textContent=z.length+left;ammo.textContent="∞"}
 function blood(x,y,variant=0){const count=5+Math.floor(Math.random()*4);for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,d=Math.random()*19;p.push({x:x+Math.cos(a)*d,y:y+Math.sin(a)*d,t:.34+Math.random()*.38,m:.72,k:"b",r:1.5+Math.random()*3.2,rot:Math.random()*6.28})}p.push({x,y,t:.85,m:.85,k:"s",r:5+Math.random()*5})}

@@ -9,39 +9,28 @@ const farmhouseTexture=new Image(); farmhouseTexture.src="assets/farmhouse_apoca
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.
-const farmhouseMap={id:"farmhouse",spawn:{x:.59,y:.77},collision:[
- // Alpha 1.24.3: normalized against the actual 1536x1024 landscape texture.
- // Barn shell (visible footprint approx x .06-.30, y .11-.55).
- {x:.061,y:.112,w:.006,h:.43,type:"wall"}, {x:.061,y:.112,w:.235,h:.008,type:"wall"},
- {x:.061,y:.542,w:.235,h:.008,type:"wall"}, {x:.292,y:.112,w:.006,h:.43,type:"wall"},
- // Barn stall dividers. Keep the aisle and gate openings traversable.
- {x:.124,y:.19,w:.004,h:.335,type:"wall"}, {x:.183,y:.19,w:.004,h:.335,type:"wall"}, {x:.242,y:.19,w:.004,h:.335,type:"wall"},
- {x:.124,y:.19,w:.059,h:.005,type:"wall"}, {x:.183,y:.19,w:.059,h:.005,type:"wall"},
- // Main farmhouse outer shell (approx x .405-.637, y .18-.70). South entrance remains open.
- {x:.405,y:.185,w:.006,h:.50,type:"wall"}, {x:.631,y:.185,w:.006,h:.50,type:"wall"},
- {x:.405,y:.185,w:.232,h:.008,type:"wall"},
- {x:.405,y:.685,w:.085,h:.008,type:"wall"}, {x:.523,y:.685,w:.114,h:.008,type:"wall"},
- // Interior horizontal partitions: split around the visible door gaps.
- {x:.411,y:.305,w:.084,h:.006,type:"wall"}, {x:.523,y:.305,w:.105,h:.006,type:"wall"},
- {x:.411,y:.435,w:.055,h:.006,type:"wall"}, {x:.493,y:.435,w:.135,h:.006,type:"wall"},
- {x:.411,y:.575,w:.055,h:.006,type:"wall"}, {x:.493,y:.575,w:.135,h:.006,type:"wall"},
- // Interior vertical partitions, segmented to leave visible openings.
- {x:.493,y:.195,w:.005,h:.105,type:"wall"}, {x:.493,y:.325,w:.005,h:.105,type:"wall"},
- {x:.493,y:.445,w:.005,h:.12,type:"wall"}, {x:.493,y:.585,w:.005,h:.095,type:"wall"},
- {x:.523,y:.315,w:.005,h:.115,type:"wall"}, {x:.523,y:.445,w:.005,h:.12,type:"wall"},
- // Front porch rail/walls; central steps/door approach is deliberately clear.
- {x:.424,y:.695,w:.065,h:.008,type:"wall"}, {x:.523,y:.695,w:.09,h:.008,type:"wall"},
- // Garage shell (approx x .145-.34, y .64-.85), with an opening on the north side.
- {x:.145,y:.65,w:.006,h:.20,type:"wall"}, {x:.145,y:.844,w:.195,h:.006,type:"wall"},
- {x:.334,y:.65,w:.006,h:.20,type:"wall"}, {x:.145,y:.65,w:.052,h:.006,type:"wall"}, {x:.247,y:.65,w:.093,h:.006,type:"wall"},
- // Fixed garage shelves/workbench, avoiding the central vehicle bay.
- {x:.157,y:.68,w:.018,h:.135,type:"furniture"}, {x:.309,y:.68,w:.014,h:.12,type:"furniture"},
- {x:.19,y:.70,w:.018,h:.025,type:"furniture"}, {x:.265,y:.80,w:.035,h:.012,type:"furniture"},
- // Fountain stone rim; circular approximation kept tight to the visible ring.
- {x:.785,y:.445,w:.088,h:.16,type:"furniture"},
- // Perimeter fence. Southern entrance remains open for deployment/extraction.
- {x:.02,y:.055,w:.96,h:.006,type:"wall"}, {x:.02,y:.935,w:.39,h:.006,type:"wall"},
- {x:.59,y:.935,w:.39,h:.006,type:"wall"}, {x:.02,y:.055,w:.005,h:.88,type:"wall"},
+const farmhouseMap={id:"farmhouse",spawn:{x:.56,y:.80},collision:[
+ // Alpha 1.24.4: collision polygons are aligned to the current high-detail 1536x1024 texture.
+ // Barn outer shell. Wide south-side loading entrance and central access gap remain open.
+ {x:.105,y:.055,w:.006,h:.22,type:"wall"}, {x:.105,y:.055,w:.415,h:.007,type:"wall"},
+ {x:.105,y:.275,w:.275,h:.007,type:"wall"}, {x:.445,y:.275,w:.075,h:.007,type:"wall"},
+ {x:.514,y:.055,w:.006,h:.22,type:"wall"},
+ // Stall dividers are visual only in this pass; avoid false blocking inside the barn.
+ // Farmhouse shell. Wide front steps/door opening centred on the south wall.
+ {x:.285,y:.302,w:.006,h:.392,type:"wall"}, {x:.285,y:.302,w:.275,h:.007,type:"wall"},
+ {x:.554,y:.302,w:.006,h:.392,type:"wall"},
+ {x:.285,y:.694,w:.135,h:.007,type:"wall"}, {x:.485,y:.694,w:.075,h:.007,type:"wall"},
+ // Internal room walls intentionally omitted until each doorway is pixel-aligned; rooms remain traversable.
+ // Garage/workshop. Large vehicle entrance on east side plus a broad north-side opening.
+ {x:.105,y:.695,w:.006,h:.215,type:"wall"}, {x:.105,y:.695,w:.065,h:.007,type:"wall"},
+ {x:.255,y:.695,w:.045,h:.007,type:"wall"}, {x:.105,y:.905,w:.195,h:.007,type:"wall"},
+ {x:.299,y:.695,w:.006,h:.055,type:"wall"}, {x:.299,y:.825,w:.006,h:.085,type:"wall"},
+ // Main solid obstacles: fountain rim and garage storage shelves, with the vehicle bay left clear.
+ {x:.835,y:.435,w:.075,h:.145,type:"furniture"},
+ {x:.125,y:.735,w:.018,h:.105,type:"furniture"},
+ // Estate perimeter; entrance remains open at the south-east gate.
+ {x:.02,y:.055,w:.96,h:.006,type:"wall"}, {x:.02,y:.935,w:.70,h:.006,type:"wall"},
+ {x:.83,y:.935,w:.15,h:.006,type:"wall"}, {x:.02,y:.055,w:.005,h:.88,type:"wall"},
  {x:.975,y:.055,w:.005,h:.88,type:"wall"}
 ],interactiveObjects:[{id:"front-window-left",type:"window",health:100,repairable:true},{id:"front-window-right",type:"window",health:100,repairable:true},{id:"back-door",type:"door",health:150,repairable:true},{id:"barn-gate",type:"barrier",health:200,repairable:true}]};
 function rectHit(px,py,r,box){return px+r>box.x*W&&px-r<(box.x+box.w)*W&&py+r>box.y*H&&py-r<(box.y+box.h)*H}

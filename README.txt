@@ -1,14 +1,14 @@
-SAS VS ZOMBIES — ALPHA 1.24.3
+SAS VS ZOMBIES — ALPHA 1.24.4
 
 INSTALL
 Replace the existing repository files with the files in this ZIP. Keep the root files at repository root and upload the included assets/ folder unchanged.
 
-ALPHA 1.24.3 CHANGES
-- Rebuilt collision geometry against the actual landscape farmhouse texture coordinates rather than the previous mismatched layout.
-- Corrected the barn shell and stall dividers, farmhouse exterior and interior partitions, garage/workshop, fountain rim and perimeter fence.
-- Left gaps at the farmhouse front entrance, room doorways, barn access and southern perimeter entrance.
-- Preserved the 3x world scale and player-follow camera.
-- Preserved the separate 700-zombie Arena Stress Test button on Map Select.
+ALPHA 1.24.4 CHANGES
+- Replaced farmhouse_apocalypse.png with a higher-detail post-apocalyptic estate illustration.
+- Rebuilt collision geometry against the exact new 1536x1024 image.
+- Opened wider access gaps at the barn south loading entrance, farmhouse front entrance, garage north entrance and garage east-side main door.
+- Removed interior partition collisions for this pass to prevent blocked access while the outer shell alignment is tested.
+- Preserved the 3x world scale, player-follow camera and separate 700-zombie Arena Stress Test button.
 
 TESTING NOTES
-JavaScript syntax and ZIP integrity were checked. This build has not been live-tested in iPhone Safari, so verify movement through each doorway and along the outer walls after deployment. Collision geometry is based on the current 1536x1024 map image rendered to the full world dimensions.
+JavaScript syntax and ZIP integrity checked. Not live-tested in iPhone Safari. Please verify that the player can enter the barn, farmhouse and garage from the intended doors. Interior partitions are temporarily non-solid so access is not blocked while exterior collision alignment is confirmed.

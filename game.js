@@ -12,7 +12,7 @@ const TUTORIAL_SCALE=.65;
 function tutorialPoint(nx,ny){return {x:(W*(1-TUTORIAL_SCALE)/2)+nx*W*TUTORIAL_SCALE,y:(H*(1-TUTORIAL_SCALE)/2)+ny*H*TUTORIAL_SCALE}}
 // Tutorial collision segments use the same normalized coordinates as the PNG. The central-rectangle side openings are doubled in height (0.085 to 0.17 normalized units), centred at y=0.5.
 // Perimeter walls are split around the six tutorial barriers. The interior geometry stays unchanged.
-const tutorialSolids=[[.145,.125,.475,.125],[.525,.125,.855,.125],[.875,.145,.875,.285],[.875,.315,.875,.685],[.875,.715,.875,.855],[.855,.875,.525,.875],[.475,.875,.145,.875],[.125,.855,.125,.715],[.125,.685,.125,.315],[.125,.285,.125,.145],[0.375,0.125,0.375,0.415],[0.375,0.585,0.375,0.875],[0.625,0.125,0.625,0.415],[0.625,0.585,0.625,0.875],[0.125,0.5,0.2233,0.5],[0.2767,0.5,0.375,0.5],[0.625,0.5,0.7233,0.5],[0.7767,0.5,0.875,0.5]];
+const tutorialSolids=[[.145,.125,.475,.125],[.525,.125,.855,.125],[.875,.145,.875,.215],[.875,.285,.875,.715],[.875,.785,.875,.855],[.855,.875,.525,.875],[.475,.875,.145,.875],[.125,.855,.125,.785],[.125,.715,.125,.285],[.125,.215,.125,.145],[0.375,0.125,0.375,0.415],[0.375,0.585,0.375,0.875],[0.625,0.125,0.625,0.415],[0.625,0.585,0.625,0.875],[0.125,0.5,0.2233,0.5],[0.2767,0.5,0.375,0.5],[0.625,0.5,0.7233,0.5],[0.7767,0.5,0.875,0.5]];
 // Six stateful tutorial barriers: intact, four damage stages, then broken.
 const tutorialBarriers=[
  {id:'left-upper',x:.125,y:.25,w:.014,h:.07,state:1,cooldown:0},
@@ -98,24 +98,43 @@ function blocked(px,py,r,kind="player"){
  if(stressMode)return false;
  if((tutorialMode?tutorialSolids:solidSegments).some(q=>segmentHit(px,py,r,q)))return true;
  if(!tutorialMode&&movementOnly.some(q=>segmentHit(px,py,r,q)))return true;
- if(tutorialMode&&tutorialBarriers.some(q=>tutorialBarrierHit(px,py,r,q)))return true;
+ if(tutorialMode&&tutorialBarriers.some(q=>kind==="player"?(()=>{const pt=tutorialPoint(q.x,q.y),ww=q.w*W*TUTORIAL_SCALE,hh=q.h*H*TUTORIAL_SCALE;return px+r>pt.x-ww/2&&px-r<pt.x+ww/2&&py+r>pt.y-hh/2&&py-r<pt.y+hh/2})():tutorialBarrierHit(px,py,r,q)))return true;
  if(!tutorialMode&&breakables.some(q=>insideBreakable(px,py,r,q)))return true;
  return false;
 }
-function projectileBlocked(px,py,r=2){if(stressMode)return false;return (tutorialMode?tutorialSolids:solidSegments).some(q=>segmentHit(px,py,r,q))||(tutorialMode?tutorialBarriers.some(q=>tutorialBarrierHit(px,py,r,q)):breakables.some(q=>insideBreakable(px,py,r,q)))}
-function moveBullet(q,dt){const dx=q.vx*dt,dy=q.vy*dt,steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/7));for(let i=0;i<steps;i++){q.x+=dx/steps;q.y+=dy/steps;const panel=stressMode?null:breakables.find(v=>v.hp>0&&rectHit(q.x,q.y,2,v));if(panel){panel.hp=Math.max(0,panel.hp-25);q.t=0;return false}if(tutorialMode){const tb=tutorialBarriers.find(v=>tutorialBarrierHit(q.x,q.y,2,v));if(tb){tb.state=Math.min(6,tb.state+1);q.t=0;return false}}if(projectileBlocked(q.x,q.y,2)){q.t=0;return false}for(const e of z){if(!e.dead&&Math.hypot(q.x-e.x,q.y-e.y)<e.r+3){killZombie(e);q.t=0;return false}}}q.t-=dt;return true}
+function projectileBlocked(px,py,r=2){if(stressMode)return false;return (tutorialMode?tutorialSolids:solidSegments).some(q=>segmentHit(px,py,r,q))||(!tutorialMode&&breakables.some(q=>insideBreakable(px,py,r,q)))}
+function moveBullet(q,dt){const dx=q.vx*dt,dy=q.vy*dt,steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/7));for(let i=0;i<steps;i++){q.x+=dx/steps;q.y+=dy/steps;const panel=stressMode?null:breakables.find(v=>v.hp>0&&rectHit(q.x,q.y,2,v));if(panel){panel.hp=Math.max(0,panel.hp-25);q.t=0;return false}if(projectileBlocked(q.x,q.y,2)){q.t=0;return false}for(const e of z){if(!e.dead&&Math.hypot(q.x-e.x,q.y-e.y)<e.r+3){killZombie(e);q.t=0;return false}}}q.t-=dt;return true}
 function movePlayer(dx,dy){let nx=Math.max(18,Math.min(W-18,player.x+dx)),ny=Math.max(18,Math.min(H-18,player.y+dy));if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny}
 function moveZombie(e,dx,dy){
  if(e.climbing)return;
  if(tutorialMode){
-  const live=tutorialBarriers.filter(q=>q.state<6); if(!live.length){/* all entries open; pursue player */}
-  else {const target=e.targetBarrier&&e.targetBarrier.state<6?e.targetBarrier:live.reduce((best,q)=>{const a=tutorialPoint(q.x,q.y),b=tutorialPoint(best.x,best.y);return Math.hypot(a.x-e.x,a.y-e.y)<Math.hypot(b.x-e.x,b.y-e.y)?q:best},live[0]);e.targetBarrier=target;
-   const pt=tutorialPoint(target.x,target.y),dist=Math.hypot(pt.x-e.x,pt.y-e.y)||1;
-   if(dist<30){e.barrierAttack=(e.barrierAttack||0)+Math.min(.033,Math.max(0,last?0:.033));if(target.cooldown<=0){target.state=Math.min(6,target.state+1);target.cooldown=.8;e.hitT=.22}return}
-   const sx=(pt.x-e.x)/dist*Math.min(Math.hypot(dx,dy),dist),sy=(pt.y-e.y)/dist*Math.min(Math.hypot(dx,dy),dist);let nx=e.x+sx,ny=e.y+sy;
+  // Zombies outside the tutorial building prioritise an assigned perimeter barrier.
+  // Approach along the exterior edge to line up with the doorway, then move inward.
+  const target=e.targetBarrier;
+  if(target && target.state<6){
+   const pt=tutorialPoint(target.x,target.y), margin=18;
+   let wx=pt.x,wy=pt.y;
+   if(target.id==='top') wy=pt.y-margin;
+   else if(target.id==='bottom') wy=pt.y+margin;
+   else if(target.id.startsWith('left')) wx=pt.x-margin;
+   else if(target.id.startsWith('right')) wx=pt.x+margin;
+   let tx=wx-e.x,ty=wy-e.y,dd=Math.hypot(tx,ty)||1,step=Math.hypot(dx,dy);
+   // Reach the outside alignment point first; only then close on the barrier itself.
+   if(Math.hypot(e.x-wx,e.y-wy)>8){let sx=tx/dd*Math.min(step,dd),sy=ty/dd*Math.min(step,dd);if(!tutorialSolids.some(q=>segmentHit(e.x+sx,e.y+sy,e.r*.72,q))) {e.x+=sx;e.y+=sy;} else {if(!tutorialSolids.some(q=>segmentHit(e.x+sx,e.y,e.r*.72,q)))e.x+=sx;if(!tutorialSolids.some(q=>segmentHit(e.x,e.y+sy,e.r*.72,q)))e.y+=sy;}return;}
+   const dist=Math.hypot(pt.x-e.x,pt.y-e.y)||1;
+   if(dist<30){e.barrierAttack=(e.barrierAttack||0)+.033;if(target.cooldown<=0){target.state=Math.min(6,target.state+1);target.cooldown=.8;e.hitT=.22}return;}
+   const sx=(pt.x-e.x)/dist*Math.min(step,dist),sy=(pt.y-e.y)/dist*Math.min(step,dist);let nx=e.x+sx,ny=e.y+sy;
+   if(!blocked(nx,e.y,e.r*.72,'zombie'))e.x=nx;if(!blocked(e.x,ny,e.r*.72,'zombie'))e.y=ny;return;
+  }
+  // Once the assigned barrier is destroyed, pass through its opening and pursue the player.
+  if(target && target.state>=6){
+   const pt=tutorialPoint(target.x,target.y),inner={x:pt.x+(target.id.startsWith('left')?30:target.id.startsWith('right')?-30:0),y:pt.y+(target.id==='top'?30:target.id==='bottom'?-30:0)};
+   const outside=target.id==='top'?e.y<pt.y:target.id==='bottom'?e.y>pt.y:target.id.startsWith('left')?e.x<pt.x:e.x>pt.x;
+   const goal=outside?inner:player;const gx=goal.x-e.x,gy=goal.y-e.y,dd=Math.hypot(gx,gy)||1,step=Math.hypot(dx,dy);let nx=e.x+gx/dd*Math.min(step,dd),ny=e.y+gy/dd*Math.min(step,dd);
    if(!blocked(nx,e.y,e.r*.72,'zombie'))e.x=nx;if(!blocked(e.x,ny,e.r*.72,'zombie'))e.y=ny;return;
   }
  }
+
  const r=Math.max(5,e.r*.72),ox=e.x,oy=e.y,step=Math.hypot(dx,dy);
  // Outside zombies deliberately navigate to a gate or climb point before trying to reach the player.
  if(!stressMode&&!tutorialMode&&isOutsideFence(e.x,e.y)){
@@ -186,10 +205,10 @@ function resize(){
 function message(t){msg.textContent=t;clearTimeout(message.t);message.t=setTimeout(()=>msg.textContent="",1000)}
 function reset(){resize();z=[];b=[];g=[];p=[];tutorialBarriers.forEach(q=>{q.state=1;q.cooldown=0});wave=1;clock=0;player={x:stressMode?W/2:tutorialMode?tutorialPoint(.50,.50).x:W*farmhouseMap.spawn.x,y:stressMode?H/2:tutorialMode?tutorialPoint(.50,.50).y:H*farmhouseMap.spawn.y,r:17,hp:100,arm:50,ammo:12,a:0,cd:0,walk:0,move:0,shootT:0,reloadT:0,throwT:0};C.base=stressMode?700:85;C.perWave=stressMode?0:5;C.spawnMs=stressMode?20:220;C.max=stressMode?700:100;newWave()}
 function newWave(){left=C.base+(wave-1)*C.perWave;spawnT=0;inter=0;message("WAVE "+wave)}
-function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(!stressMode){if(tutorialMode){let tp;if(s===0)tp=tutorialPoint(.2+Math.random()*.6,.045);else if(s===1)tp=tutorialPoint(.955,.15+Math.random()*.7);else if(s===2)tp=tutorialPoint(.2+Math.random()*.6,.955);else tp=tutorialPoint(.045,.15+Math.random()*.7);px=tp.x;py=tp.y}else if(s===0){px=(.05+Math.random()*.88)*W;py=H*.025}else if(s===1){px=W*.985;py=(.10+Math.random()*.78)*H}else if(s===2){px=(.05+Math.random()*.88)*W;py=H*.975}else{px=W*.005;py=(.10+Math.random()*.78)*H}}else if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}z.push({x:px,y:py,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*20),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random(),climbing:false,climbT:0,climbFrame:0,climbPoint:null});left--}
+function spawn(){if(left<=0||z.length>=C.max)return;let s=Math.floor(Math.random()*4),px,py;if(!stressMode){if(tutorialMode){let tp;if(s===0)tp=tutorialPoint(.2+Math.random()*.6,.045);else if(s===1)tp=tutorialPoint(.955,.15+Math.random()*.7);else if(s===2)tp=tutorialPoint(.2+Math.random()*.6,.955);else tp=tutorialPoint(.045,.15+Math.random()*.7);px=tp.x;py=tp.y}else if(s===0){px=(.05+Math.random()*.88)*W;py=H*.025}else if(s===1){px=W*.985;py=(.10+Math.random()*.78)*H}else if(s===2){px=(.05+Math.random()*.88)*W;py=H*.975}else{px=W*.005;py=(.10+Math.random()*.78)*H}}else if(s===0){px=Math.random()*W;py=-25}else if(s===1){px=W+25;py=Math.random()*H}else if(s===2){px=Math.random()*W;py=H+25}else{px=-25;py=Math.random()*H}const tutorialTarget=tutorialMode?(s===0?tutorialBarriers.find(q=>q.id==='top'):s===1?(Math.random()<.5?tutorialBarriers.find(q=>q.id==='right-upper'):tutorialBarriers.find(q=>q.id==='right-lower')):s===2?tutorialBarriers.find(q=>q.id==='bottom'):(Math.random()<.5?tutorialBarriers.find(q=>q.id==='left-upper'):tutorialBarriers.find(q=>q.id==='left-lower'))):null;z.push({x:px,y:py,targetBarrier:tutorialTarget,r:13+Math.random()*3,v:55+Math.random()*23,phase:Math.random()*6.28,h:0,hitT:0,dead:false,deathT:0,deathLen:.48+Math.random()*.22,variant:Math.floor(Math.random()*20),walkStyle:Math.floor(Math.random()*3),deathStyle:Math.floor(Math.random()*3),turn:Math.atan2(player.y-py,player.x-px)+Math.PI/2,bloodLevel:Math.random(),skinTone:Math.random(),climbing:false,climbT:0,climbFrame:0,climbPoint:null});left--}
 function shoot(){if(!running||paused||player.cd>0)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;dx/=d;dy/=d;player.a=Math.atan2(dy,dx);b.push({x:player.x+dx*24,y:player.y+dy*24,vx:dx*850,vy:dy*850,t:.6});player.cd=.07;player.ammo=12;player.shootT=.12;p.push({x:player.x+dx*27,y:player.y+dy*27,t:.07,m:.07,k:"m"})}
 function grenade(){if(!running||paused)return;let dx=aim.x,dy=aim.y;if(Math.hypot(dx,dy)<.2){dx=Math.cos(player.a);dy=Math.sin(player.a)}let d=Math.hypot(dx,dy)||1;g.push({x:player.x+dx*18,y:player.y+dy*18,vx:dx/d*430,vy:dy/d*430,t:.55});player.throwT=.32}
-function reload(){if(!player)return;player.ammo=12;if(running&&!paused){player.reloadT=.42;if(tutorialMode){const near=tutorialBarriers.filter(q=>q.state>1).sort((a,b)=>Math.hypot(tutorialPoint(a.x,a.y).x-player.x,tutorialPoint(a.x,a.y).y-player.y)-Math.hypot(tutorialPoint(b.x,b.y).x-player.x,tutorialPoint(b.x,b.y).y-player.y))[0];if(near&&Math.hypot(tutorialPoint(near.x,near.y).x-player.x,tutorialPoint(near.x,near.y).y-player.y)<85){near.state=1;message("BARRIER REPAIRED");return}}let near=breakables.filter(q=>q.hp>0&&q.hp<q.maxHp).sort((a,b)=>Math.hypot(a.x*W-player.x,a.y*H-player.y)-Math.hypot(b.x*W-player.x,b.y*H-player.y))[0];if(near&&Math.hypot(near.x*W-player.x,near.y*H-player.y)<85){near.hp=Math.min(near.maxHp,near.hp+35);message("BARRICADE REPAIRED")}}}
+function reload(){if(!player)return;player.ammo=12;if(running&&!paused){player.reloadT=.42;if(tutorialMode){const damaged=tutorialBarriers.filter(q=>q.state>1).map(q=>({q,d:Math.hypot(tutorialPoint(q.x,q.y).x-player.x,tutorialPoint(q.x,q.y).y-player.y)})).filter(v=>v.d<100).sort((a,b)=>a.d-b.d)[0];if(damaged){damaged.q.state=1;damaged.q.cooldown=0;message("BARRIER REPAIRED");return}}let near=breakables.filter(q=>q.hp>0&&q.hp<q.maxHp).sort((a,b)=>Math.hypot(a.x*W-player.x,a.y*H-player.y)-Math.hypot(b.x*W-player.x,b.y*H-player.y))[0];if(near&&Math.hypot(near.x*W-player.x,near.y*H-player.y)<85){near.hp=Math.min(near.maxHp,near.hp+35);message("BARRICADE REPAIRED")}}}
 function hurt(v){}
 function killZombie(e){if(e.dead)return;e.dead=true;e.deathT=e.deathLen||.58;e.hitT=0;blood(e.x,e.y,e.variant)}
 function update(dt){if(!running||paused)return;clock+=dt;player.cd=Math.max(0,player.cd-dt);player.shootT=Math.max(0,player.shootT-dt);player.reloadT=Math.max(0,player.reloadT-dt);player.throwT=Math.max(0,player.throwT-dt);spawnT-=dt*1000;while(left>0&&spawnT<=0&&z.length<C.max){spawn();spawnT+=C.spawnMs}

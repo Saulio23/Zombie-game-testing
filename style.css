@@ -23,5 +23,5 @@
 
 
 /* Alpha 1.24.19 contextual tutorial barrier repair prompt */
-.repairPrompt{position:absolute;z-index:8;left:50%;bottom:clamp(18px,5vh,54px);transform:translateX(-50%);min-width:190px;min-height:44px;padding:10px 18px;border:2px solid #d2b47a;border-radius:3px;background:rgba(18,20,18,.94);color:#f4ead5;font:900 13px/1.2 Arial,sans-serif;letter-spacing:.12em;text-align:center;box-shadow:0 4px 18px #000b;touch-action:manipulation;pointer-events:auto}
+.repairPrompt{position:absolute;z-index:2;left:50%;bottom:clamp(18px,5vh,54px);transform:translateX(-50%);min-width:190px;min-height:44px;padding:10px 18px;border:2px solid #d2b47a;border-radius:3px;background:rgba(18,20,18,.94);color:#f4ead5;font:900 13px/1.2 Arial,sans-serif;letter-spacing:.12em;text-align:center;box-shadow:0 4px 18px #000b;touch-action:manipulation;pointer-events:auto}
 .repairPrompt:active{background:#4a3926}.repairPrompt.hidden{display:none!important}

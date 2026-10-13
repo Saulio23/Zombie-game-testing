@@ -1,4 +1,4 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.24.16
+SAS VS ZOMBIES / DEADLINE — Alpha 1.24.17
 
 Collision diagnostic build. Start Farmhouse, then pause and choose COLLISION DEBUG: ON. On desktop, press D to toggle the overlay.
 
@@ -10,4 +10,6 @@ Separate 700-zombie Arena Stress Test remains available from Map Select.
 
 Alpha 1.24.15: Replaced the tutorial map artwork and collision barriers from scratch. Five rooms: tall central rectangle, two equal stacked square rooms on each side, with passages between all adjacent rooms. Home Screen version and Settings version history updated.
 
-Alpha 1.24.16: Doubled the width of the two openings connecting the central rectangle to the side-room columns. Updated tutorial_interior.png and tutorial collision barriers to match. Retained all other gameplay systems.
+Alpha 1.24.17: Doubled the width of the two openings connecting the central rectangle to the side-room columns. Updated tutorial_interior.png and tutorial collision barriers to match. Retained all other gameplay systems.
+
+Alpha 1.24.17: Added six tutorial perimeter barriers with damage states, destruction/opening, repair, and zombie targeting. Farmhouse and 700-zombie Arena Stress Test kept separate.

@@ -10,8 +10,8 @@ const tutorialTexture=new Image(); tutorialTexture.src="assets/tutorial_interior
 // The tutorial map is displayed at 65% of the play area, centred. Artwork and collision share this transform.
 const TUTORIAL_SCALE=.65;
 function tutorialPoint(nx,ny){return {x:(W*(1-TUTORIAL_SCALE)/2)+nx*W*TUTORIAL_SCALE,y:(H*(1-TUTORIAL_SCALE)/2)+ny*H*TUTORIAL_SCALE}}
-// Tutorial collision segments use the same normalized coordinates as the PNG. The right-hand room doorway is intentionally open.
-const tutorialSolids=[[.042,.167,.708,.167],[.042,.167,.042,.833],[.042,.833,.375,.833],[.375,.167,.375,.367],[.375,.433,.375,.6],[.375,.667,.375,.833],[.375,.167,.708,.167],[.708,.167,.708,.5],[.375,.5,.708,.5],[.375,.833,.708,.833],[.708,.5,.79,.5],[.91,.5,.958,.5],[.708,.5,.708,.833],[.708,.833,.958,.833],[.958,.5,.958,.833]];
+// Tutorial collision segments use the same normalized coordinates as the PNG. The two side squares each have an open doorway between them, and each room connects to the central rectangle.
+const tutorialSolids=[[.10,.15,.90,.15],[.90,.15,.90,.85],[.90,.85,.10,.85],[.10,.85,.10,.15],[.3667,.15,.3667,.27],[.3667,.333,.3667,.50],[.3667,.50,.3667,.567],[.3667,.633,.3667,.85],[.6333,.15,.6333,.267],[.6333,.333,.6333,.50],[.6333,.50,.6333,.567],[.6333,.633,.6333,.85],[.10,.50,.1833,.50],[.2583,.50,.3667,.50],[.6333,.50,.7417,.50],[.8167,.50,.90,.50]];
 const C={base:85,perWave:0,spawnMs:220,max:100,speed:240};
 // Layered map data: rendering, collision and navigation are deliberately separate.
 // Coordinates are normalized to the current viewport so the layout scales to phones and desktop.

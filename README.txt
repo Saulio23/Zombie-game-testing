@@ -1,4 +1,4 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.24.20
+SAS VS ZOMBIES / DEADLINE — Alpha 1.24.19
 
 Collision diagnostic build. Start Farmhouse, then pause and choose COLLISION DEBUG: ON. On desktop, press D to toggle the overlay.
 
@@ -16,6 +16,4 @@ Alpha 1.24.18: Added six tutorial perimeter barriers with damage states, destruc
 
 Alpha 1.24.18: Improved tutorial barrier navigation, repair from any damaged state, player collision at destroyed barriers, and bullet pass-through in every barrier state.
 
-Alpha 1.24.20: Added a visible rubble graphic for fully broken tutorial barriers. Added a context-sensitive rectangular repair prompt that appears only when the player is near a damaged tutorial barrier. Barrier repair is now separate from the reload control; reload only reloads ammunition.
-
-Alpha 1.24.20: Fixed touch-control layering by placing the contextual repair prompt inside the mobile controls layer, preventing it from intercepting joystick and action-button touches.
+Alpha 1.24.19: Rebuilt from the known-good 1.24.18 base. Added a separate repair action button beside reload within the existing mobile-controls container, shown only near damaged barriers. Reload is reload-only. Destroyed tutorial barriers remain visible as rubble while remaining passable to zombies.

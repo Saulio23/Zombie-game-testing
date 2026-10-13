@@ -1,4 +1,4 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.24.19
+SAS VS ZOMBIES / DEADLINE — Alpha 1.25
 
 Collision diagnostic build. Start Farmhouse, then pause and choose COLLISION DEBUG: ON. On desktop, press D to toggle the overlay.
 
@@ -17,3 +17,5 @@ Alpha 1.24.18: Added six tutorial perimeter barriers with damage states, destruc
 Alpha 1.24.18: Improved tutorial barrier navigation, repair from any damaged state, player collision at destroyed barriers, and bullet pass-through in every barrier state.
 
 Alpha 1.24.19: Rebuilt from the known-good 1.24.18 base. Added a separate repair action button beside reload within the existing mobile-controls container, shown only near damaged barriers. Reload is reload-only. Destroyed tutorial barriers remain visible as rubble while remaining passable to zombies.
+
+Alpha 1.25: upgraded the tutorial interior PNG to 2400x1600 with additional floor wear, broken-board details, blood smears, small corpse silhouettes and stained mattresses. The existing room/wall layout remains unchanged; interactive tutorial barriers are still rendered separately by JavaScript. Improved wood grain, nails and damage detail in the barrier renderer.

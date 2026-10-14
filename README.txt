@@ -1,6 +1,6 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.25.2
+SAS VS ZOMBIES / DEADLINE — Alpha 1.25.3
 
-Alpha 1.25.2: Replaced assets/tutorial_interior.png with the supplied dark weathered timber image, converted to PNG at 2400x1600 to match the existing asset dimensions. No gameplay code, map geometry, collision barriers, or interactive barricade rendering changed.
+Alpha 1.25.3: Replaced assets/tutorial_interior.png with the supplied dark weathered timber image, converted to PNG at 2400x1600 to match the existing asset dimensions. No gameplay code, map geometry, collision barriers, or interactive barricade rendering changed.
 
 
 Collision diagnostic build. Start Farmhouse, then pause and choose COLLISION DEBUG: ON. On desktop, press D to toggle the overlay.
@@ -22,3 +22,5 @@ Alpha 1.24.18: Improved tutorial barrier navigation, repair from any damaged sta
 Alpha 1.24.19: Rebuilt from the known-good 1.24.18 base. Added a separate repair action button beside reload within the existing mobile-controls container, shown only near damaged barriers. Reload is reload-only. Destroyed tutorial barriers remain visible as rubble while remaining passable to zombies.
 
 Alpha 1.25: upgraded the tutorial interior PNG to 2400x1600 with additional floor wear, broken-board details, blood smears, small corpse silhouettes and stained mattresses. The existing room/wall layout remains unchanged; interactive tutorial barriers are still rendered separately by JavaScript. Improved wood grain, nails and damage detail in the barrier renderer.
+
+Alpha 1.25.3: Collision-only adjustment to the four internal room-to-courtyard doorways. Upper openings span 26%–43% of map height; lower openings span 57%–74%. Other collision geometry and gameplay code are unchanged.

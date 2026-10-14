@@ -10,9 +10,9 @@ const tutorialTexture=new Image(); tutorialTexture.src="assets/tutorial_interior
 // The tutorial map is displayed at 65% of the play area, centred. Artwork and collision share this transform.
 const TUTORIAL_SCALE=.65;
 function tutorialPoint(nx,ny){return {x:(W*(1-TUTORIAL_SCALE)/2)+nx*W*TUTORIAL_SCALE,y:(H*(1-TUTORIAL_SCALE)/2)+ny*H*TUTORIAL_SCALE}}
-// Tutorial collision segments use the same normalized coordinates as the PNG. The central-rectangle side openings are doubled in height (0.085 to 0.17 normalized units), centred at y=0.5.
-// Perimeter walls are split around the six tutorial barriers. The interior geometry stays unchanged.
-const tutorialSolids=[[.145,.125,.475,.125],[.525,.125,.855,.125],[.875,.145,.875,.215],[.875,.285,.875,.715],[.875,.785,.875,.855],[.855,.875,.525,.875],[.475,.875,.145,.875],[.125,.855,.125,.785],[.125,.715,.125,.285],[.125,.215,.125,.145],[0.375,0.125,0.375,0.415],[0.375,0.585,0.375,0.875],[0.625,0.125,0.625,0.415],[0.625,0.585,0.625,0.875],[0.125,0.5,0.2233,0.5],[0.2767,0.5,0.375,0.5],[0.625,0.5,0.7233,0.5],[0.7767,0.5,0.875,0.5]];
+// Tutorial collision segments use normalized PNG coordinates. The four room-to-courtyard doorways now match the artwork: upper openings y=0.26–0.43 and lower openings y=0.57–0.74.
+// Collision-only adjustment for Alpha 1.25.3; all other geometry is unchanged.
+const tutorialSolids=[[.145,.125,.475,.125],[.525,.125,.855,.125],[.875,.145,.875,.215],[.875,.285,.875,.715],[.875,.785,.875,.855],[.855,.875,.525,.875],[.475,.875,.145,.875],[.125,.855,.125,.785],[.125,.715,.125,.285],[.125,.215,.125,.145],[.375,.125,.375,.26],[.375,.43,.375,.57],[.375,.74,.375,.875],[.625,.125,.625,.26],[.625,.43,.625,.57],[.625,.74,.625,.875],[.125,.5,.2233,.5],[.2767,.5,.375,.5],[.625,.5,.7233,.5],[.7767,.5,.875,.5]];
 // Six stateful tutorial barriers: intact, four damage stages, then broken.
 const tutorialBarriers=[
  {id:'left-upper',x:.125,y:.25,w:.014,h:.07,state:1,cooldown:0},

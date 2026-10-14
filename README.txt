@@ -1,4 +1,7 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.25
+SAS VS ZOMBIES / DEADLINE — Alpha 1.25.2
+
+Alpha 1.25.2: Replaced assets/tutorial_interior.png with the supplied dark weathered timber image, converted to PNG at 2400x1600 to match the existing asset dimensions. No gameplay code, map geometry, collision barriers, or interactive barricade rendering changed.
+
 
 Collision diagnostic build. Start Farmhouse, then pause and choose COLLISION DEBUG: ON. On desktop, press D to toggle the overlay.
 

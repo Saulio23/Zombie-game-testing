@@ -1,4 +1,4 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.26.1
+SAS VS ZOMBIES / DEADLINE — Alpha 1.26.2
 
 FOCUS OF THIS RELEASE
 - Corrected tutorial inner-wall collision boundaries to match the visible wall endpoints in assets/tutorial_interior.png. The vertical wall sections at x=37.5% and x=62.5% now stop at approximately y=39% and resume at y=60%, leaving the visible doorway span clear.
@@ -16,4 +16,6 @@ TESTING
 
 GitHub Pages: upload the contents of this ZIP to the repository root, preserving the assets/ folder.
 
-Alpha 1.26.1: Made Developer Options scrollable on mobile and desktop, added a top-right close button, and retained Back to Pause. Added standard 7-round magazine/reload combat, player health/armour and zombie contact damage, plus PC mouse aim and held fire. Unlimited reserve ammo is always standard. Built from Alpha 1.25.5.
+Alpha 1.26.2: Made Developer Options scrollable on mobile and desktop, added a top-right close button, and retained Back to Pause. Added standard 7-round magazine/reload combat, player health/armour and zombie contact damage, plus PC mouse aim and held fire. Unlimited reserve ammo is always standard. Built from Alpha 1.25.5.
+
+Alpha 1.26.2: visible draggable scrollbar for Developer Options; automatic reload on attempted fire with an empty magazine; RELOADING status; manual reload still dumps partial magazine.

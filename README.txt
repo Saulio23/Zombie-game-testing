@@ -1,27 +1,28 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.26.4
+SAS VS ZOMBIES / DEADLINE — Alpha 1.27.0
 
 FOCUS OF THIS RELEASE
-- Replaced scrollbar-dependent menu navigation with native touch/swipe scrolling in Developer Options and Settings version history. Fixed the global touch-move handler so it only prevents default gestures while a gameplay control stick is actively being used.
-- Added responsive menu sizing using available viewport height and safe-area insets, with compact layouts on short landscape screens.
+- Added an Armoury screen from the Main Menu with the planned classes: Pistols, SMGs, Assault Rifles, Marksman Rifles, LMGs, Shotguns, Explosives, Special, and Armour.
+- Added Coming Soon entries for the confirmed pistol and SMG roster. Only the Colt M1911A1 is implemented as a usable starting weapon in this release; other weapons are not selectable.
+- Added persistent local player inventory: credits, Colt M1911A1 magazine ammunition and reserve ammunition persist across missions and browser sessions where local storage is available.
+- Added limited reserve ammunition and a buy-ammunition pack in the Armoury. Reloads consume reserve rounds; manual reloads discard the partial magazine as before. Magazine and unused reserve ammunition are carried between missions.
+- Added a Developer Options Unlimited Ammo override. It temporarily allows firing/reloading without consuming the player's saved magazine/reserve inventory; disabling the toggle restores the real inventory snapshot.
+- Zombies award provisional currency. Balance values are intentionally easy to tune after testing.
 
-FOCUS OF PREVIOUS RELEASE
-- Corrected tutorial inner-wall collision boundaries to match the visible wall endpoints in assets/tutorial_interior.png. The vertical wall sections at x=37.5% and x=62.5% now stop at approximately y=39% and resume at y=60%, leaving the visible doorway span clear.
-- Fixed Collision Debug display logic: Tutorial mode now draws the actual tutorial solid segments through the same tutorialPoint transform used by artwork and collision. It no longer displays the unrelated farmhouse collision lines while the tutorial is active.
-- Shows the six interactive tutorial barricades separately in amber in collision-debug mode.
+PROVISIONAL ECONOMY VALUES
+- Starting magazine: 7 rounds.
+- Starting reserve: 35 rounds.
+- Ammunition pack: +35 reserve rounds for 100 credits.
+- Zombie kill reward: 10 credits.
+These values are placeholders for first-pass testing and are not final balance decisions.
 
-PROTECTED SYSTEMS
-- The game logic, movement, shooting, reload, grenade, zombie, barricade damage/destruction/repair behavior, room layout, background PNG, and farmhouse collision definitions were otherwise kept unchanged from Alpha 1.25.2.
-- Tutorial solid-wall collision coordinates changed only for the two inner partitions. The background asset remains 2400 x 1600 pixels.
+PROTECTED BASELINE
+- Built directly from SAS_VS_ZOMBIES_Alpha_1_26_4.zip.
+- Existing movement, aiming, reload animation duration, map art, tutorial collision geometry, farmhouse collision data, touch controls, responsive menu sizing and native swipe scrolling were preserved except for the ammunition inventory integration and new Armoury UI.
+- Armour equipment and additional weapon class rosters remain Coming Soon. The Assault Rifle roster was not guessed where exact planned names were unavailable in the context available for this build.
 
 TESTING
-- JavaScript syntax and ZIP integrity checks passed.
-- This package has not been tested in a live browser or on an iPhone; gameplay needs to be confirmed on the user's device.
-- Use the in-game Settings/Pause menu to enable COLLISION DEBUG. In Tutorial mode, red lines now correspond to the active tutorial solid-wall segments; amber outlines mark the six separate interactive barricades. In Farmhouse mode, the existing red/blue/green/yellow legend remains in effect.
+- JavaScript syntax check and ZIP integrity check performed.
+- No live iPhone/browser testing has been performed from this environment.
 
-GitHub Pages: upload the contents of this ZIP to the repository root, preserving the assets/ folder.
-
-Alpha 1.26.4: Made Developer Options scrollable on mobile and desktop, added a top-right close button, and retained Back to Pause. Added standard 7-round magazine/reload combat, player health/armour and zombie contact damage, plus PC mouse aim and held fire. Unlimited reserve ammo is always standard. Built from Alpha 1.25.5.
-
-Alpha 1.26.4: visible draggable scrollbar for Developer Options; automatic reload on attempted fire with an empty magazine; RELOADING status; manual reload still dumps partial magazine.
-
-Alpha 1.26.4: Fixed draggable scrollbar pointer tracking for Developer Options and added a visible draggable scrollbar to Settings > Version History. Swipe scrolling and mouse-wheel scrolling remain supported.
+DEPLOYMENT
+Upload the contents of this ZIP to the GitHub repository root, preserving the assets/ folder.

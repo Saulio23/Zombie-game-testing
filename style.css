@@ -20,3 +20,7 @@
 
 /* Alpha 1.24.12 tutorial-map card */
 .tutorialArt{background:linear-gradient(135deg,#252724,#51483b 48%,#171b19)!important;position:relative;overflow:hidden}.tutorialArt:before{content:"";position:absolute;left:15%;top:17%;width:32%;height:66%;border:7px solid #151817;background:repeating-linear-gradient(0deg,#514636 0 12px,#3b352c 12px 15px)}.tutorialArt:after{content:"";position:absolute;left:47%;top:17%;width:36%;height:33%;border:7px solid #151817;background:#4b4133;box-shadow:0 130px 0 -7px #4b4133,0 130px 0 0 #151817,0 260px 0 -7px #4b4133,0 260px 0 0 #151817;opacity:.95}
+
+.devPanel{width:min(94vw,440px);max-height:92vh;overflow:auto;text-align:left}.devPanel h1{font-size:30px}.devOptionsList{display:grid;gap:8px;margin:12px 0 18px}.devOptionsList label{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 12px;border:1px solid #444;border-radius:8px;background:#171717}.devOptionsList label span{display:grid;gap:4px}.devOptionsList small{font-size:12px;color:#aaa}.devOptionsList input{width:22px;height:22px;accent-color:#bfa47a;flex-shrink:0}.devPanel button{margin-top:8px}
+
+.healthHud{min-width:120px}#healthBarTrack{width:118px;height:6px;margin-top:5px;background:#481c1c;border:1px solid #b5a39a;border-radius:4px;overflow:hidden}#healthBarFill{height:100%;width:100%;background:#b92d2d;transition:width .08s linear}

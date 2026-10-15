@@ -1,4 +1,4 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.25.5
+SAS VS ZOMBIES / DEADLINE — Alpha 1.26.0
 
 FOCUS OF THIS RELEASE
 - Corrected tutorial inner-wall collision boundaries to match the visible wall endpoints in assets/tutorial_interior.png. The vertical wall sections at x=37.5% and x=62.5% now stop at approximately y=39% and resume at y=60%, leaving the visible doorway span clear.
@@ -15,3 +15,5 @@ TESTING
 - Use the in-game Settings/Pause menu to enable COLLISION DEBUG. In Tutorial mode, red lines now correspond to the active tutorial solid-wall segments; amber outlines mark the six separate interactive barricades. In Farmhouse mode, the existing red/blue/green/yellow legend remains in effect.
 
 GitHub Pages: upload the contents of this ZIP to the repository root, preserving the assets/ folder.
+
+Alpha 1.26.0: Added Developer Options, standard 7-round magazine/reload combat, player health/armour and zombie contact damage, plus PC mouse aim and held fire. Unlimited reserve ammo is always standard. Built from Alpha 1.25.5.

@@ -1,3 +1,12 @@
+SAS VS ZOMBIES — Alpha 1.29.0
+
+Alpha 1.29 adds functional persistent upgrades for the M1911A1 and Browning Hi-Power prototype. Upgrade tiers are purchased with credits and each weapon has independent upgrade levels.
+
+M1911A1 prices by tier: 10, 15, 20, 25, 30 credits.
+Hi-Power prices by tier: 15, 21, 27, 33, 39 credits.
+
+All previous Alpha 1.28.0 features and assets are retained. Open index.html through GitHub Pages; keep the ZIP contents at the repository root.
+
 SAS VS ZOMBIES / DEADLINE — Alpha 1.28.0
 
 CHANGES IN THIS RELEASE

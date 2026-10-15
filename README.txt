@@ -1,6 +1,12 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.27.2
+SAS VS ZOMBIES / DEADLINE — Alpha 1.28.0
 
 CHANGES IN THIS RELEASE
+- Added weapon-specific accuracy/spread, accumulating recoil that settles while not firing, and effective projectile range for the Colt M1911A1 and Browning Hi-Power prototype.
+- Added optional mobile aim assist, enabled by default and adjustable in Settings; it gently nudges aim toward nearby zombies inside the current aim direction. Mouse aiming is unaffected.
+- Preserved the two-slot loadout, per-weapon magazine/reserve persistence, M1911A1 unlimited reserve, limited Hi-Power reserve, and non-destructive developer Unlimited Ammo override.
+- Preserved map assets, collision geometry, mobile controls, Armoury upgrade placeholders, and existing developer options.
+
+
 - Added a two-slot pre-mission loadout selector in the Armoury and in-game swapping via SWAP or keyboard 1/2.
 - Added the Browning Hi-Power as a functional prototype specifically to test per-weapon magazine/reserve persistence; its stats are provisional.
 - Colt M1911A1 reserve is now unlimited, while its 7-round magazine remains finite. Hi-Power reserve is limited and purchased in 35-round packs for 10 credits.

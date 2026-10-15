@@ -99,3 +99,6 @@ html,body{overscroll-behavior:none}
 #armouryMenu .startPanel,#armouryMenu .armouryContent{touch-action:pan-y}
 @media(max-height:600px){.armouryUpgradesPanel{max-height:48vh;padding:6px}.armouryUpgradeStat{padding:6px}.armouryUpgradeStatHead{margin-bottom:5px}.armouryUpgradeTier{padding:4px 1px}.panel button.armouryUpgradeToggle{min-height:40px;margin-top:7px}}
 @media(max-width:360px){.armouryUpgradeStatHead{display:block}.armouryUpgradeStatHead .armouryStatus{display:inline-block;margin-top:5px}.armouryUpgradeTiers{gap:3px}.armouryUpgradeTier small{font-size:6px}}
+
+.loadoutPanel{border:1px solid #555044;background:#0c0e0de8;padding:10px;margin:10px 0;text-align:left}.loadoutPanel h2{font-size:13px;letter-spacing:.12em;margin:0 0 5px}.loadoutPanel p{font-size:11px;color:#c3c0b5;margin:5px 0 9px}.loadoutSlots{display:grid;grid-template-columns:1fr 1fr;gap:8px}.loadoutSlots label{display:grid;gap:5px;font-size:10px;letter-spacing:.1em;color:#bda878}.loadoutSlots select{width:100%;min-width:0;background:#171916;color:#f2ead8;border:1px solid #6b685b;padding:8px;font:inherit;font-size:11px}.loadoutPanel .small{font-size:10px;color:#aaa;margin-bottom:0}
+#swapWeaponBtn{min-height:28px;padding:3px 7px;font-size:10px;letter-spacing:.06em}

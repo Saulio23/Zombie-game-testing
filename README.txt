@@ -1,7 +1,11 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.27.1
+SAS VS ZOMBIES / DEADLINE — Alpha 1.27.2
 
 CHANGES IN THIS RELEASE
-- Reduced the reserve ammunition pack price from 100 to 10 credits. A pack still provides 35 reserve rounds.
+- Added a two-slot pre-mission loadout selector in the Armoury and in-game swapping via SWAP or keyboard 1/2.
+- Added the Browning Hi-Power as a functional prototype specifically to test per-weapon magazine/reserve persistence; its stats are provisional.
+- Colt M1911A1 reserve is now unlimited, while its 7-round magazine remains finite. Hi-Power reserve is limited and purchased in 35-round packs for 10 credits.
+- Ammo is stored independently per weapon and persists across weapon swaps and missions. The developer Unlimited Ammo override remains separate and non-destructive.
+- Reduced the reserve ammunition pack price from 100 to 10 credits. A pack still provides 35 reserve rounds for the Hi-Power prototype.
 - Added a separate expandable upgrades panel to every listed pistol and SMG in the Armoury.
 - The upgrade framework displays all 10 planned upgrade stats for each weapon: Magazine Capacity, Fire Rate, Damage, Reload Speed, Critical Hit Chance, Accuracy, Range, Critical Damage, Penetration and Stagger.
 - Every stat displays five planned tiers (50 planned upgrades per weapon). All upgrade tiers are marked Coming Soon and cannot yet be purchased.

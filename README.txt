@@ -1,6 +1,10 @@
-SAS VS ZOMBIES / DEADLINE — Alpha 1.26.3
+SAS VS ZOMBIES / DEADLINE — Alpha 1.26.4
 
 FOCUS OF THIS RELEASE
+- Replaced scrollbar-dependent menu navigation with native touch/swipe scrolling in Developer Options and Settings version history. Fixed the global touch-move handler so it only prevents default gestures while a gameplay control stick is actively being used.
+- Added responsive menu sizing using available viewport height and safe-area insets, with compact layouts on short landscape screens.
+
+FOCUS OF PREVIOUS RELEASE
 - Corrected tutorial inner-wall collision boundaries to match the visible wall endpoints in assets/tutorial_interior.png. The vertical wall sections at x=37.5% and x=62.5% now stop at approximately y=39% and resume at y=60%, leaving the visible doorway span clear.
 - Fixed Collision Debug display logic: Tutorial mode now draws the actual tutorial solid segments through the same tutorialPoint transform used by artwork and collision. It no longer displays the unrelated farmhouse collision lines while the tutorial is active.
 - Shows the six interactive tutorial barricades separately in amber in collision-debug mode.
@@ -16,8 +20,8 @@ TESTING
 
 GitHub Pages: upload the contents of this ZIP to the repository root, preserving the assets/ folder.
 
-Alpha 1.26.3: Made Developer Options scrollable on mobile and desktop, added a top-right close button, and retained Back to Pause. Added standard 7-round magazine/reload combat, player health/armour and zombie contact damage, plus PC mouse aim and held fire. Unlimited reserve ammo is always standard. Built from Alpha 1.25.5.
+Alpha 1.26.4: Made Developer Options scrollable on mobile and desktop, added a top-right close button, and retained Back to Pause. Added standard 7-round magazine/reload combat, player health/armour and zombie contact damage, plus PC mouse aim and held fire. Unlimited reserve ammo is always standard. Built from Alpha 1.25.5.
 
-Alpha 1.26.3: visible draggable scrollbar for Developer Options; automatic reload on attempted fire with an empty magazine; RELOADING status; manual reload still dumps partial magazine.
+Alpha 1.26.4: visible draggable scrollbar for Developer Options; automatic reload on attempted fire with an empty magazine; RELOADING status; manual reload still dumps partial magazine.
 
-Alpha 1.26.3: Fixed draggable scrollbar pointer tracking for Developer Options and added a visible draggable scrollbar to Settings > Version History. Swipe scrolling and mouse-wheel scrolling remain supported.
+Alpha 1.26.4: Fixed draggable scrollbar pointer tracking for Developer Options and added a visible draggable scrollbar to Settings > Version History. Swipe scrolling and mouse-wheel scrolling remain supported.

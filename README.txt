@@ -1,3 +1,7 @@
+SAS VS ZOMBIES — Alpha 1.29.1
+
+Alpha 1.29.1 hardens weapon swapping, reload cancellation and upgraded magazine persistence. If an equipped pistol has an empty magazine but reserve rounds available, equipping it starts a reload automatically. Interrupting a Hi-Power reload returns the rounds reserved for that unfinished reload. The game now saves and displays magazine capacity consistently with per-weapon upgrades.
+
 SAS VS ZOMBIES — Alpha 1.29.0
 
 Alpha 1.29 adds functional persistent upgrades for the M1911A1 and Browning Hi-Power prototype. Upgrade tiers are purchased with credits and each weapon has independent upgrade levels.

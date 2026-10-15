@@ -3,7 +3,7 @@ const c=document.getElementById("game"),x=c.getContext("2d"),hp=document.getElem
 let W,H,last=0,running=false,paused=false,wave=1,left=0,spawnT=0,inter=0,player,z=[],b=[],g=[],p=[],keys={},clock=0,selectedMap="farmhouse",stressMode=false,collisionDebug=false,tutorialMode=false,mouseDown=false,mouseActive=false;
 const dev={unlimitedHealth:false,noZombieDamage:false,instantReload:false,unlimitedAmmo:false,oneHitKills:false,fastSpawn:false};
 const PROFILE_KEY="svz_profile_alpha127";
-const ECONOMY={startingReserve:35,ammoPackRounds:35,ammoPackCost:100,creditsPerZombie:10};
+const ECONOMY={startingReserve:35,ammoPackRounds:35,ammoPackCost:10,creditsPerZombie:10};
 function loadProfile(){
  const fresh={credits:0,inventory:{m1911a1:{magazine:7,reserve:ECONOMY.startingReserve}}};
  try{const raw=localStorage.getItem(PROFILE_KEY);if(!raw)return fresh;const d=JSON.parse(raw);return {credits:Math.max(0,Math.floor(Number(d.credits)||0)),inventory:{m1911a1:{magazine:Math.max(0,Math.min(7,Math.floor(Number(d.inventory?.m1911a1?.magazine??7)||0))),reserve:Math.max(0,Math.floor(Number(d.inventory?.m1911a1?.reserve??ECONOMY.startingReserve)||0))}}};}catch(e){return fresh}
@@ -37,20 +37,39 @@ const WEAPON_ROSTER={
  "SMGs":["Uzi","MP40","Thompson M1A1","PPSh-41","Škorpion vz.61 (.32 ACP)","MP5A3","UMP45","FN P90"],
  "Assault Rifles":[],"Marksman Rifles":[],"LMGs":[],"Shotguns":[],"Explosives":[],"Special":[],"Armour":[]
 };
+const WEAPON_UPGRADE_STATS=[
+ {id:"magazineCapacity",name:"Magazine Capacity",desc:"Increase the number of rounds held in a magazine."},
+ {id:"fireRate",name:"Fire Rate",desc:"Reduce the delay between shots."},
+ {id:"damage",name:"Damage",desc:"Increase damage dealt per hit."},
+ {id:"reloadSpeed",name:"Reload Speed",desc:"Reduce the time needed to reload."},
+ {id:"criticalHitChance",name:"Critical Hit Chance",desc:"Increase the chance of a critical hit."},
+ {id:"accuracy",name:"Accuracy",desc:"Improve shot consistency and reduce spread."},
+ {id:"range",name:"Range",desc:"Increase effective projectile distance."},
+ {id:"criticalDamage",name:"Critical Damage",desc:"Increase the damage dealt by critical hits."},
+ {id:"penetration",name:"Penetration",desc:"Improve the chance to hit additional targets."},
+ {id:"stagger",name:"Stagger",desc:"Improve the ability to slow or interrupt zombies."}
+];
 const ARMOURY_CATEGORY_NAMES=Object.keys(WEAPON_ROSTER);
 let currentArmouryCategory="Pistols";
 function saveProfile(){try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile))}catch(e){} updateArmourySummary()}
 function updateArmourySummary(){if(armouryCredits)armouryCredits.textContent=Math.floor(profile.credits).toLocaleString("en-GB");const inv=profile.inventory.m1911a1;if(reserveAmmoEl)reserveAmmoEl.textContent=dev.unlimitedAmmo?"∞":String(inv.reserve);if(ammo&&player&&!dev.unlimitedAmmo)ammo.textContent=String(player.ammo)}
 function setArmouryFeedback(text){if(armouryFeedback)armouryFeedback.textContent=text||""}
 function buyM1911Ammo(){if(profile.credits<ECONOMY.ammoPackCost){setArmouryFeedback("NOT ENOUGH CREDITS — EARN CREDITS BY ELIMINATING ZOMBIES.");return}profile.credits-=ECONOMY.ammoPackCost;profile.inventory.m1911a1.reserve+=ECONOMY.ammoPackRounds;saveProfile();renderArmoury(currentArmouryCategory);setArmouryFeedback("AMMUNITION PURCHASED: +"+ECONOMY.ammoPackRounds+" ROUNDS.")}
+function weaponKey(category,index){return category.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-"+index}
+function upgradePanelMarkup(key,weaponName){
+ const safeName=weaponName.toUpperCase();
+ const rows=WEAPON_UPGRADE_STATS.map(stat=>'<section class="armouryUpgradeStat" aria-label="'+stat.name+' upgrades"><div class="armouryUpgradeStatHead"><div><h3>'+stat.name+'</h3><p>'+stat.desc+'</p></div><span class="armouryStatus">COMING SOON</span></div><div class="armouryUpgradeTiers" aria-label="Five upgrade tiers for '+stat.name+'">'+[1,2,3,4,5].map(tier=>'<div class="armouryUpgradeTier" aria-label="Tier '+tier+': Coming Soon"><strong>T'+tier+'</strong><small>SOON</small></div>').join('')+'</div></section>').join('');
+ return '<button type="button" class="armouryUpgradeToggle" data-upgrades-for="'+key+'" aria-expanded="false" aria-controls="armouryUpgrades-'+key+'"><span class="upgradeToggleText"><strong>WEAPON UPGRADES</strong><small>10 STATS · 5 TIERS EACH</small></span><span class="upgradeToggleIcon" aria-hidden="true">＋</span></button><div id="armouryUpgrades-'+key+'" class="armouryUpgradesPanel hidden" data-upgrade-panel="'+key+'" aria-hidden="true"><div class="armouryUpgradeIntro"><strong>'+safeName+' — UPGRADE PATH</strong><p>All 10 upgrade stats are planned with five tiers each. A total of 50 upgrades will be available for this weapon when progression is implemented.</p><span>UPGRADES NOT YET PURCHASEABLE</span></div><div class="armouryUpgradeList">'+rows+'</div></div>';
+}
+function wireUpgradeToggles(){armouryContent.querySelectorAll(".armouryUpgradeToggle").forEach(button=>{bind(button,()=>{const key=button.dataset.upgradesFor;const panel=armouryContent.querySelector('[data-upgrade-panel="'+key+'"]');if(!panel)return;const opening=panel.classList.contains("hidden");panel.classList.toggle("hidden",!opening);panel.setAttribute("aria-hidden",opening?"false":"true");button.setAttribute("aria-expanded",opening?"true":"false");const icon=button.querySelector(".upgradeToggleIcon");if(icon)icon.textContent=opening?"−":"＋";button.classList.toggle("expanded",opening)})})}
 function renderArmoury(category=currentArmouryCategory){currentArmouryCategory=category;updateArmourySummary();if(!armouryCategories||!armouryContent)return;armouryCategories.innerHTML="";ARMOURY_CATEGORY_NAMES.forEach(name=>{const b=document.createElement("button");b.type="button";b.className="armouryTab"+(name===category?" active":"");b.textContent=name.toUpperCase();b.setAttribute("aria-pressed",name===category?"true":"false");bind(b,()=>{setArmouryFeedback("");renderArmoury(name)});armouryCategories.appendChild(b)});
  if(category==="Armour"){armouryContent.innerHTML='<div class="armouryPlaceholder"><span class="armouryStatus">COMING SOON</span><h2>ARMOUR &amp; PROTECTION</h2><p>Armour sets, armour upgrades and protective equipment will be integrated here. Character and AI teammate upgrades are intentionally left for a future decision.</p></div>';return}
  const names=WEAPON_ROSTER[category]||[];
  if(!names.length){const label=category.toUpperCase();armouryContent.innerHTML='<div class="armouryPlaceholder"><span class="armouryStatus">COMING SOON</span><h2>'+label+'</h2><p>This weapon class is reserved in the Armoury. Its planned roster will be added before these weapons become available.</p></div>';return}
  const inv=profile.inventory.m1911a1;let html='';
- names.forEach((name,i)=>{const current=category==="Pistols"&&i===0;const state=current?'AVAILABLE':'COMING SOON';html+='<article class="armouryWeapon '+(current?'weaponAvailable':'')+'"><div class="armouryWeaponTop"><div><h2>'+name.toUpperCase()+'</h2><p>'+(current?'Standard-issue starting sidearm.':'Planned weapon · not yet implemented.')+'</p></div><span class="armouryStatus '+(current?'isAvailable':'')+'">'+state+'</span></div>';
+ names.forEach((name,i)=>{const current=category==="Pistols"&&i===0;const state=current?'AVAILABLE':'COMING SOON';const key=weaponKey(category,i);html+='<article class="armouryWeapon '+(current?'weaponAvailable':'')+'" data-weapon-key="'+key+'"><div class="armouryWeaponTop"><div><h2>'+name.toUpperCase()+'</h2><p>'+(current?'Standard-issue starting sidearm.':'Planned weapon · not yet implemented.')+'</p></div><span class="armouryStatus '+(current?'isAvailable':'')+'">'+state+'</span></div>';
  if(current){html+='<div class="armouryAmmoLine"><span>MAGAZINE</span><strong> '+inv.magazine+' / 7</strong><span class="ammoDivider">·</span><span>RESERVE</span><strong>'+inv.reserve+' ROUNDS</strong></div><div class="armouryBuyLine"><span>AMMO PACK <b>+'+ECONOMY.ammoPackRounds+' ROUNDS</b><small>'+ECONOMY.ammoPackCost+' CREDITS · PROVISIONAL PRICE</small></span><button id="buyM1911AmmoBtn" class="armouryBuyBtn" type="button">BUY AMMO</button></div>'}
- html+='</article>'});armouryContent.innerHTML=html;const buy=document.getElementById("buyM1911AmmoBtn");if(buy)bind(buy,buyM1911Ammo);
+ html+=upgradePanelMarkup(key,name)+'</article>'});armouryContent.innerHTML=html;const buy=document.getElementById("buyM1911AmmoBtn");if(buy)bind(buy,buyM1911Ammo);wireUpgradeToggles();
 }
 function commitPlayerInventory(){if(!player)return;const inv=profile.inventory.m1911a1;if(dev.unlimitedAmmo&&devAmmoSnapshot){inv.magazine=devAmmoSnapshot.magazine;inv.reserve=devAmmoSnapshot.reserve}else{inv.magazine=Math.max(0,Math.min(7,Math.floor(player.ammo||0)))}saveProfile()}
 function persistMagazine(){if(!player||dev.unlimitedAmmo)return;profile.inventory.m1911a1.magazine=Math.max(0,Math.min(7,Math.floor(player.ammo||0)));saveProfile()}
@@ -486,8 +505,8 @@ let settingsOrigin="home";
 function toggle(){if(!running||!start.classList.contains("hidden")||!confirmOverlay.classList.contains("hidden")||!devOverlay.classList.contains("hidden"))return;paused=!paused;pause.classList.toggle("hidden",!paused);pauseBtn.textContent=paused?"▶":"Ⅱ";if(paused)mv.x=mv.y=aim.x=aim.y=0}
 function showMapSelect(){homeMenu.classList.add("hidden");armouryMenu.classList.add("hidden");settingsMenu.classList.add("hidden");mapMenu.classList.remove("hidden");start.classList.remove("hidden")}
 function backToHome(){mapMenu.classList.add("hidden");armouryMenu.classList.add("hidden");homeMenu.classList.remove("hidden")}
-function openArmoury(){homeMenu.classList.add("hidden");mapMenu.classList.add("hidden");settingsMenu.classList.add("hidden");armouryMenu.classList.remove("hidden");start.classList.remove("hidden");setArmouryFeedback("");renderArmoury("Pistols")}
-function backFromArmoury(){armouryMenu.classList.add("hidden");homeMenu.classList.remove("hidden");setArmouryFeedback("")}
+function openArmoury(){homeMenu.classList.add("hidden");mapMenu.classList.add("hidden");settingsMenu.classList.add("hidden");armouryMenu.classList.remove("hidden");start.classList.remove("hidden");setArmouryFeedback("");renderArmoury("Pistols");const panel=start.querySelector(".startPanel");if(panel)panel.scrollTop=0}
+function backFromArmoury(){armouryMenu.classList.add("hidden");homeMenu.classList.remove("hidden");setArmouryFeedback("");const panel=start.querySelector(".startPanel");if(panel)panel.scrollTop=0}
 function startGame(e){e.preventDefault();e.stopPropagation();if(running)return;reset();running=true;paused=false;mapMenu.classList.add("hidden");armouryMenu.classList.add("hidden");start.classList.add("hidden");pause.classList.add("hidden");confirmOverlay.classList.add("hidden")}
 function startSelectedMap(isStress=false,isTutorial=false){stressMode=isStress;tutorialMode=isTutorial;selectedMap=isStress?"arena":isTutorial?"tutorial":"farmhouse";resize();startGame({preventDefault(){},stopPropagation(){}})}
 function openSettings(origin){settingsOrigin=origin;homeMenu.classList.add("hidden");mapMenu.classList.add("hidden");armouryMenu.classList.add("hidden");settingsMenu.classList.remove("hidden");backHomeBtn.textContent=origin==="pause"?"← BACK TO PAUSE MENU":"← BACK";start.classList.remove("hidden");pause.classList.add("hidden")}

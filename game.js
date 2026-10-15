@@ -10,9 +10,9 @@ const tutorialTexture=new Image(); tutorialTexture.src="assets/tutorial_interior
 // The tutorial map is displayed at 65% of the play area, centred. Artwork and collision share this transform.
 const TUTORIAL_SCALE=.65;
 function tutorialPoint(nx,ny){return {x:(W*(1-TUTORIAL_SCALE)/2)+nx*W*TUTORIAL_SCALE,y:(H*(1-TUTORIAL_SCALE)/2)+ny*H*TUTORIAL_SCALE}}
-// Tutorial collision segments use the same normalized coordinates as the PNG. The four side-room openings align to y=26–43% and 57–74% of the map artwork.
-// Perimeter walls are split around the six tutorial barriers. The interior geometry stays unchanged.
-const tutorialSolids=[[.145,.125,.475,.125],[.525,.125,.855,.125],[.875,.145,.875,.215],[.875,.285,.875,.715],[.875,.785,.875,.855],[.855,.875,.525,.875],[.475,.875,.145,.875],[.125,.855,.125,.785],[.125,.715,.125,.285],[.125,.215,.125,.145],[.375,.125,.375,.26],[.375,.43,.375,.57],[.375,.74,.375,.875],[.625,.125,.625,.26],[.625,.43,.625,.57],[.625,.74,.625,.875],[.125,.5,.2233,.5],[.2767,.5,.375,.5],[.625,.5,.7233,.5],[.7767,.5,.875,.5]];
+// Tutorial collision coordinates are normalized to the PNG; tutorialPoint applies the same centered 65% transform as artwork rendering. The inner partitions end at the visible wall tips around 39% and resume around 60% of image height, leaving the two stacked side-room entrances clear.
+// Perimeter walls remain split around the six interactive tutorial barriers. The interior geometry is aligned to the visible wall ends.
+const tutorialSolids=[[.145,.125,.475,.125],[.525,.125,.855,.125],[.875,.145,.875,.215],[.875,.285,.875,.715],[.875,.785,.875,.855],[.855,.875,.525,.875],[.475,.875,.145,.875],[.125,.855,.125,.785],[.125,.715,.125,.285],[.125,.215,.125,.145],[0.375,0.125,0.375,0.39],[0.375,0.60,0.375,0.875],[0.625,0.125,0.625,0.39],[0.625,0.60,0.625,0.875],[0.125,0.5,0.2233,0.5],[0.2767,0.5,0.375,0.5],[0.625,0.5,0.7233,0.5],[0.7767,0.5,0.875,0.5]];
 // Six stateful tutorial barriers: intact, four damage stages, then broken.
 const tutorialBarriers=[
  {id:'left-upper',x:.125,y:.25,w:.014,h:.07,state:1,cooldown:0},
@@ -376,8 +376,8 @@ function drawFarmhouse(){
 function drawCollisionDebug(){
  if(!collisionDebug||stressMode)return;
  x.save();
- // World-space 2% grid. Each cell is labelled with its X/Y percentage range
- // so collision reports can identify the exact box start and end.
+ // World-space grid. In tutorial mode, draw the actual tutorial colliders through
+ // tutorialPoint, matching the same transform used by the PNG and blocked().
  x.lineWidth=1;
  const cellW=W/50, cellH=H/50;
  x.font='9px monospace';
@@ -391,35 +391,50 @@ function drawCollisionDebug(){
   x.strokeStyle=iy%5===0?'rgba(255,255,255,.48)':'rgba(255,255,255,.24)';
   x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();
  }
- // Label every cell with the cell's top-left X/Y coordinate, using a dark
- // backing for legibility. Labels are world-space and pan with the map.
  for(let iy=0;iy<50;iy++){
   for(let ix=0;ix<50;ix++){
    const gx=ix*cellW, gy=iy*cellH;
    const label=`${String(ix*2).padStart(2,'0')},${String(iy*2).padStart(2,'0')}`;
    x.font='9px monospace';
    const tw=x.measureText(label).width;
-   x.fillStyle='rgba(0,0,0,.62)';
-   x.fillRect(gx+2,gy+2,tw+4,12);
-   x.fillStyle='rgba(255,255,255,.94)';
-   x.fillText(label,gx+4,gy+11);
+   x.fillStyle='rgba(0,0,0,.62)';x.fillRect(gx+2,gy+2,tw+4,12);
+   x.fillStyle='rgba(255,255,255,.94)';x.fillText(label,gx+4,gy+11);
   }
  }
- // Perimeter labels every 10% remain larger for orientation.
  x.font='bold 12px monospace';
  for(let i=0;i<=10;i++){
   const pct=i*10, gx=W*i/10, gy=H*i/10, label=String(pct).padStart(2,'0')+'%';
-  x.fillStyle='rgba(0,0,0,.82)'; x.fillRect(Math.min(Math.max(0,gx-17),W-36),0,36,16);
-  x.fillStyle='#fff'; x.fillText(label,Math.min(Math.max(2,gx-15),W-34),12);
-  x.fillStyle='rgba(0,0,0,.82)'; x.fillRect(0,Math.min(Math.max(0,gy-8),H-16),36,16);
-  x.fillStyle='#fff'; x.fillText(label,2,Math.min(Math.max(12,gy+4),H-2));
+  x.fillStyle='rgba(0,0,0,.82)';x.fillRect(Math.min(Math.max(0,gx-17),W-36),0,36,16);
+  x.fillStyle='#fff';x.fillText(label,Math.min(Math.max(2,gx-15),W-34),12);
+  x.fillStyle='rgba(0,0,0,.82)';x.fillRect(0,Math.min(Math.max(0,gy-8),H-16),36,16);
+  x.fillStyle='#fff';x.fillText(label,2,Math.min(Math.max(12,gy+4),H-2));
  }
- const drawSegments=(arr,color,width)=>{x.strokeStyle=color;x.lineWidth=width;x.lineCap='round';for(const q of arr){x.beginPath();x.moveTo(q[0]*W,q[1]*H);x.lineTo(q[2]*W,q[3]*H);x.stroke()}};
- drawSegments(solidSegments,'#ff3b30',4);
- drawSegments(movementOnly,'#38e56d',4);
- for(const q of breakables){x.fillStyle=q.hp>0?'rgba(30,160,255,.48)':'rgba(120,120,120,.25)';x.strokeStyle='#26a7ff';x.lineWidth=3;x.fillRect(q.x*W,q.y*H,q.w*W,q.h*H);x.strokeRect(q.x*W,q.y*H,q.w*W,q.h*H)}
- for(const q of climbPoints){x.fillStyle='#ffe52e';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(q.x*W,q.y*H,13,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#111';x.font='bold 12px monospace';x.fillText('CLIMB',q.x*W-20,q.y*H-18)}
- x.fillStyle='#ffe52e';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(gatePoint.x*W,gatePoint.y*H,13,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#111';x.font='bold 12px monospace';x.fillText('GATE',gatePoint.x*W-15,gatePoint.y*H-18);
+ const drawSegments=(arr,color,width,mapCoords=false)=>{
+  x.strokeStyle=color;x.lineWidth=width;x.lineCap='round';
+  for(const q of arr){
+   const a=mapCoords?tutorialPoint(q[0],q[1]):{x:q[0]*W,y:q[1]*H};
+   const b=mapCoords?tutorialPoint(q[2],q[3]):{x:q[2]*W,y:q[3]*H};
+   x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+  }
+ };
+ if(tutorialMode){
+  // These are the exact solid segments consulted by blocked() during tutorial gameplay.
+  drawSegments(tutorialSolids,'#ff3b30',4,true);
+  // Outline the interactive, separately rendered tutorial barricades in amber.
+  for(const q of tutorialBarriers){
+   const pt=tutorialPoint(q.x,q.y),ww=q.w*W*TUTORIAL_SCALE,hh=q.h*H*TUTORIAL_SCALE;
+   x.fillStyle=q.state>=6?'rgba(120,120,120,.12)':'rgba(244,208,63,.12)';
+   x.strokeStyle=q.state>=6?'#888':'#f4d03f';x.lineWidth=3;
+   x.fillRect(pt.x-ww/2,pt.y-hh/2,ww,hh);x.strokeRect(pt.x-ww/2,pt.y-hh/2,ww,hh);
+  }
+ }else{
+  // Farmhouse-only colliders are shown only when the farmhouse is the active map.
+  drawSegments(solidSegments,'#ff3b30',4);
+  drawSegments(movementOnly,'#38e56d',4);
+  for(const q of breakables){x.fillStyle=q.hp>0?'rgba(30,160,255,.48)':'rgba(120,120,120,.25)';x.strokeStyle='#26a7ff';x.lineWidth=3;x.fillRect(q.x*W,q.y*H,q.w*W,q.h*H);x.strokeRect(q.x*W,q.y*H,q.w*W,q.h*H)}
+  for(const q of climbPoints){x.fillStyle='#ffe52e';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(q.x*W,q.y*H,13,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#111';x.font='bold 12px monospace';x.fillText('CLIMB',q.x*W-20,q.y*H-18)}
+  x.fillStyle='#ffe52e';x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.arc(gatePoint.x*W,gatePoint.y*H,13,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#111';x.font='bold 12px monospace';x.fillText('GATE',gatePoint.x*W-15,gatePoint.y*H-18);
+ }
  if(player){x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(player.x,player.y,player.r,0,Math.PI*2);x.stroke();x.fillStyle='#fff';x.font='bold 13px monospace';x.fillText(`PLAYER ${Math.round(player.x/W*100)}%, ${Math.round(player.y/H*100)}%`,player.x+18,player.y-18)}
  x.restore();
 }
@@ -430,7 +445,7 @@ function draw(){
  if(stressMode){x.fillStyle="#151515";x.fillRect(0,0,W,H);x.strokeStyle="#383838";x.lineWidth=3;x.strokeRect(18,18,W-36,H-36)}else if(tutorialMode&&tutorialTexture.complete&&tutorialTexture.naturalWidth){const tw=W*TUTORIAL_SCALE,th=H*TUTORIAL_SCALE;x.drawImage(tutorialTexture,(W-tw)/2,(H-th)/2,tw,th)}else if(farmhouseTexture.complete&&farmhouseTexture.naturalWidth){x.drawImage(farmhouseTexture,0,0,W,H)}else drawFarmhouse();
 if(tutorialMode){for(const q of tutorialBarriers){const a=tutorialPoint(q.x,q.y),ww=q.w*W*TUTORIAL_SCALE,hh=q.h*H*TUTORIAL_SCALE;x.save();x.translate(a.x,a.y);if(q.state>=6){x.fillStyle="#171513";x.fillRect(-ww/2,-hh/2,ww,hh);x.strokeStyle="#3a3028";x.lineWidth=Math.max(3,Math.min(7,ww>hh?hh*.35:ww*.35));for(let k=-1;k<=1;k++){x.beginPath();if(ww>hh){x.moveTo(k*ww*.28,-hh*.48);x.lineTo(k*ww*.28+hh*.35,hh*.4)}else{x.moveTo(-ww*.48,k*hh*.28);x.lineTo(ww*.4,k*hh*.28+ww*.25)}x.stroke()}x.fillStyle="#090909";x.beginPath();x.arc(-ww*.12,-hh*.12,Math.max(2,Math.min(5,Math.min(ww,hh)*.18)),0,Math.PI*2);x.fill();x.restore();continue;}x.fillStyle=q.state===1?'#65452f':q.state===2?'#68452d':q.state===3?'#59402e':q.state===4?'#47382d':'#302b27';x.fillRect(-ww/2,-hh/2,ww,hh);x.strokeStyle='#100e0c';x.lineWidth=Math.max(2,Math.min(4,Math.min(ww,hh)*.12));x.strokeRect(-ww/2,-hh/2,ww,hh);x.save();x.beginPath();x.rect(-ww/2,-hh/2,ww,hh);x.clip();for(let plank=-2;plank<=2;plank++){x.strokeStyle=plank%2?'#8b6947':'#a1845d';x.globalAlpha=.72;x.lineWidth=Math.max(1,Math.min(2,Math.min(ww,hh)*.06));x.beginPath();if(ww>hh){const px=plank*ww/5;x.moveTo(px,-hh/2+1);x.lineTo(px+Math.max(1,hh*.06),hh/2-1)}else{const py=plank*hh/5;x.moveTo(-ww/2+1,py);x.lineTo(ww/2-1,py+Math.max(1,ww*.06))}x.stroke()}x.globalAlpha=1;for(let grain=0;grain<7;grain++){x.strokeStyle=grain%2?'#3a281b':'#b08a5c';x.globalAlpha=grain%3===0?.48:.24;x.lineWidth=1;x.beginPath();if(ww>hh){let yy=-hh*.42+grain*hh*.14;x.moveTo(-ww*.44,yy);x.bezierCurveTo(-ww*.1,yy-1,ww*.1,yy+1,ww*.43,yy)}else{let xx=-ww*.42+grain*ww*.14;x.moveTo(xx,-hh*.44);x.bezierCurveTo(xx-1,-hh*.1,xx+1,hh*.1,xx,hh*.43)}x.stroke()}x.globalAlpha=1;const nailR=Math.max(1.4,Math.min(2.5,Math.min(ww,hh)*.09));for(const nx of [-.38,.38])for(const ny of [-.34,.34]){x.fillStyle='#171615';x.beginPath();x.arc(ww*nx,hh*ny,nailR+1,0,Math.PI*2);x.fill();x.fillStyle='#9a8c72';x.beginPath();x.arc(ww*nx-.3,hh*ny-.3,nailR*.55,0,Math.PI*2);x.fill()}if(q.state>=2){x.strokeStyle='#5d1115';x.globalAlpha=.8;x.lineWidth=Math.max(1.5,Math.min(3,Math.min(ww,hh)*.1));x.beginPath();x.moveTo(-ww*.28,-hh*.18);x.lineTo(-ww*.08,hh*.02);x.lineTo(ww*.02,-hh*.02);x.stroke();x.globalAlpha=1}if(q.state>=3){x.strokeStyle='#171311';x.lineWidth=2;x.beginPath();x.moveTo(-ww*.3,-hh*.25);x.lineTo(ww*.1,hh*.2);if(q.state>=4)x.lineTo(-ww*.1,hh*.4);x.stroke()}x.restore();x.restore()}}
 for(const q of p){let a=q.t/q.m;if(q.k==="b"){x.globalAlpha=a;x.fillStyle="#76191c";x.save();x.translate(q.x,q.y);x.rotate(q.rot||0);x.beginPath();x.ellipse(0,0,q.r||3,(q.r||3)*.58,0,0,Math.PI*2);x.fill();x.restore()}else if(q.k==="s"){x.globalAlpha=a*.7;x.fillStyle="#501316";x.beginPath();x.ellipse(q.x,q.y,q.r||7,(q.r||7)*.55,0,0,Math.PI*2);x.fill()}else if(q.k==="m"){x.globalAlpha=a;x.fillStyle="#fff1a8";x.beginPath();x.arc(q.x,q.y,13,0,7);x.fill()}else{x.globalAlpha=a;x.strokeStyle="#ffcc55";x.lineWidth=6;x.beginPath();x.arc(q.x,q.y,60*(1-a)+8,0,7);x.stroke()}}x.globalAlpha=1;
-for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();drawCollisionDebug();x.restore();if(collisionDebug&&!stressMode){x.save();x.setTransform(1,0,0,1,0,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(8,8,Math.min(c.width-16,360),48);x.fillStyle="#fff";x.font="bold 13px monospace";x.fillText("COLLISION DEBUG ON · GRID 5%",16,26);x.font="11px monospace";x.fillText("RED solid · BLUE breakable · GREEN movement-only · YELLOW entry",16,43);x.restore()}}
+for(const q of g){x.fillStyle="#777";x.beginPath();x.arc(q.x,q.y,7,0,7);x.fill()}for(const e of z)drawZombie(e);drawPlayer();drawCollisionDebug();x.restore();if(collisionDebug&&!stressMode){x.save();x.setTransform(1,0,0,1,0,0);x.fillStyle="rgba(0,0,0,.78)";x.fillRect(8,8,Math.min(c.width-16,360),48);x.fillStyle="#fff";x.font="bold 13px monospace";x.fillText("COLLISION DEBUG ON · GRID 2%",16,26);x.font="11px monospace";x.fillText(tutorialMode?"TUTORIAL: RED solid · AMBER interactive barriers":"FARMHOUSE: RED solid · BLUE breakable · GREEN movement-only · YELLOW entry",16,43);x.restore()}}
 
 function frame(t){let dt=Math.min(.033,(t-last)/1000||0);last=t;update(dt);updateRepairButton();draw();requestAnimationFrame(frame)}requestAnimationFrame(frame);
 let settingsOrigin="home";

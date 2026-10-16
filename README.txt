@@ -1,3 +1,7 @@
+SAS VS ZOMBIES — Alpha 1.29.3
+
+Armoury redesign in a SAS 3-inspired black/red visual style. Weapon-group tabs now sit across the top; the selected group’s weapon list appears on the right and the selected weapon panel appears on the left with a visual silhouette, magazine/reserve information, stat bars, ammunition purchasing where applicable, and a separate Upgrade button. Upgrade planning is a distinct screen with all ten stats and tier prices, selectable next-tier purchases, live total cost, Back-to-cancel, and Confirm-to-purchase. Confirm deducts credits and saves selected upgrades together; backing out does not spend credits. The existing primary/secondary loadout selectors remain available. Existing combat mechanics, credit prices, inventory storage, map art and collision definitions are retained.
+
 SAS VS ZOMBIES — Alpha 1.29.2
 
 Alpha 1.29.2 fixes an upgrade-tier lookup bug so purchased tiers display as owned and the correct next-tier price is shown. It also corrects weapon upgrade effects and improves Armoury feedback. Accuracy reduces base spread and recoil buildup; standard pistols have a 5% base critical-hit chance before upgrades; each penetration tier adds a consistent 15 percentage-point chance to continue to the next target; stagger applies a temporary slow rather than permanently reducing zombie speed. Armoury tier tiles show the per-tier effects, and the upgrade panel stays open after a purchase.

@@ -105,3 +105,114 @@ html,body{overscroll-behavior:none}
 #swapWeaponBtn{min-height:28px;padding:3px 7px;font-size:10px;letter-spacing:.06em}
 
 .aimAssistSetting{display:flex;align-items:center;gap:10px;margin:12px 0;padding:12px;border:1px solid #454545;background:#111;color:#eee;font-size:12px;font-weight:800;letter-spacing:.06em}.aimAssistSetting input{width:20px;height:20px;accent-color:#a92323;flex-shrink:0}.aimAssistSetting span{display:block;margin-left:auto;max-width:58%;font-size:10px;line-height:1.35;font-weight:400;color:#aaa;letter-spacing:0}
+
+
+/* Alpha 1.29.3 — SAS 3-inspired black/red Armoury layout */
+.startPanel.armouryExpanded{width:min(97vw,1240px);height:min(95dvh,900px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 10px);overflow:hidden;padding:9px 12px;border:1px solid #9a171b;border-radius:3px;background:radial-gradient(ellipse at 40% 20%,#351614 0%,#15100f 40%,#080808 100%);box-shadow:0 0 0 2px #26090a,0 20px 80px #000e;}
+#armouryMenu{width:100%;height:100%;min-height:0;display:flex;flex-direction:column;gap:6px;text-align:left;touch-action:pan-y;}
+.armouryHeader{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;min-height:44px;padding:5px 8px;background:linear-gradient(90deg,#650d10,#9a171b 45%,#2a0c0c);border:1px solid #711014;box-shadow:inset 0 1px #ed57502b;}
+.panel button.armouryBackBtn{width:auto;min-height:31px;padding:0 10px;border:1px solid #672025;background:#171312;color:#f4e8e8;border-radius:1px;font-size:10px;letter-spacing:.1em;white-space:nowrap;touch-action:manipulation;}
+.armouryBrand{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;}
+.armouryBrand small,.armouryCreditBox small,.loadoutBarTitle small,.upgradeScreenHeader small,.upgradeQuote small{font-size:8px;line-height:1.2;letter-spacing:.16em;color:#d0aaa7;font-weight:800;}
+.armouryBrand strong{font-size:clamp(15px,3.2vw,24px);line-height:1;letter-spacing:.18em;text-shadow:0 2px #30090a;}
+.armouryCreditBox{display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap;}
+.armouryCreditBox strong{font-size:clamp(15px,2.8vw,22px);font-variant-numeric:tabular-nums;letter-spacing:.03em;color:#fff;}
+.armouryCreditBox em{font-style:normal;font-size:9px;color:#f3c0bd;letter-spacing:.12em;}
+#armouryMainView{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;}
+#armouryMainView.hidden{display:none!important}
+.armouryCategories{display:flex;flex:0 0 auto;gap:4px;margin:0;padding:0 0 4px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;scrollbar-width:none;border-bottom:3px solid #a9141b;}
+.armouryCategories::-webkit-scrollbar,.armouryWeaponList::-webkit-scrollbar,.armouryUpgradeScreenList::-webkit-scrollbar{display:none}
+.panel button.armouryTab{position:relative;flex:1 0 auto;min-width:72px;min-height:31px;padding:5px 8px;border:1px solid #4c4141;border-bottom:0;border-radius:1px 1px 0 0;background:linear-gradient(#363030,#191718);color:#d8cece;font-size:clamp(8px,1.2vw,11px);letter-spacing:.035em;white-space:nowrap;}
+.panel button.armouryTab.active{background:linear-gradient(#d51a22,#9a1017);border-color:#ed3b3e;color:#fff;box-shadow:inset 0 1px #ff9b9d;}
+.panel button.armouryTab.active:after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:#c91920;}
+.armouryContent{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(170px,.92fr);gap:8px;flex:1;min-height:0;overflow:hidden;}
+.armouryWeaponDetail{display:flex;flex-direction:column;min-width:0;min-height:0;border:2px solid #b5161d;background:#090909;box-shadow:inset 0 0 0 1px #3e1718;overflow:hidden;}
+.weaponDetailHead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;background:#292626;min-height:30px;}
+.weaponDetailHead h2{margin:0;font-size:clamp(12px,2vw,17px);letter-spacing:.04em;font-weight:500;color:#f0e7e7;overflow-wrap:anywhere;}
+.weaponState{border:1px solid #6c4141;padding:3px 5px;font-size:7px;font-weight:900;letter-spacing:.08em;color:#e9b9b9;white-space:nowrap;}
+.weaponState.available{background:#761015;border-color:#dc373b;color:white;}
+.weaponShowcase{position:relative;display:flex;align-items:center;justify-content:center;min-height:68px;flex:1 1 90px;max-height:140px;overflow:hidden;background:radial-gradient(ellipse at center,#515050 0%,#343232 54%,#201d1d 100%);border-bottom:1px solid #3d3030;}
+.weaponShowcase:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,#fff1,transparent 28%,#0002 70%,#0006),repeating-linear-gradient(0deg,#fff0 0 16px,#0000000a 17px 18px);pointer-events:none;}
+.weaponShowcase svg{width:min(75%,440px);height:88%;max-height:118px;filter:drop-shadow(0 6px 4px #000c);z-index:1;}
+.weaponShowcase .showcaseTag{position:absolute;left:8px;top:6px;z-index:2;font-size:7px;letter-spacing:.12em;color:#ddd;font-weight:800;}
+.weaponShowcase .showcaseCode{position:absolute;right:8px;bottom:6px;z-index:2;text-align:right;font-size:8px;letter-spacing:.08em;color:#ddd;}
+.weaponRoleRow{display:grid;grid-template-columns:1.15fr .8fr 1fr;align-items:center;gap:4px;padding:6px 8px;background:#090909;border-bottom:1px solid #2b2626;}
+.weaponRole{font-size:clamp(8px,1.1vw,11px);line-height:1.35;color:#ddd;letter-spacing:.04em;}
+.weaponDatum{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0;}
+.weaponDatum small{font-size:7px;letter-spacing:.1em;color:#b4a8a8;font-weight:800;}
+.weaponDatum strong{font-size:clamp(10px,1.5vw,15px);font-weight:500;color:#fff;}
+.weaponStats{display:grid;gap:5px;padding:6px 8px 8px;background:#080808;}
+.weaponStat{display:grid;grid-template-columns:minmax(55px,.55fr) minmax(55px,1fr) 37px;align-items:center;gap:7px;}
+.weaponStat label{font-size:8px;font-weight:900;letter-spacing:.06em;color:#dcd5d5;}
+.weaponStatTrack{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:2px;height:13px;}
+.weaponStatTrack i{display:block;background:#111;border:1px solid #292424;min-width:0;}
+.weaponStatTrack i.filled{background:linear-gradient(#e6393c,#8c1219);border-color:#a8262b;box-shadow:inset 0 1px #ff7979 44;}
+.weaponStat output{font-size:8px;color:#b8aeae;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.weaponActions{display:flex;gap:6px;padding:0 8px 8px;background:#080808;}
+.panel button.weaponActionBtn{min-height:34px;flex:1;width:auto;padding:5px 8px;border-radius:1px;border:1px solid #ce3439;background:linear-gradient(#b51a22,#741017);color:#fff;font-size:clamp(9px,1.15vw,12px);letter-spacing:.08em;text-align:center;justify-content:center;touch-action:manipulation;}
+.panel button.weaponActionBtn.secondary{border-color:#6c3b3e;background:linear-gradient(#383030,#211b1b);}
+.panel button.weaponActionBtn:disabled{opacity:.42;filter:grayscale(.4);}
+.armouryWeaponListPanel{display:flex;flex-direction:column;min-width:0;min-height:0;border:2px solid #b5161d;background:#090909;}
+.weaponListHeader{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:30px;padding:5px 8px;background:#292626;border-bottom:1px solid #5a191c;}
+.weaponListHeader strong{font-size:10px;letter-spacing:.12em;color:#eee;}
+.weaponListHeader small{font-size:7px;letter-spacing:.08em;color:#bcaeae;}
+.armouryWeaponList{display:flex;flex-direction:column;gap:3px;overflow-y:auto;min-height:0;padding:4px;background:#0b0b0b;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;}
+.panel button.weaponListItem{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px;min-height:30px;width:100%;padding:5px 7px;border:1px solid #2d2929;border-radius:0;background:linear-gradient(90deg,#202020,#151515);color:#c7c1c1;text-align:left;font-size:clamp(9px,1.25vw,12px);font-weight:500;letter-spacing:.025em;touch-action:manipulation;}
+.panel button.weaponListItem.selected{background:#d1121b;border-color:#f4484e;color:white;box-shadow:inset 0 1px #ff777b;}
+.weaponListItem .listState{font-size:6px;letter-spacing:.06em;color:#b29a9a;white-space:nowrap;font-weight:900;}
+.weaponListItem.selected .listState{color:#ffe5e5;}
+.weaponListEmpty{margin:auto;padding:18px 10px;text-align:center;color:#bcb0b0;font-size:10px;line-height:1.5;letter-spacing:.07em;}
+.weaponListEmpty strong{display:block;color:#eee;margin-bottom:6px;font-size:12px;}
+.armouryLoadoutBar{display:grid;grid-template-columns:minmax(130px,1fr) minmax(130px,1fr) minmax(130px,1fr);align-items:center;gap:8px;border:1px solid #512327;background:#110e0e;padding:6px 8px;}
+.loadoutBarTitle{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.loadoutBarTitle small{color:#e3bbbb;}
+.loadoutBarTitle span{font-size:8px;color:#a79a9a;}
+.armouryLoadoutBar label{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px;font-size:8px;font-weight:900;letter-spacing:.1em;color:#cbbcbc;min-width:0;}
+.armouryLoadoutBar label select{width:100%;min-width:0;min-height:28px;padding:4px 6px;background:#211919;color:#fff;border:1px solid #724044;border-radius:0;font-size:9px;touch-action:manipulation;}
+.armouryFeedback{min-height:14px;max-height:30px;overflow:hidden;margin:0;padding:1px 5px;color:#f0b6b7;font-size:9px;line-height:1.4;letter-spacing:.04em;text-align:left;}
+.armouryUpgradeView{display:flex;flex:1;flex-direction:column;gap:7px;min-height:0;}
+.armouryUpgradeView.hidden{display:none!important;}
+.upgradeScreenHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 8px;border:1px solid #4d2528;background:linear-gradient(90deg,#291010,#181212);}
+.upgradeScreenHeader h2{margin:2px 0 0;font-size:clamp(14px,2.7vw,21px);letter-spacing:.12em;}
+.upgradeOwnedNote{max-width:170px;font-size:7px;line-height:1.35;letter-spacing:.08em;text-align:right;color:#bf9e9e;}
+.armouryUpgradeScreenList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 7px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding:2px;scrollbar-width:none;}
+.armouryUpgradeScreenList .armouryUpgradeStat{display:grid;grid-template-rows:auto 1fr;gap:5px;min-width:0;padding:5px 6px;border:1px solid #383030;background:linear-gradient(120deg,#201a1a,#0d0c0c);}
+.armouryUpgradeScreenList .armouryUpgradeStatHead{align-items:center;gap:5px;margin:0;}
+.armouryUpgradeScreenList .armouryUpgradeStatHead h3{font-size:9px;letter-spacing:.08em;margin:0 0 2px;color:#f0e7e7;}
+.armouryUpgradeScreenList .armouryUpgradeStatHead p{font-size:7px!important;line-height:1.25!important;margin:0!important;color:#a99c9c!important;}
+.armouryUpgradeScreenList .armouryUpgradeStatHead .armouryStatus{font-size:6px;padding:3px;}
+.armouryUpgradeScreenList .armouryUpgradeTiers{gap:3px;align-items:stretch;}
+.panel button.upgradeChoice,.upgradeTierLocked,.upgradeTierOwned{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:34px;width:100%;padding:3px 1px;border:1px solid #3c3333;border-radius:0;background:#111;color:#cfc2c2;font-size:7px;line-height:1.1;text-align:center;touch-action:manipulation;}
+.panel button.upgradeChoice.available{border-color:#8f282e;background:linear-gradient(#471315,#241010);color:#fff;}
+.panel button.upgradeChoice.selected{border-color:#ff595c;background:linear-gradient(#df1b24,#8d1017);box-shadow:inset 0 0 0 1px #ff898c;color:#fff;}
+.upgradeTierOwned{border-color:#405238;background:linear-gradient(#273322,#141a11);color:#cde2bc;}
+.upgradeTierLocked{border-color:#292424;background:#0b0b0b;color:#706969;opacity:.8;}
+.upgradeChoice strong,.upgradeTierOwned strong,.upgradeTierLocked strong{font-size:8px;letter-spacing:.05em;}
+.upgradeChoice small,.upgradeTierOwned small,.upgradeTierLocked small{font-size:6px;line-height:1.2;overflow-wrap:anywhere;}
+.armouryUpgradeFooter{display:grid;grid-template-columns:minmax(130px,1fr) auto;align-items:center;gap:10px;padding:7px 8px;border:1px solid #66242a;background:linear-gradient(90deg,#180d0e,#2a1012);}
+.upgradeQuote{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.upgradeQuote strong{font-size:10px;letter-spacing:.08em;color:#fff;}
+.upgradeQuote span{font-size:8px;color:#c9b4b4;line-height:1.3;}
+.upgradeFooterActions{display:flex;align-items:center;gap:6px;}
+.panel button.armourySecondaryBtn,.panel button.armouryConfirmBtn{width:auto;min-height:34px;padding:5px 10px;border-radius:1px;font-size:9px;letter-spacing:.08em;justify-content:center;white-space:nowrap;touch-action:manipulation;}
+.panel button.armourySecondaryBtn{background:#211a1a;border:1px solid #694246;color:#e7dada;}
+.panel button.armouryConfirmBtn{background:linear-gradient(#cc1e27,#791017);border:1px solid #f04b51;color:#fff;}
+.panel button.armouryConfirmBtn:disabled{opacity:.38;filter:grayscale(.5);}
+@media(max-width:620px){.startPanel.armouryExpanded{padding:6px}.armouryHeader{grid-template-columns:auto 1fr auto;gap:6px;padding:4px}.armouryBrand small{font-size:6px;letter-spacing:.08em}.armouryCategories{gap:3px}.panel button.armouryTab{min-width:64px;padding:4px 6px;font-size:8px}.armouryContent{grid-template-columns:minmax(0,1.45fr) minmax(130px,.9fr);gap:5px}.weaponDetailHead{padding:4px 6px}.weaponRoleRow{padding:4px 5px}.weaponStats{gap:4px;padding:5px}.weaponActions{padding:0 5px 5px;gap:4px}.panel button.weaponActionBtn{min-height:30px;padding:4px 5px;font-size:8px}.panel button.weaponListItem{padding:4px 5px;min-height:28px;font-size:9px}.weaponListItem .listState{font-size:5px}.armouryLoadoutBar{grid-template-columns:minmax(90px,.7fr) 1fr 1fr;gap:5px;padding:5px}.loadoutBarTitle span{display:none}.armouryLoadoutBar label{display:flex;flex-direction:column;align-items:stretch;gap:3px;font-size:7px}.armouryLoadoutBar label select{min-height:26px;font-size:8px}.armouryUpgradeScreenList{gap:4px;grid-template-columns:repeat(2,minmax(0,1fr))}.armouryUpgradeScreenList .armouryUpgradeStat{padding:4px}.armouryUpgradeScreenList .armouryUpgradeStatHead p{display:none}.panel button.upgradeChoice,.upgradeTierLocked,.upgradeTierOwned{min-height:31px}.armouryUpgradeFooter{grid-template-columns:minmax(0,1fr) auto;gap:5px;padding:5px}.panel button.armourySecondaryBtn,.panel button.armouryConfirmBtn{min-height:31px;padding:4px 7px;font-size:8px}}
+@media(max-height:440px){.startPanel.armouryExpanded{height:96dvh;max-height:96dvh;padding:5px 8px}.armouryHeader{min-height:36px}.armouryBrand small{font-size:6px}.armouryBrand strong{font-size:16px}.armouryCategories{padding-bottom:2px}.panel button.armouryTab{min-height:27px}.armouryContent{gap:5px}.weaponShowcase{min-height:55px;max-height:100px}.weaponRoleRow{padding:3px 5px}.weaponStats{gap:3px;padding:4px 6px}.weaponStatTrack{height:10px}.armouryLoadoutBar{padding:4px;gap:5px}.loadoutBarTitle small{font-size:7px}.armouryLoadoutBar label select{min-height:23px}.armouryFeedback{min-height:10px;font-size:8px}.upgradeScreenHeader{padding:2px 6px}.armouryUpgradeScreenList{gap:3px}.armouryUpgradeScreenList .armouryUpgradeStat{padding:3px 4px}.panel button.upgradeChoice,.upgradeTierLocked,.upgradeTierOwned{min-height:28px}.armouryUpgradeFooter{padding:4px 6px}}
+#armouryMenu .armouryCategories{touch-action:pan-x;}
+#armouryMenu button{touch-action:manipulation;}
+.weaponUnavailableMark{position:relative;z-index:1;text-align:center;color:#ab9e9e;font-size:10px;letter-spacing:.2em;text-shadow:0 2px #000;padding:10px;border:1px dashed #665252;background:#171313a8;}
+.weaponUnavailableMark b{display:inline-block;margin-top:6px;color:#e1c7c7;font-size:12px;letter-spacing:.12em;}
+.weaponComingCopy{font-size:9px;line-height:1.5;color:#bcb0b0;margin:0;}
+.weaponStatTrack i.filled{box-shadow:inset 0 1px rgba(255,121,121,.25);}
+@media(max-height:440px){.weaponShowcase{min-height:48px}.weaponRoleRow{font-size:7px}.weaponStat{gap:4px;grid-template-columns:minmax(45px,.55fr) minmax(45px,1fr) 32px}.weaponStat label{font-size:7px}.weaponStat output{font-size:7px}.weaponStatTrack{gap:1px}.weaponActions{padding-bottom:4px}.panel button.weaponActionBtn{min-height:28px;font-size:7px}}
+.panel button.armouryTab{width:auto;}
+.armouryUpgradeScreenList{grid-template-columns:repeat(3,minmax(0,1fr));}
+.upgradeTierLocked small:first-of-type{display:block;}
+@media(max-width:620px){.armouryUpgradeScreenList{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-height:440px){.armouryUpgradeScreenList .armouryUpgradeStatHead p{display:none}.armouryUpgradeScreenList .armouryUpgradeStat{gap:3px;padding:3px 4px}.panel button.upgradeChoice,.upgradeTierLocked,.upgradeTierOwned{min-height:27px}}
+#armouryMenu .armouryWeaponList,#armouryMenu .armouryUpgradeScreenList{scrollbar-width:thin;scrollbar-color:#8b1c23 #171313;}
+#armouryMenu .armouryWeaponList::-webkit-scrollbar,#armouryMenu .armouryUpgradeScreenList::-webkit-scrollbar{display:block;width:4px;height:4px;}
+#armouryMenu .armouryWeaponList::-webkit-scrollbar-track,#armouryMenu .armouryUpgradeScreenList::-webkit-scrollbar-track{background:#171313;}
+#armouryMenu .armouryWeaponList::-webkit-scrollbar-thumb,#armouryMenu .armouryUpgradeScreenList::-webkit-scrollbar-thumb{background:#8b1c23;border-radius:2px;}

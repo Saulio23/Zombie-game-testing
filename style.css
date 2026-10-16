@@ -95,6 +95,7 @@ html,body{overscroll-behavior:none}
 .armouryUpgradeTier{min-width:0;display:grid;gap:3px;align-content:center;justify-items:center;padding:6px 2px;border:1px solid #42473e;background:#191c18;text-align:center}
 .armouryUpgradeTier strong{font-size:9px;color:#d6bd8a;letter-spacing:.04em}
 .armouryUpgradeTier small{font-size:7px;color:#9d9d90;font-weight:800;letter-spacing:.02em}
+.armouryUpgradeTier .upgradeEffect{display:block;font-size:6px;line-height:1.15;color:#a4ad9b;font-style:normal;font-weight:800;letter-spacing:0;white-space:nowrap}
 #armouryMenu{touch-action:pan-y}
 #armouryMenu .startPanel,#armouryMenu .armouryContent{touch-action:pan-y}
 @media(max-height:600px){.armouryUpgradesPanel{max-height:48vh;padding:6px}.armouryUpgradeStat{padding:6px}.armouryUpgradeStatHead{margin-bottom:5px}.armouryUpgradeTier{padding:4px 1px}.panel button.armouryUpgradeToggle{min-height:40px;margin-top:7px}}

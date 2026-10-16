@@ -1,3 +1,9 @@
+SAS VS ZOMBIES — Alpha 1.29.2
+
+Alpha 1.29.2 fixes an upgrade-tier lookup bug so purchased tiers display as owned and the correct next-tier price is shown. It also corrects weapon upgrade effects and improves Armoury feedback. Accuracy reduces base spread and recoil buildup; standard pistols have a 5% base critical-hit chance before upgrades; each penetration tier adds a consistent 15 percentage-point chance to continue to the next target; stagger applies a temporary slow rather than permanently reducing zombie speed. Armoury tier tiles show the per-tier effects, and the upgrade panel stays open after a purchase.
+
+Map artwork, collision definitions, controls, credits, upgrade costs and ammunition/loadout persistence are retained.
+
 SAS VS ZOMBIES — Alpha 1.29.1
 
 Alpha 1.29.1 hardens weapon swapping, reload cancellation and upgraded magazine persistence. If an equipped pistol has an empty magazine but reserve rounds available, equipping it starts a reload automatically. Interrupting a Hi-Power reload returns the rounds reserved for that unfinished reload. The game now saves and displays magazine capacity consistently with per-weapon upgrades.

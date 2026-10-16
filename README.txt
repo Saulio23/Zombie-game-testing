@@ -1,4 +1,4 @@
-SAS VS ZOMBIES — Alpha 1.29.3
+SAS VS ZOMBIES — Alpha 1.29.4
 
 Armoury redesign in a SAS 3-inspired black/red visual style. Weapon-group tabs now sit across the top; the selected group’s weapon list appears on the right and the selected weapon panel appears on the left with a visual silhouette, magazine/reserve information, stat bars, ammunition purchasing where applicable, and a separate Upgrade button. Upgrade planning is a distinct screen with all ten stats and tier prices, selectable next-tier purchases, live total cost, Back-to-cancel, and Confirm-to-purchase. Confirm deducts credits and saves selected upgrades together; backing out does not spend credits. The existing primary/secondary loadout selectors remain available. Existing combat mechanics, credit prices, inventory storage, map art and collision definitions are retained.
 

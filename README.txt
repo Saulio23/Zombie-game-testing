@@ -1,6 +1,27 @@
+SAS VS ZOMBIES — Alpha 1.29.5
+
+MAIN MENU & PLAYER PROGRESSION
+- Added a dedicated Home Screen with START and SETTINGS. The release/version number is pinned at the bottom-centre; final cover artwork is intentionally deferred.
+- START opens the Main Menu, with the player callsign, player level, rank and credits in the profile header.
+- Main Menu entries appear in the requested order: PLAY, BARRACKS, ARMOURY, RANKS & UNLOCKS, SETTINGS.
+- PLAY opens SINGLE PLAYER and MULTIPLAYER. Multiplayer displays COMING SOON and has no action.
+- BARRACKS shows the player and three permanent AI squadmate records. Squadmates unlock at player Levels 5, 10 and 15. Individual XP/level/rank records are persisted; AI combat deployment and full squad upgrade trees remain future work.
+- RANKS & UNLOCKS lists all 100 levels, their game-progression rank/insignia, reward status, current-level marker and upcoming confirmed unlocks. Confirmed entries in this release are Level 1 Colt M1911A1, Level 2 Basic Fragmentation Grenade (planned tool unlock), Level 3 Healing Stim (planned field item), and AI squadmates at Levels 5, 10 and 15. Other level rewards are clearly reserved rather than guessed before the weapon/armour/toolbelt master list is finalised.
+- Zombie kills award provisional 10 player XP alongside the existing credit reward. Each unlocked squadmate record gains 5 XP per kill, independently. The XP curve is provisional and can be balanced later.
+- Settings supports a saved operator callsign and a UI size control from 80% to 120%, in addition to the existing mobile aim assist toggle and full version history.
+
+PRESERVED SYSTEMS
+- Existing Armoury layout, weapon roster placeholders, weapon upgrade selection/confirmation, loadout and ammunition persistence, credits, combat, movement, touch controls, developer options, mission selector, Farmhouse and Training Block maps, artwork, assets and collision definitions.
+- No map art or collision geometry was changed in this release.
+
+KNOWN SCOPE NOTES
+- The Multiplayer screen remains a non-functional Coming Soon entry.
+- AI teammates appear as Barracks progression records; active in-mission squadmate behaviour is not implemented in this release.
+- Future level rewards for the full weapon, six-set armour and toolbelt plan are not assigned here. Those entries should be inserted after the relevant master lists are finalised and approved.
+
 SAS VS ZOMBIES — Alpha 1.29.4
 
-Armoury redesign in a SAS 3-inspired black/red visual style. Weapon-group tabs now sit across the top; the selected group’s weapon list appears on the right and the selected weapon panel appears on the left with a visual silhouette, magazine/reserve information, stat bars, ammunition purchasing where applicable, and a separate Upgrade button. Upgrade planning is a distinct screen with all ten stats and tier prices, selectable next-tier purchases, live total cost, Back-to-cancel, and Confirm-to-purchase. Confirm deducts credits and saves selected upgrades together; backing out does not spend credits. The existing primary/secondary loadout selectors remain available. Existing combat mechanics, credit prices, inventory storage, map art and collision definitions are retained.
+Armoury redesign in a SAS 3-inspired black/red visual style. Weapon-group tabs sit across the top; the selected group’s weapon list appears on the right and selected weapon panel on the left with a visual silhouette, magazine/reserve information, stat bars, ammunition purchasing where applicable, and a separate Upgrade button. Upgrade planning is a distinct screen with all ten stats and tier prices, selectable next-tier purchases, live total cost, Back-to-cancel, and Confirm-to-purchase. Confirm deducts credits and saves selected upgrades together; backing out does not spend credits. Existing primary/secondary loadout selectors remain available. Existing combat mechanics, credit prices, inventory storage, map art and collision definitions are retained.
 
 SAS VS ZOMBIES — Alpha 1.29.2
 

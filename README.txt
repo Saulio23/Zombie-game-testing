@@ -1,4 +1,4 @@
-SAS VS ZOMBIES — Alpha 1.29.5
+SAS VS ZOMBIES — Alpha 1.29.6
 
 MAIN MENU & PLAYER PROGRESSION
 - Added a dedicated Home Screen with START and SETTINGS. The release/version number is pinned at the bottom-centre; final cover artwork is intentionally deferred.

@@ -253,3 +253,7 @@ html,body{overscroll-behavior:none}
 #mobileControls #repairBtn{width:58px;height:58px;border-radius:50%;right:auto;bottom:auto}
 #mobileControls #reloadBtn,#mobileControls #grenadeBtn{right:auto;bottom:auto}
 @media(pointer:fine){#mobileControls .actionBtn{opacity:.92;background:#111d;border-color:#ffffff80}#mobileControls .stick{display:none}}
+
+/* Alpha 1.29.7: force planner items to escape generic .panel button rules. */
+#hudPlannerPreview button.hudPlanItem{position:absolute!important;display:flex!important;box-sizing:border-box!important;width:58px!important;min-width:58px!important;max-width:58px!important;height:58px!important;min-height:58px!important;max-height:58px!important;margin:0!important;padding:0!important;flex:0 0 58px!important;align-items:center!important;justify-content:center!important;text-align:center!important;border:1px solid #ffffff66!important;border-radius:50%!important;background:#111c!important;color:#fff!important;font:normal 25px/1 Arial,sans-serif!important;letter-spacing:0!important;white-space:normal!important;box-shadow:0 2px 8px #0009!important;transform:translate(-50%,-50%)!important;}
+#hudPlannerPreview button.hudPlanItem:active{transform:translate(-50%,-50%)!important}

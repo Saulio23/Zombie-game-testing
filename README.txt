@@ -1,4 +1,9 @@
-SAS VS ZOMBIES — Alpha 1.29.6 (HUD planner hotfix)
+SAS VS ZOMBIES — Alpha 1.29.7
+
+ALPHA 1.29.7 CHANGES
+- PC keyboard: press Space to repair a nearby damaged tutorial barrier or farmhouse barricade. Repair only happens when a repairable object is in range.
+- Collision debug keyboard toggle changed from D to Q; the pause-menu debug toggle remains available.
+- HUD planner buttons now explicitly override generic menu button styles (including width, min-height, display, padding, margin and flex sizing) so the planner shows only draggable 58×58 circular icons, not large button rectangles.
 
 HUD PLANNER & PC CONTROLS HOTFIX
 - HUD planner controls now use the same 58×58 circular footprint as the in-game action buttons, showing only the actual grenade, repair and reload icons instead of large labelled rectangles.

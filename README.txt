@@ -1,4 +1,10 @@
-SAS VS ZOMBIES — Alpha 1.29.6
+SAS VS ZOMBIES — Alpha 1.29.6 (HUD planner hotfix)
+
+HUD PLANNER & PC CONTROLS HOTFIX
+- HUD planner controls now use the same 58×58 circular footprint as the in-game action buttons, showing only the actual grenade, repair and reload icons instead of large labelled rectangles.
+- The grenade, repair and reload action buttons are now visible and usable on desktop/PC as well as mobile. Desktop hides the mobile movement/aim sticks while retaining the action buttons.
+- Dragged HUD positions are applied to the in-game buttons, saved locally, and restored on load; reset restores the default positions.
+
 
 MAIN MENU & PLAYER PROGRESSION
 - Added a dedicated Home Screen with START and SETTINGS. The release/version number is pinned at the bottom-centre; final cover artwork is intentionally deferred.

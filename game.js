@@ -67,7 +67,12 @@ const tutorialBarriers=[
 const WEAPON_ROSTER={
  "Pistols":["Colt M1911A1","Browning Hi-Power","Beretta M9","Glock 17","Taurus Raging Bull .44","Desert Eagle .50 AE","Beretta 93R"],
  "SMGs":["Uzi","MP40","Thompson M1A1","PPSh-41","Škorpion vz.61 (.32 ACP)","MP5A3","UMP45","FN P90"],
- "Assault Rifles":["M16A2","M4A1 Carbine","AK-47","AK-74","FN FAL","Steyr AUG","SIG SG 550","Heckler & Koch G36C","FAMAS F1","IMI Galil","L85A2","HK416"],"Shotguns":["Remington 870","Mossberg 500","Benelli M4","SPAS-12","Saiga-12","Ithaca 37","Winchester Model 1897"],"Machine Guns":["M249 SAW","FN Minimi","M60","PKM","MG42","M134 Minigun"],"Snipers":["Remington 700","M40A5","M24 SWS","Accuracy International L96A1","Barrett M82A1","Dragunov SVD"],"Explosives":["M67 Fragmentation Grenade","M18 Smoke Grenade","M84 Stun Grenade","M18A1 Claymore","M72 LAW"],"Special":["FN P90 TR","HK MP7A1","Kriss Vector","AA-12","XM25 CDTE","M32 MGL","M202 FLASH","Prototype Energy Weapon"]
+ "Assault Rifles":["Stg-44","M4A1","AK-74","M16A1","FAMAS F1","AUG A1","SG 550","AK-47","HK G36","Galil ARM","HK416","Scar-H"],
+ "Shotguns":["Remington 870","Winchester Model 1897","Benelli M4","SPAS-12","KSG","AA-12"],
+ "HMGs":["MG42","M60","RPD","Browning M2","M249 SAW"],
+ "Sniper Rifles":["Mosin–Nagant","Dragunov SVD","HK PSG-1","Accuracy International Arctic Warfare L96A1","CheyTac M200 Intervention","Barrett M82"],
+ "Explosives":["M72 LAW","RPG-7","Panzerfaust 3","Milkor MGL / M32 (standard grenade variant)"],
+ "Special Weapons":["LANCE","NEEDLEPOINT","TEMPEST","FIREBRAND","HALBERD","CASCADE","MAELSTROM","VANGUARD"]
 };
 const WEAPON_UPGRADE_STATS=[
  {id:"magazineCapacity",name:"Magazine Capacity",desc:"Increase the number of rounds held in a magazine."},

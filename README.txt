@@ -1,3 +1,16 @@
+SAS VS ZOMBIES — ALPHA 1.29.9
+
+ALPHA 1.29.9 CHANGES
+- Armoury roster corrected to the approved 56 weapons in exact category order and category-internal unlock order.
+- Category counts: Pistols 7; SMGs 8; Assault Rifles 12; Shotguns 6; HMGs 5; Sniper Rifles 6; Explosives 4; Special Weapons 8 (56 total).
+- Unimplemented weapons are labelled Coming Soon / unavailable and cannot be purchased or equipped.
+- Existing Colt M1911A1 and Browning Hi-Power prototype implementation is preserved.
+- Weapon unlock level assignments remain unallocated to preserve future progression space for armour, Toolbelt abilities, AI teammates, and map-region unlocks.
+- This release includes code/static checks and a headless browser smoke test; it is not a claim of full device-specific gameplay QA.
+
+INSTALLATION
+Extract the ZIP and upload the files to your existing game repository, keeping the assets folder and its contents intact.
+
 SAS VS ZOMBIES — Alpha 1.29.7
 
 ALPHA 1.29.7 CHANGES

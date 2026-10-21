@@ -257,3 +257,17 @@ html,body{overscroll-behavior:none}
 /* Alpha 1.29.7: force planner items to escape generic .panel button rules. */
 #hudPlannerPreview button.hudPlanItem{position:absolute!important;display:flex!important;box-sizing:border-box!important;width:58px!important;min-width:58px!important;max-width:58px!important;height:58px!important;min-height:58px!important;max-height:58px!important;margin:0!important;padding:0!important;flex:0 0 58px!important;align-items:center!important;justify-content:center!important;text-align:center!important;border:1px solid #ffffff66!important;border-radius:50%!important;background:#111c!important;color:#fff!important;font:normal 25px/1 Arial,sans-serif!important;letter-spacing:0!important;white-space:normal!important;box-shadow:0 2px 8px #0009!important;transform:translate(-50%,-50%)!important;}
 #hudPlannerPreview button.hudPlanItem:active{transform:translate(-50%,-50%)!important}
+
+
+/* Alpha 1.30 — Armoury weapon-list scrolling rework. Keep the list as a bounded flex child so all weapon rows remain reachable on short screens and touch devices. */
+#armouryMenu #armouryMainView{min-height:0;overflow:hidden;}
+#armouryMenu .armouryContent{min-height:0;min-width:0;grid-template-rows:minmax(0,1fr);align-items:stretch;overflow:hidden;}
+#armouryMenu .armouryWeaponListPanel{display:flex;flex-direction:column;min-width:0;min-height:0;height:100%;max-height:100%;overflow:hidden;}
+#armouryMenu .weaponListHeader{flex:0 0 auto;}
+#armouryMenu .armouryWeaponList{display:flex;flex:1 1 0%;flex-direction:column;min-width:0;min-height:0;height:0;max-height:100%;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#a9141b #171313;padding:5px 6px 10px;}
+#armouryMenu .armouryWeaponList .weaponListItem{flex:0 0 auto;min-height:34px;}
+#armouryMenu .armouryWeaponList::-webkit-scrollbar{display:block;width:7px;}
+#armouryMenu .armouryWeaponList::-webkit-scrollbar-track{background:#171313;}
+#armouryMenu .armouryWeaponList::-webkit-scrollbar-thumb{background:#a9141b;border:1px solid #2a0b0d;border-radius:4px;}
+@media(max-width:620px){#armouryMenu .armouryWeaponList .weaponListItem{min-height:34px;padding:5px 6px;}#armouryMenu .armouryWeaponList{padding-bottom:12px;}}
+@media(max-height:520px){#armouryMenu .armouryWeaponList .weaponListItem{min-height:29px;}#armouryMenu .armouryWeaponList{padding-top:3px;padding-bottom:8px;}}

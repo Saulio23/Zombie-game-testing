@@ -1,3 +1,19 @@
+SAS VS ZOMBIES — ALPHA 1.30
+
+ALPHA 1.30 CHANGES
+- Reworked Armoury weapon-list scrolling so the weapon list is a bounded, independently scrollable panel instead of being clipped by its parent layout.
+- Explicit min-height/flex sizing allows the full list to scroll on desktop, mobile touchscreens, and short landscape displays.
+- Added a visible, themed scrollbar on desktop and kept touch swipe, mouse wheel, and trackpad scrolling available.
+- Weapon category order, each category's weapon order, the 56-entry roster, availability labels, weapon details, loadout and upgrades are preserved.
+- No weapon progression levels, gameplay balance, map geometry or assets were changed.
+
+CHECKS
+- JavaScript syntax and ZIP integrity checks are included in release validation.
+- Browser test checks category switching, full-list scroll reachability (including all 12 Assault Rifles), and JavaScript console errors.
+
+INSTALLATION
+Extract the ZIP and upload the files to your existing game repository, keeping the assets folder and its contents intact.
+
 SAS VS ZOMBIES — ALPHA 1.29.9
 
 ALPHA 1.29.9 CHANGES

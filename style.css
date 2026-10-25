@@ -291,3 +291,13 @@ html,body{overscroll-behavior:none}
 .lobbyMission{display:grid;gap:8px}.lobbyMission select{width:100%;min-height:44px;padding:8px 10px;border-radius:7px;border:1px solid #555;background:#161616;color:#fff;font-size:13px;touch-action:auto}
 .lobbyActions>*{flex:1!important;width:auto!important;min-height:46px!important;font-size:13px!important;padding:8px!important}.lobbyNotice,.multiplayerFootnote{font-size:11px;line-height:1.5;color:#bdbdbd;margin:0;text-align:center}.multiplayerFootnote{margin-top:16px}.multiplayerError{padding:12px;border:1px solid #8b4444;background:#351414;border-radius:8px;color:#ffdada;font-size:12px;line-height:1.5;margin:14px 0}
 @media(max-width:520px){.multiplayerPage{padding:20px 16px;min-width:0}.lobbyTopline strong{font-size:24px}.lobbyActions{flex-direction:column}.lobbyActions>*{width:100%!important}.lobbyStatusRow{font-size:10px}}
+
+
+/* Alpha 1.31.1 — host-authoritative mission briefing */
+.lobbyMissionBriefing{margin-top:10px;padding:14px 16px;border:1px solid rgba(255,255,255,.13);border-left:3px solid #9b252b;border-radius:8px;background:rgba(255,255,255,.035);display:grid;gap:5px}
+.lobbyMissionBriefing strong{font-size:clamp(14px,2vw,18px);letter-spacing:.08em;color:#f1f1f1}
+.lobbyMissionBriefing>span{font-size:11px;letter-spacing:.12em;color:#d17d80;font-weight:800}
+.lobbyMissionBriefing p{margin:2px 0 0;color:#bdbdbd;font-size:13px;line-height:1.45}
+.lobbyMissionAuthority{margin:8px 0 0;color:#a9a9a9;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+#lobbyMissionSelect:disabled{opacity:.8;cursor:not-allowed}
+#lobbyDeployBtn:disabled{opacity:.42;filter:grayscale(.5);cursor:not-allowed}

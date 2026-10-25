@@ -271,3 +271,23 @@ html,body{overscroll-behavior:none}
 #armouryMenu .armouryWeaponList::-webkit-scrollbar-thumb{background:#a9141b;border:1px solid #2a0b0d;border-radius:4px;}
 @media(max-width:620px){#armouryMenu .armouryWeaponList .weaponListItem{min-height:34px;padding:5px 6px;}#armouryMenu .armouryWeaponList{padding-bottom:12px;}}
 @media(max-height:520px){#armouryMenu .armouryWeaponList .weaponListItem{min-height:29px;}#armouryMenu .armouryWeaponList{padding-top:3px;padding-bottom:8px;}}
+
+
+/* Alpha 1.31 — private multiplayer lobby prototype */
+.multiplayerPage{width:min(680px,94vw);max-height:88vh;overflow-y:auto;text-align:left;overscroll-behavior:contain}
+.multiplayerPage>h1{text-align:center;font-size:clamp(28px,5vw,40px)}
+.multiplayerPage>.eyebrow,.multiplayerPage>.pageIntro{text-align:center}
+.multiplayerHomeActions{margin:22px auto 12px;max-width:430px}
+.joinRoomForm{max-width:430px;margin:20px auto;display:grid;gap:10px}
+.joinRoomForm label,.lobbyMission label{font-size:11px;font-weight:900;letter-spacing:1.5px;color:#c9c9c9}
+.joinRoomForm input{width:100%;min-height:50px;background:#090909;color:#fff;border:1px solid #686868;border-radius:8px;padding:10px 14px;font-size:23px;font-weight:900;letter-spacing:6px;text-align:center;text-transform:uppercase;touch-action:auto;user-select:text;-webkit-user-select:text}
+.multiplayerLobby{margin-top:20px;border:1px solid #4d4d4d;border-radius:12px;background:#090909a8;padding:16px;display:flex;flex-direction:column;gap:14px}
+.lobbyTopline,.lobbyStatusRow,.lobbyActions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lobbyTopline>div{display:flex;flex-direction:column;gap:4px}.lobbyTopline small{font-size:10px;letter-spacing:1.5px;color:#bbb}.lobbyTopline strong{font-size:28px;letter-spacing:5px;color:#f0f0f0}
+.compactBtn{width:auto!important;min-height:38px!important;padding:8px 12px!important;font-size:12px!important;white-space:nowrap}
+.lobbyStatusRow{font-size:11px;color:#d6d6d6;flex-wrap:wrap}.lobbyStatusRow #lobbyPlayerCount{margin-left:auto;font-weight:900;letter-spacing:.5px}
+.connectionPip{display:inline-block;flex:0 0 9px;width:9px;height:9px;border-radius:50%;background:#d4a94c;box-shadow:0 0 8px #d4a94c66}.connectionPip.connected{background:#68d391;box-shadow:0 0 8px #68d39166}.connectionPip.error{background:#e56b6f;box-shadow:0 0 8px #e56b6f66}
+.lobbyRoster{display:grid;gap:7px}.lobbyPlayer{display:flex;align-items:center;gap:10px;border:1px solid #353535;border-radius:8px;background:#151515;padding:10px 12px;min-height:54px}.lobbyPlayer .slotIndex{font-size:11px;color:#999;width:20px}.lobbyPlayer .playerInfo{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.lobbyPlayer .playerCallsign{font-size:13px;font-weight:900;overflow:hidden;text-overflow:ellipsis}.lobbyPlayer .playerMeta{font-size:10px;color:#aaa;letter-spacing:.6px}.lobbyPlayer .readyState{font-size:10px;font-weight:900;letter-spacing:.6px;color:#aaa}.lobbyPlayer .readyState.ready{color:#80d99b}
+.lobbyMission{display:grid;gap:8px}.lobbyMission select{width:100%;min-height:44px;padding:8px 10px;border-radius:7px;border:1px solid #555;background:#161616;color:#fff;font-size:13px;touch-action:auto}
+.lobbyActions>*{flex:1!important;width:auto!important;min-height:46px!important;font-size:13px!important;padding:8px!important}.lobbyNotice,.multiplayerFootnote{font-size:11px;line-height:1.5;color:#bdbdbd;margin:0;text-align:center}.multiplayerFootnote{margin-top:16px}.multiplayerError{padding:12px;border:1px solid #8b4444;background:#351414;border-radius:8px;color:#ffdada;font-size:12px;line-height:1.5;margin:14px 0}
+@media(max-width:520px){.multiplayerPage{padding:20px 16px;min-width:0}.lobbyTopline strong{font-size:24px}.lobbyActions{flex-direction:column}.lobbyActions>*{width:100%!important}.lobbyStatusRow{font-size:10px}}

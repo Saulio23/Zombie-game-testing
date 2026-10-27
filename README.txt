@@ -1,44 +1,38 @@
-SAS VS ZOMBIES — Alpha 1.32.1
-==============================
+SAS VS ZOMBIES — Alpha 1.33
 ===========================
 
-This release builds on Alpha 1.32 and fixes pre-game lobby sizing. It focuses on the multiplayer menu/preparation flow and keeps the existing single-player game intact.
+Alpha 1.33 builds on the confirmed Alpha 1.32.1 multiplayer-menu baseline. This is a preparation and ownership update; it does not add shared co-op combat.
 
 WHAT'S NEW
-- Fixed the pre-game lobby expanding beyond its narrower parent menu. The parent panel now sizes to the available viewport width/height and safe areas.
-- Short landscape screens use a compact two-column preparation layout so mission/loadout controls and the roster are visible together where space permits. On especially constrained viewports, the panel scrolls vertically instead of clipping content.
-- No peer networking or gameplay logic changed.
-- Split multiplayer preparation into two clear stages that use the existing black/red tactical menu styling.
-- Network Staging: connect through the existing private room-code system, view the operator roster and ready to proceed.
-- When the host and every connected guest are ready, the host moves the group into the Pre-Game Lobby.
-- Pre-Game Lobby: the operator roster is on the right on wider screens; mission selection and preparation controls are on the left. The layout adapts to phone-sized screens.
-- Mission selection is now in the Pre-Game Lobby and is host-only. The options are Farmhouse Estate — Survival and Farmhouse — Training Grounds. Mission changes reset readiness.
-- Added a separate Ready Up stage for deployment and a synchronized 3–2–1 countdown prototype. The countdown is cancelled if an operator becomes unready or disconnects.
-- Added a Player Loadout preparation panel. Player 1 uses the existing saved profile; Player 2 has a separate local test loadout so the two slots do not share the same weapon selection.
-- Added AI Team Loadouts preparation panels with local-only weapon/armour preference settings.
-- Added Alpha 1.32.1 version labels, manifest metadata and changelog entry.
+- Removed the Player 1 / Player 2 loadout selector. The local player edits only their own operator loadout, saved through the existing player profile used by single-player and the Armoury.
+- Each connected player configures their own loadout on their own device. No player can use this menu to edit another player's weapons.
+- Reworked AI setup labels and guidance so the menu clearly configures only the local player's three AI squadmates.
+- AI squad preferences use a dedicated Alpha 1.33 local-storage key and persist on the device. Existing Alpha 1.32 AI preferences are migrated by reading them as a fallback; new saves use the 1.33 key.
+- Added deployment validation: the local player must have two distinct supported weapons and the selected mission must be valid before they can ready up for deployment.
+- Preserved the existing black/red tactical menu style and two-stage multiplayer staging/pre-game flow.
 
 IMPORTANT LIMITATIONS
-- This is a menu and lobby foundation, not full co-op gameplay. Completing the countdown synchronizes lobby data only; it does not launch a shared playable mission.
-- The Player 2 test loadout is stored locally on the device and is not transmitted to another player yet.
-- AI loadout preferences are saved locally for UI testing and do not yet change AI combat behaviour.
-- The existing game only has functional M1911A1 and Hi-Power prototype weapons. Other weapon, armour and upgrade options remain part of the broader roadmap.
-- Live two-device WebRTC validation was not available during packaging. Please test staging, the pre-game lobby, mission updates and readiness on your devices.
+- This remains a lobby and preparation prototype, not shared co-op gameplay. The countdown synchronizes lobby data only and does not launch a shared playable mission.
+- Player loadouts and AI preferences are local to each device and are not transmitted to other players.
+- AI loadout preferences do not yet affect AI combat behaviour.
+- Only the M1911A1 and Hi-Power prototype are selectable in this menu.
+- Live two-device WebRTC validation was not available during packaging.
 
 PRESERVATION
-- Existing game.js/index.html/style.css structure and all original assets are retained.
-- Single-player gameplay, maps, collision data, existing weapon implementations, progression, and mobile controls were not intentionally changed.
-- The 22 original asset files were retained byte-for-byte.
+- Single-player gameplay, existing player profile, Armoury, progression, maps, collision data, weapons, and mobile controls are retained.
+- All original asset files are retained byte-for-byte.
+- Existing network staging, host-only mission selection, readiness handling, and countdown cancellation behavior are retained.
 
 TESTS PERFORMED
 - JavaScript syntax check with Node.js.
 - HTML parser check.
 - manifest.json parse check.
 - ZIP integrity/CRC check.
-- Static checks for the two-stage UI, host-only mission selection, separate Player 2 local loadout storage, and countdown readiness gates.
-- Live two-device networking was not tested as part of this package.
+- Static checks for removal of the player selector, use of the existing local player profile, separate local AI squad persistence, distinct-weapon validation, and deployment readiness gating.
+- Automated regression checks for required DOM IDs and JavaScript element references.
+- Live two-device networking and in-browser visual testing are not available in this packaging environment.
 
 INSTALL
-1. Keep a copy of Alpha 1.31.2 as your rollback backup.
+1. Keep Alpha 1.32.1 as your rollback backup.
 2. Extract this ZIP and upload its contents to your existing web host/repository, preserving the assets/ folder.
-3. Open the game on the devices and test the new two-stage multiplayer menu.
+3. Open the game on devices and test staging, per-device loadout editing, AI preference persistence, mission selection, readiness cancellation, and countdown behavior.

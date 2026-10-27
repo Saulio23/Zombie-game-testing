@@ -1,9 +1,13 @@
-SAS VS ZOMBIES — Alpha 1.32
+SAS VS ZOMBIES — Alpha 1.32.1
+==============================
 ===========================
 
-This release builds on the confirmed Alpha 1.31.2 baseline. It focuses on the multiplayer menu/preparation flow and keeps the existing single-player game intact.
+This release builds on Alpha 1.32 and fixes pre-game lobby sizing. It focuses on the multiplayer menu/preparation flow and keeps the existing single-player game intact.
 
 WHAT'S NEW
+- Fixed the pre-game lobby expanding beyond its narrower parent menu. The parent panel now sizes to the available viewport width/height and safe areas.
+- Short landscape screens use a compact two-column preparation layout so mission/loadout controls and the roster are visible together where space permits. On especially constrained viewports, the panel scrolls vertically instead of clipping content.
+- No peer networking or gameplay logic changed.
 - Split multiplayer preparation into two clear stages that use the existing black/red tactical menu styling.
 - Network Staging: connect through the existing private room-code system, view the operator roster and ready to proceed.
 - When the host and every connected guest are ready, the host moves the group into the Pre-Game Lobby.
@@ -12,7 +16,7 @@ WHAT'S NEW
 - Added a separate Ready Up stage for deployment and a synchronized 3–2–1 countdown prototype. The countdown is cancelled if an operator becomes unready or disconnects.
 - Added a Player Loadout preparation panel. Player 1 uses the existing saved profile; Player 2 has a separate local test loadout so the two slots do not share the same weapon selection.
 - Added AI Team Loadouts preparation panels with local-only weapon/armour preference settings.
-- Added Alpha 1.32 version labels, manifest metadata and changelog entry.
+- Added Alpha 1.32.1 version labels, manifest metadata and changelog entry.
 
 IMPORTANT LIMITATIONS
 - This is a menu and lobby foundation, not full co-op gameplay. Completing the countdown synchronizes lobby data only; it does not launch a shared playable mission.

@@ -36,3 +36,6 @@ INSTALL
 1. Keep Alpha 1.32.1 as your rollback backup.
 2. Extract this ZIP and upload its contents to your existing web host/repository, preserving the assets/ folder.
 3. Open the game on devices and test staging, per-device loadout editing, AI preference persistence, mission selection, readiness cancellation, and countdown behavior.
+
+
+Alpha 1.33 ownership correction (revision): Host owns AI teammates 1–3; Players 2, 3, and 4 each own exactly one AI teammate. Joining players see a single AI selection and save validation rejects any AI slot outside their ownership. Four humans + six AI teammates = ten deployment characters.
